@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDSS599 Module 6 — HASS Assessment Evidence & Feedback Lab</title>
+<style>
+:root{
+  --ink:#24152f; --purple:#4b155f; --purple2:#6d2a83; --cream:#fbf8f3; --card:#fff;
+  --line:#e5dce7; --green:#176b4a; --red:#9b2c2c; --amber:#8b5a00; --muted:#6a6170;
+  --shadow:0 8px 28px rgba(42,22,50,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream);line-height:1.45}
+header{background:linear-gradient(135deg,#351047,#5a1a70);color:#fff;padding:28px 18px}
+.header-inner{max-width:1180px;margin:auto}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:700}
+h1{font-size:clamp(1.7rem,4vw,2.8rem);margin:.25rem 0 .5rem;line-height:1.08}
+header p{max-width:930px;margin:0;opacity:.92}
+main{max-width:1180px;margin:auto;padding:18px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:8px 0 18px}
+.progress-wrap{background:#eadfed;height:12px;border-radius:999px;overflow:hidden;border:1px solid #d9c9dd}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#5a1a70,#9a58ac);transition:width .35s}
+.score{font-weight:750;white-space:nowrap}
+.intro,.level,.completion{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.level.locked{opacity:.5;filter:grayscale(.35);pointer-events:none}
+.level-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.level h2{margin:0;font-size:1.35rem}
+.badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#f1e7f4;color:var(--purple);font-size:.78rem;font-weight:800}
+.instructions{color:var(--muted);margin:.35rem 0 1rem}
+.note{background:#f7f0fa;border-left:4px solid var(--purple2);padding:10px 12px;border-radius:8px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.case,.row,.data-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.case h3,.row h3,.data-card h3{margin:.1rem 0 .5rem;font-size:1rem;color:var(--purple)}
+.options{display:grid;gap:8px;margin-top:10px}
+.option{width:100%;text-align:left;background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+.option.correct{background:#eff9f3;border-color:#79b798;color:#15593f}
+.option.wrong{background:#fff3f3;border-color:#d49797;color:#7f2222}
+.option:disabled{cursor:default;opacity:1}
+.explain{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#faf7fb;border-left:3px solid #9a72a6;font-size:.9rem}
+.row-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.row-buttons button{background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1}
+.row-buttons button.selected{outline:3px solid #a87cba}
+.row-buttons button.good{background:#eff9f3;border-color:#79b798}
+.row-buttons button.bad{background:#fff3f3;border-color:#d49797}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:.93rem;cursor:pointer}
+.primary{background:var(--purple);color:white}
+.secondary{background:#eee5f1;color:var(--purple)}
+.feedback{min-height:28px;margin-top:10px;font-weight:700}
+.feedback.ok{color:var(--green)}
+.feedback.bad{color:var(--red)}
+.feedback.hint{color:var(--amber)}
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;padding:14px;border:1px dashed #baa8c0;border-radius:14px;background:#fcf9fd;min-height:100px}
+.drag-card{background:#fff;border:1px solid #d9ccdd;border-radius:13px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:grab;user-select:none}
+.drag-card.selected{outline:3px solid #a87cba;background:#faf5fc}
+.drag-card.correct{border-color:#6fb595;background:#f1fbf6}
+.dropgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.dropzone{min-height:180px;border:2px dashed #c7b5cc;border-radius:14px;padding:10px;background:#fff}
+.dropzone h3{margin:0 0 5px;color:var(--purple);font-size:1rem}
+.dropzone p{font-size:.84rem;color:var(--muted);margin:.2rem 0 .5rem}
+.dropzone.dragover{background:#f5eafa;border-color:#6f3d7f}
+.dropzone .drag-card{margin-top:8px;cursor:pointer}
+.mini-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.92rem}
+.mini-table th,.mini-table td{border:1px solid var(--line);padding:8px;text-align:left}
+.mini-table th{background:#f6f0f8;color:var(--purple)}
+.feedback-sample{background:#fcfaf7;border:1px solid #eadfce;border-radius:12px;padding:14px;margin-top:8px}
+.small{font-size:.84rem;color:var(--muted)}
+.completion{text-align:center;display:none}
+.trophy{font-size:3rem}
+.footer{font-size:.78rem;color:var(--muted);padding:8px 2px 28px}
+@media(max-width:900px){.dropgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:820px){.topbar{grid-template-columns:1fr}}
+@media(max-width:620px){.dropgrid{grid-template-columns:1fr}main{padding:10px}header{padding:22px 14px}.level,.intro{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+   <div class="eyebrow">EDSS599 • Module 6 formative activity</div>
+   <h1>HASS Assessment Evidence & Feedback Lab</h1>
+   <p>Practise identifying assessment purpose, interpreting evidence, responding to misconceptions, judging data cautiously, participating in moderation, and writing feedback students can actually use.</p>
+ </div>
+</header>
+
+<main>
+ <div class="topbar">
+   <div>
+     <div class="small">Overall mastery</div>
+     <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+   </div>
+   <div class="score" id="score">0 / 5 challenges complete</div>
+ </div>
+
+ <section class="intro">
+   <h2>Assessment lens</h2>
+   <p>Assessment is useful when it produces evidence that informs teaching or supports a defensible judgement. The format alone does not determine whether an assessment is diagnostic, formative or summative — the key question is how the evidence will be used.</p>
+   <div class="note"><strong>Core principle:</strong> assessment matters because evidence changes what happens next.</div>
+ </section>
+
+ <section class="level" id="level1">
+   <div class="level-head"><div><span class="badge">Challenge 1</span><h2>What is the assessment purpose?</h2></div><span>🎯</span></div>
+   <p class="instructions">Classify each example according to how the evidence is being used.</p>
+   <div class="grid" id="purposeCases"></div>
+   <div class="actions"><button class="primary" id="check1">Check classifications</button><button class="secondary" id="reset1">Reset</button></div>
+   <div class="feedback" id="feedback1" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level2">
+   <div class="level-head"><div><span class="badge">Challenge 2</span><h2>Misconception detective</h2></div><span>🕵️</span></div>
+   <div class="data-card">
+     <h3>Civics diagnostic check</h3>
+     <p><strong>Question:</strong> Which court sits at the top of the Australian court hierarchy?</p>
+     <table class="mini-table">
+       <tr><th>Student response</th><th>Number of students</th></tr>
+       <tr><td>High Court of Australia</td><td>9</td></tr>
+       <tr><td>Supreme Court</td><td>13</td></tr>
+       <tr><td>Federal Court</td><td>3</td></tr>
+     </table>
+   </div>
+   <p class="instructions">Use the evidence to identify the misconception and choose the strongest next teaching move.</p>
+   <div class="grid" id="misconceptionCases"></div>
+   <div class="feedback" id="feedback2" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level3">
+   <div class="level-head"><div><span class="badge">Challenge 3</span><h2>Does this assessment give useful evidence?</h2></div><span>📊</span></div>
+   <p class="instructions">Sort each assessment strategy according to the quality of evidence it is likely to provide for the stated purpose. Drag cards, or tap a card and then tap a destination.</p>
+   <div class="bank" id="bank3"></div>
+   <div class="dropgrid">
+     <div class="dropzone" data-zone="strong"><h3>Strong evidence</h3><p>Aligned, interpretable and likely to reveal individual understanding.</p></div>
+     <div class="dropzone" data-zone="weak"><h3>Weak evidence</h3><p>Limited, ambiguous or unreliable evidence of individual learning.</p></div>
+     <div class="dropzone" data-zone="modify"><h3>Potentially useful with modification</h3><p>Could work if the design is tightened or better aligned.</p></div>
+   </div>
+   <div class="actions"><button class="primary" id="check3">Check sorting</button><button class="secondary" id="reset3">Reset</button></div>
+   <div class="feedback" id="feedback3" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level4">
+   <div class="level-head"><div><span class="badge">Challenge 4</span><h2>Moderation & data judgement lab</h2></div><span>⚖️</span></div>
+   <p class="instructions">Make the most defensible professional judgement in each scenario.</p>
+   <div class="grid" id="dataCases"></div>
+   <div class="feedback" id="feedback4" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level5">
+   <div class="level-head"><div><span class="badge">Challenge 5</span><h2>Make the feedback actionable</h2></div><span>✍️</span></div>
+   <div class="feedback-sample">
+     <strong>Student History response:</strong>
+     <p>“Militarism and alliances were important causes of World War I because countries built stronger armies and supported each other.”</p>
+   </div>
+   <p class="instructions">Choose the feedback that best connects to evidence, identifies a specific next step and gives the student an opportunity to improve.</p>
+   <div class="grid" id="feedbackCases"></div>
+   <div class="feedback" id="feedback5" aria-live="polite"></div>
+ </section>
+
+ <section class="completion" id="completion">
+   <div class="trophy">🏆</div>
+   <h2>HASS Assessment Evidence & Feedback Lab complete</h2>
+   <p>You have practised identifying assessment purpose, interpreting misconceptions, judging evidence quality, distinguishing achievement from progress, approaching moderation and writing actionable feedback.</p>
+   <div class="note"><strong>Decision chain:</strong> What am I trying to find out? → What evidence will show it? → What does the evidence actually support? → What misconception or strength is visible? → What teaching response is needed? → What feedback will help the student improve? → What judgement can I defensibly make?</div>
+   <button class="secondary" id="restart">Start again</button>
+ </section>
+
+ <div class="footer">Formative learning resource for EDSS599 Module 6. Designed to support curriculum-aligned assessment, formative use of evidence, moderation, data interpretation and feedback.</div>
+</main>
+
+<script>
+const completed=new Set();
+let selectedCard=null;
+
+const purposeData=[
+ {text:"Before a Civics unit, students answer five questions about the court hierarchy. The teacher uses the responses to decide what prerequisite content needs reteaching.",answer:"diagnostic",why:"The evidence is being used to identify prior knowledge and misconceptions before instruction progresses."},
+ {text:"Midway through a Geography unit, students annotate a map. The teacher notices weak use of scale and models the process again the next lesson.",answer:"formative",why:"Evidence gathered during learning is used to change subsequent teaching."},
+ {text:"At the end of a History unit, students complete an inquiry assessed against selected aspects of the achievement standard.",answer:"summative",why:"The primary purpose is to make a standards-based judgement about achievement."},
+ {text:"Students complete an exit ticket after source analysis. The teacher groups students for additional guided practice the next day.",answer:"formative",why:"The evidence directly informs the next teaching step."},
+ {text:"A short retrieval quiz is given in Week 1 and used to identify which concepts students already know.",answer:"diagnostic",why:"The method is a quiz, but its purpose is diagnostic because it informs initial planning."},
+ {text:"Students submit a final evidence-based argument that contributes to the reported achievement judgement.",answer:"summative",why:"The evidence is being used to evaluate achievement after learning."}
+];
+
+const misconceptionData=[
+ {title:"What does the evidence suggest?",text:"Thirteen students selected Supreme Court. What is the strongest interpretation?",answer:"A substantial group holds a misconception about the position of the High Court in the Australian court hierarchy.",options:["A substantial group holds a misconception about the position of the High Court in the Australian court hierarchy.","The class does not understand Civics at all.","The assessment is automatically invalid."],why:"The evidence supports a specific misconception, not a broad claim about all Civics learning."},
+ {title:"What should the teacher do next?",text:"Which response best uses the evidence formatively?",answer:"Explicitly reteach the hierarchy, model it visually, provide guided sequencing practice, then check understanding again before progressing.",options:["Record the errors and continue to appeals.","Explicitly reteach the hierarchy, model it visually, provide guided sequencing practice, then check understanding again before progressing.","Give students a mark and move on."],why:"Formative assessment becomes meaningful when evidence informs specific next teaching steps."},
+ {title:"What should not be concluded?",text:"Which claim goes beyond the available evidence?",answer:"Students who selected Supreme Court are generally low-achieving learners.",options:["A misconception about the court hierarchy is common.","Further teaching of the hierarchy is warranted.","Students who selected Supreme Court are generally low-achieving learners."],why:"One item does not justify a general judgement about a student's overall achievement or ability."}
+];
+
+const evidenceData=[
+ {id:"e1",text:"Every student writes one sentence explaining why a historical source may still be useful even if it is biased.",answer:"strong"},
+ {id:"e2",text:"Teacher asks, 'Who understands source reliability?' and students show hands.",answer:"weak"},
+ {id:"e3",text:"Students complete a mini-whiteboard response interpreting one geographical graph; all responses are scanned before the teacher proceeds.",answer:"strong"},
+ {id:"e4",text:"Students create an elaborate poster, but the intended learning is analysing geographical data and the marking criteria mostly reward presentation.",answer:"modify"},
+ {id:"e5",text:"Students complete a digital multiple-choice quiz on factual recall when the teacher wants evidence of evidence-based historical reasoning.",answer:"modify"},
+ {id:"e6",text:"Students complete an exit ticket requiring one claim, one piece of source evidence and one explanation.",answer:"strong"},
+ {id:"e7",text:"Teacher relies only on answers volunteered by three confident students during discussion.",answer:"weak"},
+ {id:"e8",text:"Students use think-pair-share, but the teacher also collects a short individual written response from everyone.",answer:"strong"}
+];
+
+const dataData=[
+ {title:"Cohort trend",text:"This year's Year 8 History class averages 72%. Last year's class averaged 65% on a broadly similar task. What can you conclude?",answer:"The result may suggest a cohort-level difference, but it does not show that individual students grew by 7%.",options:["Students grew by 7%.","The result may suggest a cohort-level difference, but it does not show that individual students grew by 7%.","Teaching improved by exactly 7%."],why:"Different cohorts cannot provide matched-student growth evidence."},
+ {title:"Matched-student progress",text:"The same students improve their source-analysis performance across two comparable tasks over a semester.",answer:"This is stronger evidence of progress, but interpretation should still consider comparability, learning opportunities and contextual factors.",options:["This proves the teacher caused the improvement.","This is stronger evidence of progress, but interpretation should still consider comparability, learning opportunities and contextual factors.","The second task alone is enough to measure growth."],why:"Matched-student evidence is more informative for progress, but still requires cautious interpretation."},
+ {title:"Achievement vs progress",text:"A student performs at a high standard but shows little recent improvement in source analysis.",answer:"The student may have high achievement and limited recent progress; these are different constructs.",options:["The student is not achieving.","The student may have high achievement and limited recent progress; these are different constructs.","Progress matters, so achievement should be ignored."],why:"Achievement describes quality at a point in time; progress describes change over time."},
+ {title:"Moderation disagreement",text:"Two teachers award different standards to the same student response. What should happen next?",answer:"Return to the achievement standard and evidence, discuss interpretations and seek consensus through moderation.",options:["Average the two grades automatically.","Return to the achievement standard and evidence, discuss interpretations and seek consensus through moderation.","Let the more experienced teacher decide without discussion."],why:"Moderation relies on standards, evidence and consensus."},
+ {title:"Single assessment",text:"A class performs poorly on one source-analysis task. What is the most defensible conclusion?",answer:"The task provides useful evidence, but further evidence is needed before making broad claims about learning or teacher effectiveness.",options:["The class has failed to learn source analysis.","The teacher's approach was ineffective.","The task provides useful evidence, but further evidence is needed before making broad claims about learning or teacher effectiveness."],why:"No single assessment is sufficient evidence for broad causal or effectiveness claims."}
+];
+
+const feedbackData=[
+ {title:"History feedback",text:"Which feedback is most actionable?",answer:"You have identified militarism and alliances accurately. Now explain how each contributed to the outbreak of war and support one explanation with a specific piece of source evidence. Revise paragraph two.",options:["Good work. Add more detail.","You have identified militarism and alliances accurately. Now explain how each contributed to the outbreak of war and support one explanation with a specific piece of source evidence. Revise paragraph two.","Nice effort — keep going!"],why:"It identifies what is already demonstrated, specifies the missing reasoning, requires evidence and directs revision."},
+ {title:"Geography feedback",text:"A student describes a graph but does not explain the pattern. Which feedback is strongest?",answer:"You have correctly identified the increase from 2010 to 2020. Add one sentence explaining what the pattern suggests about population change, using the figures to support your interpretation.",options:["Be more analytical.","You have correctly identified the increase from 2010 to 2020. Add one sentence explaining what the pattern suggests about population change, using the figures to support your interpretation.","More detail needed."],why:"The feedback connects directly to the evidence in the work and gives a concrete next step."},
+ {title:"Civics feedback",text:"A student makes a claim but gives no evidence. Which feedback best supports improvement?",answer:"Your claim about compulsory voting is clear. Add one specific piece of evidence from the source set and explain how it supports your judgement before resubmitting.",options:["Use evidence.","Your claim about compulsory voting is clear. Add one specific piece of evidence from the source set and explain how it supports your judgement before resubmitting.","This is not strong enough."],why:"The feedback is specific, evidence-based and provides an opportunity to act."},
+ {title:"Feedback overload",text:"Which statement best reflects effective feedback?",answer:"Feedback should be specific and manageable, and students need an opportunity to use it.",options:["The more comments the better.","Feedback should be specific and manageable, and students need an opportunity to use it.","Fast feedback is always effective even if students cannot act on it."],why:"Feedback has greater value when students can interpret and apply it."}
+];
+
+function updateProgress(){
+ document.getElementById("progress").style.width=(completed.size/5*100)+"%";
+ document.getElementById("score").textContent=`${completed.size} / 5 challenges complete`;
+ if(completed.size===5)document.getElementById("completion").style.display="block";
+}
+function complete(n){
+ if(completed.has(n))return;
+ completed.add(n);
+ const next=document.getElementById("level"+(n+1));
+ if(next)next.classList.remove("locked");
+ updateProgress();
+}
+
+function renderRows(){
+ const box=document.getElementById("purposeCases");box.innerHTML="";
+ purposeData.forEach((r,i)=>{
+   const d=document.createElement("div");d.className="row";d.dataset.answer=r.answer;d.innerHTML=`<h3>Example ${i+1}</h3><div>${r.text}</div>`;
+   const btns=document.createElement("div");btns.className="row-buttons";
+   [["diagnostic","Diagnostic"],["formative","Formative"],["summative","Summative"]].forEach(([v,label])=>{
+      const b=document.createElement("button");b.textContent=label;b.dataset.value=v;
+      b.addEventListener("click",()=>{[...btns.children].forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});
+      btns.appendChild(b);
+   });
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=r.why;d.append(btns,exp);box.appendChild(d);
+ });
+}
+function checkRows(){
+ const items=[...document.querySelectorAll("#purposeCases .row")],f=document.getElementById("feedback1");
+ if(items.some(i=>!i.querySelector("button.selected"))){f.className="feedback hint";f.textContent="Classify every example before checking.";return}
+ let correct=0;
+ items.forEach(i=>{
+   const a=i.dataset.answer,s=i.querySelector("button.selected");
+   [...i.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.dataset.value===a)b.classList.add("good")});
+   if(s.dataset.value===a)correct++; else s.classList.add("bad");
+   i.querySelector(".explain").style.display="block";
+ });
+ f.className=correct===items.length?"feedback ok":"feedback bad";
+ f.textContent=`${correct}/${items.length} matched the intended reasoning. The assessment format does not define the purpose — the decisive question is how the evidence is used.`;
+ complete(1);
+}
+
+function renderChoice(containerId,data,level){
+ const box=document.getElementById(containerId);box.innerHTML="";
+ data.forEach(c=>{
+   const d=document.createElement("div");d.className="case";d.innerHTML=`<h3>${c.title}</h3><p>${c.text}</p>`;
+   const opts=document.createElement("div");opts.className="options";
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=c.why;
+   c.options.forEach(o=>{
+     const b=document.createElement("button");b.className="option";b.textContent=o;
+     b.addEventListener("click",()=>{
+       [...opts.children].forEach(x=>{x.disabled=true;if(x.textContent===c.answer)x.classList.add("correct")});
+       if(o!==c.answer)b.classList.add("wrong");
+       exp.style.display="block";
+       checkChoice(containerId,level);
+     });
+     opts.appendChild(b);
+   });
+   d.append(opts,exp);box.appendChild(d);
+ });
+}
+function checkChoice(containerId,level){
+ const groups=[...document.querySelectorAll(`#${containerId} .options`)];
+ if(!groups.every(g=>[...g.children].some(b=>b.disabled)))return;
+ const f=document.getElementById("feedback"+level);f.className="feedback ok";
+ if(level===2)f.textContent="Challenge complete. The evidence supports a specific misconception and a targeted teaching response — not a broad judgement about student ability.";
+ if(level===4)f.textContent="Challenge complete. Defensible professional judgement requires attention to comparability, context, multiple sources of evidence, and the distinction between achievement and progress.";
+ if(level===5)f.textContent="Challenge complete. Actionable feedback is connected to the intended learning, grounded in evidence, specific about the next step and usable by the student.";
+ complete(level);
+}
+
+function makeSortCard(i){
+ const d=document.createElement("div");d.className="drag-card";d.draggable=true;d.dataset.id=i.id;d.dataset.answer=i.answer;d.textContent=i.text;
+ d.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",i.id);selectedCard=d});
+ d.addEventListener("click",()=>{document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=d;d.classList.add("selected")});
+ return d;
+}
+function renderSort(){
+ const bank=document.getElementById("bank3");bank.innerHTML="";
+ [...evidenceData].sort(()=>Math.random()-.5).forEach(i=>bank.appendChild(makeSortCard(i)));
+ document.querySelectorAll("#level3 .dropzone").forEach(z=>[...z.querySelectorAll(".drag-card")].forEach(c=>c.remove()));
+ installDrops();
+}
+function installDrops(){
+ document.querySelectorAll("#level3 .dropzone").forEach(z=>{
+   z.ondragover=e=>{e.preventDefault();z.classList.add("dragover")};
+   z.ondragleave=()=>z.classList.remove("dragover");
+   z.ondrop=e=>{e.preventDefault();z.classList.remove("dragover");const id=e.dataTransfer.getData("text/plain");const c=document.querySelector(`.drag-card[data-id="${id}"]`);if(c)z.appendChild(c);clearSel()};
+   z.onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){z.appendChild(selectedCard);clearSel()}};
+ });
+ document.getElementById("bank3").onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){e.currentTarget.appendChild(selectedCard);clearSel()}};
+}
+function clearSel(){document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=null}
+function checkSort(){
+ const cards=[...document.querySelectorAll("#level3 .drag-card")],f=document.getElementById("feedback3");let placed=0,correct=0;
+ cards.forEach(c=>{c.classList.remove("correct");const z=c.parentElement.closest(".dropzone");if(z){placed++;if(z.dataset.zone===c.dataset.answer){correct++;c.classList.add("correct")}}});
+ if(placed<cards.length){f.className="feedback hint";f.textContent=`Sort all ${cards.length} assessment strategies first. ${cards.length-placed} remain.`;return}
+ if(correct===cards.length){
+   f.className="feedback ok";
+   f.textContent="Excellent. Strong formative evidence is aligned to the intended learning, gathered from all students where possible, and rich enough to reveal misconceptions or reasoning.";
+   complete(3);
+ }else{
+   f.className="feedback bad";
+   f.textContent=`${correct}/${cards.length} are correctly placed. Green cards are correct. Reconsider the others.`;
+ }
+}
+
+function restart(){
+ completed.clear();updateProgress();
+ [2,3,4,5].forEach(n=>document.getElementById("level"+n).classList.add("locked"));
+ document.getElementById("completion").style.display="none";
+ ["feedback1","feedback2","feedback3","feedback4","feedback5"].forEach(id=>{const f=document.getElementById(id);f.textContent="";f.className="feedback"});
+ renderRows();
+ renderChoice("misconceptionCases",misconceptionData,2);
+ renderSort();
+ renderChoice("dataCases",dataData,4);
+ renderChoice("feedbackCases",feedbackData,5);
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+renderRows();
+renderChoice("misconceptionCases",misconceptionData,2);
+renderSort();
+renderChoice("dataCases",dataData,4);
+renderChoice("feedbackCases",feedbackData,5);
+
+document.getElementById("check1").addEventListener("click",checkRows);
+document.getElementById("reset1").addEventListener("click",()=>{renderRows();document.getElementById("feedback1").textContent=""});
+document.getElementById("check3").addEventListener("click",checkSort);
+document.getElementById("reset3").addEventListener("click",()=>{renderSort();document.getElementById("feedback3").textContent=""});
+document.getElementById("restart").addEventListener("click",restart);
+</script>
+</body>
+</html>
