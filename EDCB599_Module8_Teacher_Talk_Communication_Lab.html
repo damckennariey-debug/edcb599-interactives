@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDCB599 Module 8 — Teacher Talk & Communication Lab</title>
+<style>
+:root{
+  --ink:#24152f; --purple:#4b155f; --purple2:#6d2a83; --cream:#fbf8f3; --card:#fff;
+  --line:#e5dce7; --green:#176b4a; --red:#9b2c2c; --amber:#8b5a00; --muted:#6a6170;
+  --shadow:0 8px 28px rgba(42,22,50,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream);line-height:1.45}
+header{background:linear-gradient(135deg,#351047,#5a1a70);color:#fff;padding:28px 18px}
+.header-inner{max-width:1180px;margin:auto}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:700}
+h1{font-size:clamp(1.7rem,4vw,2.8rem);margin:.25rem 0 .5rem;line-height:1.08}
+header p{max-width:930px;margin:0;opacity:.92}
+main{max-width:1180px;margin:auto;padding:18px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:8px 0 18px}
+.progress-wrap{background:#eadfed;height:12px;border-radius:999px;overflow:hidden;border:1px solid #d9c9dd}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#5a1a70,#9a58ac);transition:width .35s}
+.score{font-weight:750;white-space:nowrap}
+.intro,.level,.completion{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.level.locked{opacity:.5;filter:grayscale(.35);pointer-events:none}
+.level-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.level h2{margin:0;font-size:1.35rem}
+.badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#f1e7f4;color:var(--purple);font-size:.78rem;font-weight:800}
+.instructions{color:var(--muted);margin:.35rem 0 1rem}
+.note{background:#f7f0fa;border-left:4px solid var(--purple2);padding:10px 12px;border-radius:8px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.case,.row{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.case h3,.row h3{margin:.1rem 0 .5rem;font-size:1rem;color:var(--purple)}
+.options{display:grid;gap:8px;margin-top:10px}
+.option{width:100%;text-align:left;background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+.option.correct{background:#eff9f3;border-color:#79b798;color:#15593f}
+.option.wrong{background:#fff3f3;border-color:#d49797;color:#7f2222}
+.option:disabled{cursor:default;opacity:1}
+.explain{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#faf7fb;border-left:3px solid #9a72a6;font-size:.9rem}
+.row-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.row-buttons button{background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1}
+.row-buttons button.selected{outline:3px solid #a87cba}
+.row-buttons button.good{background:#eff9f3;border-color:#79b798}
+.row-buttons button.bad{background:#fff3f3;border-color:#d49797}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:.93rem;cursor:pointer}
+.primary{background:var(--purple);color:white}
+.secondary{background:#eee5f1;color:var(--purple)}
+.feedback{min-height:28px;margin-top:10px;font-weight:700}
+.feedback.ok{color:var(--green)}
+.feedback.bad{color:var(--red)}
+.feedback.hint{color:var(--amber)}
+.chain{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+.chain-step{border:1px solid var(--line);border-radius:12px;padding:10px;background:#faf7fb;min-height:150px}
+.chain-step h3{margin:.1rem 0 .5rem;color:var(--purple);font-size:.92rem}
+select{width:100%;padding:9px;border:1px solid #d8cddd;border-radius:9px;background:white;color:var(--ink);font-weight:650}
+.small{font-size:.84rem;color:var(--muted)}
+.completion{text-align:center;display:none}
+.trophy{font-size:3rem}
+.footer{font-size:.78rem;color:var(--muted);padding:8px 2px 28px}
+@media(max-width:920px){.chain{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.topbar,.chain{grid-template-columns:1fr}main{padding:10px}header{padding:22px 14px}.level,.intro{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+   <div class="eyebrow">EDCB599 • Module 8 formative activity</div>
+   <h1>Teacher Talk & Communication Lab</h1>
+   <p>Practise giving clearer directions, asking purposeful questions, managing discussion, scaffolding challenging concepts and recognising communication practices that genuinely support learning.</p>
+ </div>
+</header>
+
+<main>
+ <div class="topbar">
+   <div>
+     <div class="small">Overall mastery</div>
+     <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+   </div>
+   <div class="score" id="score">0 / 5 challenges complete</div>
+ </div>
+
+ <section class="intro">
+   <h2>Communication lens</h2>
+   <p>Effective classroom communication helps students understand what they are learning, what they are expected to do and how they can improve. The goal is not simply more teacher talk or more student talk, but communication that supports attention, understanding, practice and application.</p>
+   <div class="note"><strong>Core principle:</strong> reduce ambiguity, make thinking visible, check understanding and use participation structures that support broad, respectful engagement.</div>
+ </section>
+
+ <section class="level" id="level1">
+   <div class="level-head"><div><span class="badge">Challenge 1</span><h2>Say it better</h2></div><span>🗣️</span></div>
+   <p class="instructions">Choose the version that gives students the clearest and most useful direction or explanation.</p>
+   <div class="grid" id="sayCases"></div>
+   <div class="feedback" id="feedback1" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level2">
+   <div class="level-head"><div><span class="badge">Challenge 2</span><h2>Question with purpose</h2></div><span>❓</span></div>
+   <p class="instructions">Identify what kind of questioning move is being used, and spot the weak check-for-understanding trap.</p>
+   <div class="grid" id="questionCases"></div>
+   <div class="feedback" id="feedback2" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level3">
+   <div class="level-head"><div><span class="badge">Challenge 3</span><h2>Keep the discussion productive</h2></div><span>💬</span></div>
+   <p class="instructions">Choose the response most likely to support broad participation, thinking and respectful classroom talk.</p>
+   <div class="grid" id="discussionCases"></div>
+   <div class="feedback" id="feedback3" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level4">
+   <div class="level-head"><div><span class="badge">Challenge 4</span><h2>Scaffold the hard concept</h2></div><span>🧱</span></div>
+   <p class="instructions">Build a coherent communication sequence for teaching a challenging Business concept.</p>
+   <div class="chain">
+     <div class="chain-step">
+       <h3>1. Prior knowledge</h3>
+       <select id="s1">
+         <option value="">Choose…</option>
+         <option value="correct">Check what students already understand about opportunity cost using a short retrieval prompt.</option>
+         <option value="wrong">Begin with an abstract lecture without checking prior knowledge.</option>
+       </select>
+     </div>
+     <div class="chain-step">
+       <h3>2. Explain / model</h3>
+       <select id="s2">
+         <option value="">Choose…</option>
+         <option value="correct">Explain the concept with a concrete example and think aloud through the reasoning.</option>
+         <option value="wrong">Give students the definition and ask them to memorise it.</option>
+       </select>
+     </div>
+     <div class="chain-step">
+       <h3>3. Guided practice</h3>
+       <select id="s3">
+         <option value="">Choose…</option>
+         <option value="correct">Work through a second example together using prompts and targeted questions.</option>
+         <option value="wrong">Move immediately to independent work.</option>
+       </select>
+     </div>
+     <div class="chain-step">
+       <h3>4. Check understanding</h3>
+       <select id="s4">
+         <option value="">Choose…</option>
+         <option value="correct">Ask every student to identify the opportunity cost in a new scenario and explain why.</option>
+         <option value="wrong">Ask “Does everyone understand?” and move on.</option>
+       </select>
+     </div>
+     <div class="chain-step">
+       <h3>5. Independent application</h3>
+       <select id="s5">
+         <option value="">Choose…</option>
+         <option value="correct">Students apply the concept to a new consumer or business decision with reduced support.</option>
+         <option value="wrong">Repeat the teacher example word for word.</option>
+       </select>
+     </div>
+   </div>
+   <div class="actions"><button class="primary" id="check4">Check scaffold</button><button class="secondary" id="reset4">Reset</button></div>
+   <div class="feedback" id="feedback4" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level5">
+   <div class="level-head"><div><span class="badge">Challenge 5</span><h2>Communication myth-buster</h2></div><span>🧠</span></div>
+   <p class="instructions">Classify each statement as <strong>sound</strong>, <strong>needs more thought</strong>, or <strong>problematic</strong>.</p>
+   <div class="grid" id="mythCases"></div>
+   <div class="actions"><button class="primary" id="check5">Check judgements</button><button class="secondary" id="reset5">Reset</button></div>
+   <div class="feedback" id="feedback5" aria-live="polite"></div>
+ </section>
+
+ <section class="completion" id="completion">
+   <div class="trophy">🏆</div>
+   <h2>Teacher Talk & Communication Lab complete</h2>
+   <p>You have practised improving directions, asking purposeful questions, structuring participation, scaffolding challenging concepts and identifying communication practices that support learning rather than merely increase activity.</p>
+   <button class="secondary" id="restart">Start again</button>
+ </section>
+
+ <div class="footer">Formative learning resource for EDCB599 Module 8. Designed to support effective classroom communication, questioning, scaffolding, participation and classroom management in Business and Economics.</div>
+</main>
+
+<script>
+const completed=new Set();
+
+const sayData=[
+ {title:"Starting a marketing task",text:"Which direction is stronger?",answer:"You have 12 minutes. First identify the target market. Second, complete the SWOT section. Third, draft one unique selling proposition. I’ll check your first step in three minutes.",options:[
+   "Okay everyone, just get started on the marketing task.",
+   "You have 12 minutes. First identify the target market. Second, complete the SWOT section. Third, draft one unique selling proposition. I’ll check your first step in three minutes."
+ ],why:"The stronger direction is concise, sequenced, time-bound and includes a planned check."},
+ {title:"Explaining a budget",text:"Which explanation better supports a novice learner?",answer:"Model one example aloud, name each step, show how revenue and expenses are calculated, then complete a second example with the class.",options:[
+   "Give students the completed budget and tell them to copy the format.",
+   "Model one example aloud, name each step, show how revenue and expenses are calculated, then complete a second example with the class."
+ ],why:"Modelling and guided practice make the process visible before independent application."},
+ {title:"Checking a complex instruction",text:"Which check gives better evidence?",answer:"Ask two or three students to explain the first step in their own words and have everyone begin that step while you circulate.",options:[
+   "Ask, 'Does everyone understand?'",
+   "Ask two or three students to explain the first step in their own words and have everyone begin that step while you circulate."
+ ],why:"A generic yes/no question provides weak evidence. Asking students to restate or demonstrate the step provides stronger evidence of understanding."}
+];
+
+const questionData=[
+ {title:"Question A",text:"“What factors should a business consider when choosing a target market?”",answer:"Open-ended",options:["Open-ended","Probing","Hypothetical","Weak check"],why:"The question invites multiple reasoned responses rather than one fixed answer."},
+ {title:"Question B",text:"“You said price matters. Can you explain why price might affect this target market differently from another?”",answer:"Probing",options:["Open-ended","Probing","Hypothetical","Weak check"],why:"The teacher is deepening and clarifying a student’s existing response."},
+ {title:"Question C",text:"“What would you do if a business had to choose between lower costs and a more ethical supplier?”",answer:"Hypothetical",options:["Open-ended","Probing","Hypothetical","Weak check"],why:"The question asks students to reason through a possible situation."},
+ {title:"Question D",text:"“Does everyone understand opportunity cost?”",answer:"Weak check",options:["Open-ended","Probing","Hypothetical","Weak check"],why:"Students can say yes, remain silent or follow others without demonstrating understanding."}
+];
+
+const discussionData=[
+ {title:"Nobody answers immediately",text:"You ask a worthwhile question and the room is silent for two seconds.",answer:"Allow several seconds of wait time, then invite a response or structured pair discussion.",options:[
+   "Answer the question yourself immediately.",
+   "Allow several seconds of wait time, then invite a response or structured pair discussion.",
+   "Tell the class they are not participating properly."
+ ],why:"Wait time gives students time to retrieve, organise and rehearse a response."},
+ {title:"One student dominates",text:"The same confident student answers almost every question.",answer:"Use a structure that broadens participation, such as think-pair-share, turn-taking or individual response before discussion.",options:[
+   "Keep using the same student because the lesson is moving quickly.",
+   "Use a structure that broadens participation, such as think-pair-share, turn-taking or individual response before discussion.",
+   "Stop asking questions altogether."
+ ],why:"Participation structures should prevent a small number of students from dominating the evidence and discussion."},
+ {title:"Partially correct answer",text:"A student gives a response that contains one useful idea but misses an important concept.",answer:"Acknowledge the useful part, then probe the response or invite another student to build on it.",options:[
+   "Say 'No' and move to another student.",
+   "Acknowledge the useful part, then probe the response or invite another student to build on it.",
+   "Pretend the answer is fully correct to protect confidence."
+ ],why:"Active listening and probing can preserve participation while moving the thinking forward."},
+ {title:"Students interrupt each other",text:"A discussion becomes difficult to follow because students speak over one another.",answer:"Re-establish the turn-taking routine and make the participation expectation explicit.",options:[
+   "Let it continue because energetic discussion is always positive.",
+   "Re-establish the turn-taking routine and make the participation expectation explicit.",
+   "End all classroom discussion for the rest of the unit."
+ ],why:"Clear discussion routines are part of both communication and classroom management."}
+];
+
+const mythData=[
+ {text:"Use visuals when they clarify a complex concept or process.",answer:"sound",why:"Visuals can support explanation when they serve the learning rather than merely decorate the lesson."},
+ {text:"Give 'visual learners' different curriculum because they learn best through images.",answer:"problematic",why:"Fixed learning-style prescriptions are not a sound basis for planning instruction."},
+ {text:"A simulation can support learning if the concept is explicitly framed, roles are clear, understanding is checked and the activity is debriefed.",answer:"sound",why:"The value comes from the instructional design around the activity, not from the activity alone."},
+ {text:"Open-ended discussion is always better than explicit explanation.",answer:"problematic",why:"Different communication approaches serve different purposes. Novices often need clear explanation and modelling before productive discussion."},
+ {text:"Wait time can improve the quality and breadth of student responses.",answer:"sound",why:"Processing time can support more students to retrieve and organise their thinking."},
+ {text:"Differentiation may involve varying scaffolding, prompts or support in response to evidence of need.",answer:"sound",why:"Responsive support should be based on actual barriers, knowledge and proficiency rather than presumed learning styles."}
+];
+
+function updateProgress(){
+ document.getElementById("progress").style.width=(completed.size/5*100)+"%";
+ document.getElementById("score").textContent=`${completed.size} / 5 challenges complete`;
+ if(completed.size===5)document.getElementById("completion").style.display="block";
+}
+function complete(n){
+ if(completed.has(n))return;
+ completed.add(n);
+ const next=document.getElementById("level"+(n+1));
+ if(next)next.classList.remove("locked");
+ updateProgress();
+}
+function renderChoice(containerId,data,level){
+ const box=document.getElementById(containerId);box.innerHTML="";
+ data.forEach(c=>{
+   const d=document.createElement("div");d.className="case";d.innerHTML=`<h3>${c.title}</h3><p>${c.text}</p>`;
+   const opts=document.createElement("div");opts.className="options";
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=c.why;
+   c.options.forEach(o=>{
+     const b=document.createElement("button");b.className="option";b.textContent=o;
+     b.addEventListener("click",()=>{
+       [...opts.children].forEach(x=>{x.disabled=true;if(x.textContent===c.answer)x.classList.add("correct")});
+       if(o!==c.answer)b.classList.add("wrong");
+       exp.style.display="block";
+       checkChoice(containerId,level);
+     });
+     opts.appendChild(b);
+   });
+   d.append(opts,exp);box.appendChild(d);
+ });
+}
+function checkChoice(containerId,level){
+ const groups=[...document.querySelectorAll(`#${containerId} .options`)];
+ if(!groups.every(g=>[...g.children].some(b=>b.disabled)))return;
+ const f=document.getElementById("feedback"+level);f.className="feedback ok";
+ if(level===1)f.textContent="Challenge complete. Clear communication reduces ambiguity and makes the expected process visible.";
+ if(level===2)f.textContent="Challenge complete. Questioning should be selected for a purpose, and checks for understanding should produce usable evidence.";
+ if(level===3)f.textContent="Challenge complete. Productive discussion depends on wait time, listening, routines and participation structures.";
+ complete(level);
+}
+function checkChain(){
+ const vals=[1,2,3,4,5].map(n=>document.getElementById("s"+n).value);
+ const f=document.getElementById("feedback4");
+ if(vals.some(v=>v==="")){f.className="feedback hint";f.textContent="Complete all five parts of the scaffold first.";return}
+ if(vals.every(v=>v==="correct")){f.className="feedback ok";f.textContent="Excellent. The sequence moves from prior knowledge to explanation and modelling, guided practice, checking understanding and independent application.";complete(4)}
+ else{f.className="feedback bad";f.textContent="One or more steps weaken the scaffold. Recheck whether each stage gives students enough support before independence."}
+}
+function renderMyths(){
+ const box=document.getElementById("mythCases");box.innerHTML="";
+ mythData.forEach((r,i)=>{
+   const d=document.createElement("div");d.className="row";d.dataset.answer=r.answer;d.innerHTML=`<h3>Statement ${i+1}</h3><div>${r.text}</div>`;
+   const btns=document.createElement("div");btns.className="row-buttons";
+   [["sound","Sound"],["needs","Needs more thought"],["problematic","Problematic"]].forEach(([v,label])=>{
+     const b=document.createElement("button");b.textContent=label;b.dataset.value=v;
+     b.addEventListener("click",()=>{[...btns.children].forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});
+     btns.appendChild(b);
+   });
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=r.why;d.append(btns,exp);box.appendChild(d);
+ });
+}
+function checkMyths(){
+ const items=[...document.querySelectorAll("#mythCases .row")],f=document.getElementById("feedback5");
+ if(items.some(i=>!i.querySelector("button.selected"))){f.className="feedback hint";f.textContent="Make a judgement for every statement before checking.";return}
+ let correct=0;
+ items.forEach(i=>{
+   const a=i.dataset.answer,s=i.querySelector("button.selected");
+   [...i.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.dataset.value===a)b.classList.add("good")});
+   if(s.dataset.value===a)correct++; else s.classList.add("bad");
+   i.querySelector(".explain").style.display="block";
+ });
+ f.className=correct===items.length?"feedback ok":"feedback bad";
+ f.textContent=`${correct}/${items.length} matched the intended reasoning. Effective communication depends on purpose, evidence and instructional fit rather than fashionable labels or activity for its own sake.`;
+ complete(5);
+}
+function restart(){
+ completed.clear();updateProgress();
+ [2,3,4,5].forEach(n=>document.getElementById("level"+n).classList.add("locked"));
+ document.getElementById("completion").style.display="none";
+ ["feedback1","feedback2","feedback3","feedback4","feedback5"].forEach(id=>{const f=document.getElementById(id);f.textContent="";f.className="feedback"});
+ renderChoice("sayCases",sayData,1);
+ renderChoice("questionCases",questionData,2);
+ renderChoice("discussionCases",discussionData,3);
+ [1,2,3,4,5].forEach(n=>document.getElementById("s"+n).value="");
+ renderMyths();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+renderChoice("sayCases",sayData,1);
+renderChoice("questionCases",questionData,2);
+renderChoice("discussionCases",discussionData,3);
+renderMyths();
+
+document.getElementById("check4").addEventListener("click",checkChain);
+document.getElementById("reset4").addEventListener("click",()=>{[1,2,3,4,5].forEach(n=>document.getElementById("s"+n).value="");document.getElementById("feedback4").textContent=""});
+document.getElementById("check5").addEventListener("click",checkMyths);
+document.getElementById("reset5").addEventListener("click",()=>{renderMyths();document.getElementById("feedback5").textContent=""});
+document.getElementById("restart").addEventListener("click",restart);
+</script>
+</body>
+</html>
