@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDSS599 Module 3 — HASS Pedagogy Decision Lab</title>
+<style>
+:root{
+  --ink:#24152f; --purple:#4b155f; --purple2:#6d2a83; --cream:#fbf8f3; --card:#fff;
+  --line:#e5dce7; --green:#176b4a; --red:#9b2c2c; --amber:#8b5a00; --muted:#6a6170;
+  --shadow:0 8px 28px rgba(42,22,50,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream);line-height:1.45}
+header{background:linear-gradient(135deg,#351047,#5a1a70);color:#fff;padding:28px 18px}
+.header-inner{max-width:1180px;margin:auto}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:700}
+h1{font-size:clamp(1.7rem,4vw,2.8rem);margin:.25rem 0 .5rem;line-height:1.08}
+header p{max-width:930px;margin:0;opacity:.92}
+main{max-width:1180px;margin:auto;padding:18px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:8px 0 18px}
+.progress-wrap{background:#eadfed;height:12px;border-radius:999px;overflow:hidden;border:1px solid #d9c9dd}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#5a1a70,#9a58ac);transition:width .35s}
+.score{font-weight:750;white-space:nowrap}
+.intro,.level,.completion{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.level.locked{opacity:.5;filter:grayscale(.35);pointer-events:none}
+.level-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.level h2{margin:0;font-size:1.35rem}
+.badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#f1e7f4;color:var(--purple);font-size:.78rem;font-weight:800}
+.instructions{color:var(--muted);margin:.35rem 0 1rem}
+.note{background:#f7f0fa;border-left:4px solid var(--purple2);padding:10px 12px;border-radius:8px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.case,.row{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.case h3,.row h3{margin:.1rem 0 .5rem;font-size:1rem;color:var(--purple)}
+.options{display:grid;gap:8px;margin-top:10px}
+.option{width:100%;text-align:left;background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+.option.correct{background:#eff9f3;border-color:#79b798;color:#15593f}
+.option.wrong{background:#fff3f3;border-color:#d49797;color:#7f2222}
+.option:disabled{cursor:default;opacity:1}
+.explain{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#faf7fb;border-left:3px solid #9a72a6;font-size:.9rem}
+.row-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.row-buttons button{background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1}
+.row-buttons button.selected{outline:3px solid #a87cba}
+.row-buttons button.good{background:#eff9f3;border-color:#79b798}
+.row-buttons button.bad{background:#fff3f3;border-color:#d49797}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:.93rem;cursor:pointer}
+.primary{background:var(--purple);color:white}
+.secondary{background:#eee5f1;color:var(--purple)}
+.feedback{min-height:28px;margin-top:10px;font-weight:700}
+.feedback.ok{color:var(--green)}
+.feedback.bad{color:var(--red)}
+.feedback.hint{color:var(--amber)}
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;padding:14px;border:1px dashed #baa8c0;border-radius:14px;background:#fcf9fd;min-height:100px}
+.drag-card{background:#fff;border:1px solid #d9ccdd;border-radius:13px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:grab;user-select:none}
+.drag-card.selected{outline:3px solid #a87cba;background:#faf5fc}
+.drag-card.correct{border-color:#6fb595;background:#f1fbf6}
+.dropgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+.dropzone{min-height:180px;border:2px dashed #c7b5cc;border-radius:14px;padding:10px;background:#fff}
+.dropzone h3{margin:0 0 5px;color:var(--purple);font-size:1rem}
+.dropzone p{font-size:.84rem;color:var(--muted);margin:.2rem 0 .5rem}
+.dropzone.dragover{background:#f5eafa;border-color:#6f3d7f}
+.dropzone .drag-card{margin-top:8px;cursor:pointer}
+.timeline{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:14px}
+.slot{min-height:170px;border:2px dashed #c7b5cc;border-radius:14px;padding:8px;background:#fff}
+.slot h3{font-size:.84rem;margin:0 0 6px;color:var(--purple)}
+.slot.dragover{background:#f5eafa;border-color:#6f3d7f}
+.slot .drag-card{margin-top:6px}
+.scale{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.scale-card{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fafafa}
+.scale-card h3{margin:.1rem 0 .4rem;color:var(--purple);font-size:.95rem}
+.small{font-size:.84rem;color:var(--muted)}
+.completion{text-align:center;display:none}
+.trophy{font-size:3rem}
+.footer{font-size:.78rem;color:var(--muted);padding:8px 2px 28px}
+@media(max-width:980px){.timeline{grid-template-columns:1fr 1fr}.scale{grid-template-columns:1fr 1fr}}
+@media(max-width:820px){.topbar,.dropgrid{grid-template-columns:1fr}}
+@media(max-width:620px){.timeline,.scale{grid-template-columns:1fr}main{padding:10px}header{padding:22px 14px}.level,.intro{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+   <div class="eyebrow">EDSS599 • Module 3 formative activity</div>
+   <h1>HASS Pedagogy Decision Lab</h1>
+   <p>Practise selecting and combining pedagogical approaches according to the learning intention, students’ prior knowledge, task complexity, required guidance and evidence of learning.</p>
+ </div>
+</header>
+
+<main>
+ <div class="topbar">
+   <div>
+     <div class="small">Overall mastery</div>
+     <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+   </div>
+   <div class="score" id="score">0 / 5 challenges complete</div>
+ </div>
+
+ <section class="intro">
+   <h2>Decision lens</h2>
+   <p>Explicit instruction, inquiry learning and collaborative learning are not competing “brands” of teaching. Effective HASS teachers select and combine approaches according to what students are learning, what they already know, the complexity of the task and the amount of guidance required.</p>
+   <div class="note"><strong>Core principle:</strong> pedagogy follows the learning problem. Student activity alone is not evidence of student learning.</div>
+ </section>
+
+ <section class="level" id="level1">
+   <div class="level-head"><div><span class="badge">Challenge 1</span><h2>Choose the approach</h2></div><span>🧠</span></div>
+   <p class="instructions">Choose the pedagogical approach — or blend of approaches — that best fits each HASS learning problem.</p>
+   <div class="grid" id="approachCases"></div>
+   <div class="feedback" id="feedback1" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level2">
+   <div class="level-head"><div><span class="badge">Challenge 2</span><h2>How much guidance?</h2></div><span>🎚️</span></div>
+   <p class="instructions">Classify each scenario according to the level of guidance students most likely need at that point in learning.</p>
+   <div class="scale">
+     <div class="scale-card"><h3>High guidance</h3><p class="small">Clear explanation, modelling, worked examples and close support.</p></div>
+     <div class="scale-card"><h3>Guided practice</h3><p class="small">Students practise with prompts, feedback and teacher support.</p></div>
+     <div class="scale-card"><h3>Partial scaffold</h3><p class="small">Students have more responsibility but still use structured supports.</p></div>
+     <div class="scale-card"><h3>Independent inquiry</h3><p class="small">Students apply established knowledge and skills more independently.</p></div>
+   </div>
+   <div class="grid" id="guidanceCases" style="margin-top:14px"></div>
+   <div class="actions"><button class="primary" id="check2">Check guidance</button><button class="secondary" id="reset2">Reset</button></div>
+   <div class="feedback" id="feedback2" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level3">
+   <div class="level-head"><div><span class="badge">Challenge 3</span><h2>Build the inquiry scaffold</h2></div><span>🌊</span></div>
+   <p class="instructions">Arrange the planning components for the Hawkesbury flooding inquiry into a coherent sequence. Drag cards, or tap a card and then tap a slot.</p>
+   <div class="note"><strong>Driving context:</strong> “How would you demonstrate to visitors at the Hawkesbury Regional Museum the impact that floods have had on the Hawkesbury region over time?”</div>
+   <div class="bank" id="bank3"></div>
+   <div class="timeline" id="timeline3">
+     <div class="slot" data-slot="1"><h3>1</h3></div>
+     <div class="slot" data-slot="2"><h3>2</h3></div>
+     <div class="slot" data-slot="3"><h3>3</h3></div>
+     <div class="slot" data-slot="4"><h3>4</h3></div>
+     <div class="slot" data-slot="5"><h3>5</h3></div>
+     <div class="slot" data-slot="6"><h3>6</h3></div>
+     <div class="slot" data-slot="7"><h3>7</h3></div>
+   </div>
+   <div class="actions"><button class="primary" id="check3">Check inquiry sequence</button><button class="secondary" id="reset3">Reset</button></div>
+   <div class="feedback" id="feedback3" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level4">
+   <div class="level-head"><div><span class="badge">Challenge 4</span><h2>I do → We do → You do</h2></div><span>🪜</span></div>
+   <p class="instructions">Sort each teaching move into the most appropriate phase of an explicit-instruction sequence.</p>
+   <div class="bank" id="bank4"></div>
+   <div class="dropgrid">
+     <div class="dropzone" data-zone="ido"><h3>I do</h3><p>Teacher explanation, modelling and think-aloud.</p></div>
+     <div class="dropzone" data-zone="wedo"><h3>We do</h3><p>Guided co-construction and supported practice.</p></div>
+     <div class="dropzone" data-zone="youdo"><h3>You do</h3><p>Independent application using a fresh example.</p></div>
+     <div class="dropzone" data-zone="notyet"><h3>Not yet</h3><p>Moves that would be premature before knowledge/skill is established.</p></div>
+   </div>
+   <div class="actions"><button class="primary" id="check4">Check sorting</button><button class="secondary" id="reset4">Reset</button></div>
+   <div class="feedback" id="feedback4" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level5">
+   <div class="level-head"><div><span class="badge">Challenge 5</span><h2>Collaboration that actually works</h2></div><span>🤝</span></div>
+   <p class="instructions">Judge whether each example represents purposeful collaborative learning, weak “group work”, a task needing more structure, or something better taught another way.</p>
+   <div class="grid" id="collabCases"></div>
+   <div class="actions"><button class="primary" id="check5">Check collaboration</button><button class="secondary" id="reset5">Reset</button></div>
+   <div class="feedback" id="feedback5" aria-live="polite"></div>
+ </section>
+
+ <section class="completion" id="completion">
+   <div class="trophy">🏆</div>
+   <h2>HASS Pedagogy Decision Lab complete</h2>
+   <p>You have practised choosing approaches according to learning need, calibrating guidance, scaffolding inquiry, using explicit instruction deliberately and structuring collaborative learning so that participation supports genuine disciplinary learning.</p>
+   <div class="note"><strong>Decision chain:</strong> What are students learning? → What do they already know? → How complex is the task? → How much guidance is needed? → How will I monitor understanding? → When can responsibility shift?</div>
+   <button class="secondary" id="restart">Start again</button>
+ </section>
+
+ <div class="footer">Formative learning resource for EDSS599 Module 3. Designed to support evidence-informed pedagogical decision-making in Year 7–10 HASS.</div>
+</main>
+
+<script>
+const completed=new Set();
+let selectedCard=null;
+
+const approachData=[
+ {title:"Year 7 Geography",text:"Students have never interpreted a topographic map before.",answer:"Explicit instruction",options:["Explicit instruction","Inquiry learning","Collaborative learning","Independent project"],why:"Novices need clear explanation, modelling and guided practice before independent interpretation."},
+ {title:"Year 9 Civics",text:"Students already understand the referendum process and are now evaluating competing campaign arguments.",answer:"Blended approach",options:["Explicit instruction only","Inquiry learning only","Collaborative learning only","Blended approach"],why:"Students can use structured collaborative inquiry while the teacher still provides prompts, evidence criteria and feedback."},
+ {title:"Year 8 History",text:"Students are learning for the first time how to construct an evidence-based TEEL paragraph.",answer:"Explicit instruction",options:["Explicit instruction","Open inquiry","Collaborative debate","Independent research"],why:"The new disciplinary writing process is well suited to modelling, co-construction and guided practice."},
+ {title:"Year 10 Geography",text:"Students have established data-analysis skills and are investigating local responses to coastal change using multiple sources.",answer:"Inquiry learning",options:["Explicit instruction only","Inquiry learning","Unstructured group work","Teacher lecture only"],why:"With sufficient prior knowledge and established skills, inquiry can support increasingly independent disciplinary thinking."},
+ {title:"Year 8 Economics and Business",text:"Students understand basic consumer choice but now need to compare financial options and justify a recommendation.",answer:"Blended approach",options:["Explicit instruction only","Inquiry learning only","Collaborative learning only","Blended approach"],why:"A modelled comparison can establish the reasoning, followed by guided/collaborative application and independent judgement."}
+];
+
+const guidanceData=[
+ {text:"Students are encountering historical source usefulness for the first time.",answer:"high",why:"The concept and reasoning are new, so modelling and explanation should be prominent."},
+ {text:"Students have watched a modelled example and now analyse a second source with teacher prompts.",answer:"guided",why:"This is guided practice: students are doing more of the work while support remains available."},
+ {text:"Students use a source-analysis checklist while independently analysing a fresh source.",answer:"partial",why:"The scaffold remains, but responsibility has shifted substantially to students."},
+ {text:"Students have repeatedly demonstrated source-analysis proficiency and now design their own inquiry using a source set.",answer:"independent",why:"Established knowledge and skills make more independent inquiry defensible."},
+ {text:"Students are learning to interpret a demographic graph and have not previously worked with axes, scale and trend language.",answer:"high",why:"The literacy/numeracy demands are new enough to warrant explicit teaching and modelling."},
+ {text:"Students know the legislative process and use a role-play to apply it to a new bill, with role cards and teacher checkpoints.",answer:"partial",why:"Students can work with greater independence but still benefit from structured supports and monitoring."}
+];
+
+const inquiryData=[
+ {id:"q1",text:"Clarify the required results: key understandings, target knowledge and skills.",order:1},
+ {id:"q2",text:"Frame a strong driving question connected to meaningful disciplinary learning.",order:2},
+ {id:"q3",text:"Identify authentic sources and community connections such as maps, photographs, statistics and the museum.",order:3},
+ {id:"q4",text:"Plan fieldwork / research experiences that generate relevant evidence.",order:4},
+ {id:"q5",text:"Provide scaffolds for need-to-know knowledge and targeted inquiry skills.",order:5},
+ {id:"q6",text:"Build in feedback, critique, reflection and revision across the project.",order:6},
+ {id:"q7",text:"Use a culminating product that demonstrates the intended geographical understanding and skills.",order:7}
+];
+
+const explicitData=[
+ {id:"e1",text:"Teacher models how to analyse one historical source using a think-aloud.",answer:"ido"},
+ {id:"e2",text:"Teacher colour-codes a TEEL paragraph and explains the purpose of each part.",answer:"ido"},
+ {id:"e3",text:"Teacher and class co-construct a second source analysis together.",answer:"wedo"},
+ {id:"e4",text:"Students complete a partially scaffolded example while the teacher prompts and gives feedback.",answer:"wedo"},
+ {id:"e5",text:"Students independently analyse a fresh source using a checklist.",answer:"youdo"},
+ {id:"e6",text:"Students independently write a TEEL paragraph on a new example.",answer:"youdo"},
+ {id:"e7",text:"Students begin with an open-ended source investigation before anyone has taught the analysis process.",answer:"notyet"},
+ {id:"e8",text:"Students debate source reliability before learning what reliability, usefulness and perspective mean.",answer:"notyet"}
+];
+
+const collabData=[
+ {text:"Each student analyses a different source, then the group compares evidence using assigned roles. Each student submits an individual justification.",answer:"purposeful",why:"There is shared reasoning, structured participation and individual accountability."},
+ {text:"Four students create one poster. One student researches while the others decorate.",answer:"weak",why:"The task is shared physically but not intellectually; participation and accountability are weak."},
+ {text:"Students conduct a referendum simulation, but roles and evidence requirements are unclear.",answer:"structure",why:"The collaborative idea is promising, but it needs clearer roles, routines, evidence expectations and checkpoints."},
+ {text:"Students are learning a completely new map-reading convention. The teacher immediately puts them into groups to figure it out themselves.",answer:"another",why:"For a novel technical skill, clear modelling and guided practice are more defensible before collaborative application."},
+ {text:"Groups compare competing urban-planning proposals using a shared criteria sheet, then each student writes an individual recommendation.",answer:"purposeful",why:"The collaboration supports comparison of perspectives while individual writing demonstrates each student’s understanding."},
+ {text:"Students discuss a controversial issue in groups with no source base, no norms and no requirement to justify claims.",answer:"structure",why:"Discussion needs knowledge, evidence and clear participation structures to become productive disciplinary learning."}
+];
+
+function updateProgress(){
+ document.getElementById("progress").style.width=(completed.size/5*100)+"%";
+ document.getElementById("score").textContent=`${completed.size} / 5 challenges complete`;
+ if(completed.size===5)document.getElementById("completion").style.display="block";
+}
+function complete(n){
+ if(completed.has(n))return;
+ completed.add(n);
+ const next=document.getElementById("level"+(n+1));
+ if(next)next.classList.remove("locked");
+ updateProgress();
+}
+function renderChoice(containerId,data,level){
+ const box=document.getElementById(containerId);box.innerHTML="";
+ data.forEach(c=>{
+   const d=document.createElement("div");d.className="case";d.innerHTML=`<h3>${c.title}</h3><p>${c.text}</p>`;
+   const opts=document.createElement("div");opts.className="options";
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=c.why;
+   c.options.forEach(o=>{
+     const b=document.createElement("button");b.className="option";b.textContent=o;
+     b.addEventListener("click",()=>{
+       [...opts.children].forEach(x=>{x.disabled=true;if(x.textContent===c.answer)x.classList.add("correct")});
+       if(o!==c.answer)b.classList.add("wrong");
+       exp.style.display="block";
+       checkChoice(containerId,level);
+     });
+     opts.appendChild(b);
+   });
+   d.append(opts,exp);box.appendChild(d);
+ });
+}
+function checkChoice(containerId,level){
+ const groups=[...document.querySelectorAll(`#${containerId} .options`)];
+ if(!groups.every(g=>[...g.children].some(b=>b.disabled)))return;
+ const f=document.getElementById("feedback"+level);f.className="feedback ok";
+ f.textContent="Challenge complete. The most defensible pedagogy depends on the learning intention, students’ prior knowledge, task complexity and required guidance.";
+ complete(level);
+}
+function renderRows(containerId,data,level,choices){
+ const box=document.getElementById(containerId);box.innerHTML="";
+ data.forEach((r,i)=>{
+   const d=document.createElement("div");d.className="row";d.dataset.answer=r.answer;d.innerHTML=`<h3>Scenario ${i+1}</h3><div>${r.text}</div>`;
+   const btns=document.createElement("div");btns.className="row-buttons";
+   choices.forEach(([v,label])=>{
+      const b=document.createElement("button");b.textContent=label;b.dataset.value=v;
+      b.addEventListener("click",()=>{[...btns.children].forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});
+      btns.appendChild(b);
+   });
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=r.why;d.append(btns,exp);box.appendChild(d);
+ });
+}
+function checkRows(containerId,data,level){
+ const items=[...document.querySelectorAll(`#${containerId} .row`)],f=document.getElementById("feedback"+level);
+ if(items.some(i=>!i.querySelector("button.selected"))){f.className="feedback hint";f.textContent="Make a judgement for every scenario before checking.";return}
+ let correct=0;
+ items.forEach(i=>{
+   const a=i.dataset.answer,s=i.querySelector("button.selected");
+   [...i.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.dataset.value===a)b.classList.add("good")});
+   if(s.dataset.value===a)correct++; else s.classList.add("bad");
+   i.querySelector(".explain").style.display="block";
+ });
+ f.className=correct===items.length?"feedback ok":"feedback bad";
+ if(level===2)f.textContent=`${correct}/${items.length} matched the intended reasoning. Guidance should reduce as knowledge and proficiency increase, not simply because a task is labelled 'inquiry'.`;
+ if(level===5)f.textContent=`${correct}/${items.length} matched the intended reasoning. Productive collaboration needs disciplinary purpose, clear structure, participation expectations and individual accountability.`;
+ complete(level);
+}
+function makeSeqCard(i){
+ const d=document.createElement("div");d.className="drag-card";d.draggable=true;d.dataset.id=i.id;d.dataset.order=i.order;d.textContent=i.text;
+ d.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",i.id);selectedCard=d});
+ d.addEventListener("click",()=>{document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=d;d.classList.add("selected")});
+ return d;
+}
+function renderInquiry(){
+ const bank=document.getElementById("bank3");bank.innerHTML="";
+ [...inquiryData].sort(()=>Math.random()-.5).forEach(i=>bank.appendChild(makeSeqCard(i)));
+ document.querySelectorAll("#timeline3 .slot").forEach(z=>[...z.querySelectorAll(".drag-card")].forEach(c=>c.remove()));
+ installTimelineDrops();
+}
+function installTimelineDrops(){
+ document.querySelectorAll("#timeline3 .slot").forEach(z=>{
+   z.ondragover=e=>{e.preventDefault();z.classList.add("dragover")};
+   z.ondragleave=()=>z.classList.remove("dragover");
+   z.ondrop=e=>{
+     e.preventDefault();z.classList.remove("dragover");
+     const id=e.dataTransfer.getData("text/plain");const c=document.querySelector(`.drag-card[data-id="${id}"]`);
+     if(c){const existing=z.querySelector(".drag-card");if(existing)document.getElementById("bank3").appendChild(existing);z.appendChild(c)}clearSel()
+   };
+   z.onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){const existing=z.querySelector(".drag-card");if(existing)document.getElementById("bank3").appendChild(existing);z.appendChild(selectedCard);clearSel()}};
+ });
+ document.getElementById("bank3").onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){e.currentTarget.appendChild(selectedCard);clearSel()}};
+}
+function clearSel(){document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=null}
+function checkInquiry(){
+ const slots=[...document.querySelectorAll("#timeline3 .slot")],f=document.getElementById("feedback3");
+ if(slots.some(s=>!s.querySelector(".drag-card"))){f.className="feedback hint";f.textContent="Place one inquiry component in every slot before checking.";return}
+ let correct=0;
+ slots.forEach((s,i)=>{
+   const c=s.querySelector(".drag-card");c.classList.remove("correct");
+   if(Number(c.dataset.order)===i+1){correct++;c.classList.add("correct")}
+ });
+ if(correct===slots.length){
+   f.className="feedback ok";
+   f.textContent="Excellent. Strong inquiry begins with intended learning and builds authentic questions, sources, scaffolds and feedback around that purpose — not the other way around.";
+   complete(3);
+ }else{
+   f.className="feedback bad";
+   f.textContent=`${correct}/${slots.length} are in the intended sequence. Green cards are correct. Reconsider where required results, authentic sources, scaffolding and feedback should sit.`;
+ }
+}
+function makeSortCard(i){
+ const d=document.createElement("div");d.className="drag-card";d.draggable=true;d.dataset.id=i.id;d.dataset.answer=i.answer;d.textContent=i.text;
+ d.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",i.id);selectedCard=d});
+ d.addEventListener("click",()=>{document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=d;d.classList.add("selected")});
+ return d;
+}
+function renderExplicit(){
+ const bank=document.getElementById("bank4");bank.innerHTML="";
+ [...explicitData].sort(()=>Math.random()-.5).forEach(i=>bank.appendChild(makeSortCard(i)));
+ document.querySelectorAll("#level4 .dropzone").forEach(z=>[...z.querySelectorAll(".drag-card")].forEach(c=>c.remove()));
+ installSortDrops();
+}
+function installSortDrops(){
+ document.querySelectorAll("#level4 .dropzone").forEach(z=>{
+   z.ondragover=e=>{e.preventDefault();z.classList.add("dragover")};
+   z.ondragleave=()=>z.classList.remove("dragover");
+   z.ondrop=e=>{e.preventDefault();z.classList.remove("dragover");const id=e.dataTransfer.getData("text/plain");const c=document.querySelector(`.drag-card[data-id="${id}"]`);if(c)z.appendChild(c);clearSel()};
+   z.onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){z.appendChild(selectedCard);clearSel()}};
+ });
+ document.getElementById("bank4").onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){e.currentTarget.appendChild(selectedCard);clearSel()}};
+}
+function checkExplicit(){
+ const cards=[...document.querySelectorAll("#level4 .drag-card")],f=document.getElementById("feedback4");let placed=0,correct=0;
+ cards.forEach(c=>{c.classList.remove("correct");const z=c.parentElement.closest(".dropzone");if(z){placed++;if(z.dataset.zone===c.dataset.answer){correct++;c.classList.add("correct")}}});
+ if(placed<cards.length){f.className="feedback hint";f.textContent=`Sort all ${cards.length} teaching moves first. ${cards.length-placed} remain.`;return}
+ if(correct===cards.length){
+   f.className="feedback ok";
+   f.textContent="Excellent. Explicit instruction makes the disciplinary thinking visible, provides supported practice, then transfers responsibility when students are ready.";
+   complete(4);
+ }else{
+   f.className="feedback bad";
+   f.textContent=`${correct}/${cards.length} are correctly placed. Green cards are correct. Reconsider the others.`;
+ }
+}
+function restart(){
+ completed.clear();updateProgress();
+ [2,3,4,5].forEach(n=>document.getElementById("level"+n).classList.add("locked"));
+ document.getElementById("completion").style.display="none";
+ ["feedback1","feedback2","feedback3","feedback4","feedback5"].forEach(id=>{const f=document.getElementById(id);f.textContent="";f.className="feedback"});
+ renderChoice("approachCases",approachData,1);
+ renderRows("guidanceCases",guidanceData,2,[["high","High guidance"],["guided","Guided practice"],["partial","Partial scaffold"],["independent","Independent inquiry"]]);
+ renderInquiry();
+ renderExplicit();
+ renderRows("collabCases",collabData,5,[["purposeful","Purposeful collaboration"],["weak","Weak group work"],["structure","Needs more structure"],["another","Better taught another way first"]]);
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+renderChoice("approachCases",approachData,1);
+renderRows("guidanceCases",guidanceData,2,[["high","High guidance"],["guided","Guided practice"],["partial","Partial scaffold"],["independent","Independent inquiry"]]);
+renderInquiry();
+renderExplicit();
+renderRows("collabCases",collabData,5,[["purposeful","Purposeful collaboration"],["weak","Weak group work"],["structure","Needs more structure"],["another","Better taught another way first"]]);
+
+document.getElementById("check2").addEventListener("click",()=>checkRows("guidanceCases",guidanceData,2));
+document.getElementById("reset2").addEventListener("click",()=>{renderRows("guidanceCases",guidanceData,2,[["high","High guidance"],["guided","Guided practice"],["partial","Partial scaffold"],["independent","Independent inquiry"]]);document.getElementById("feedback2").textContent=""});
+document.getElementById("check3").addEventListener("click",checkInquiry);
+document.getElementById("reset3").addEventListener("click",()=>{renderInquiry();document.getElementById("feedback3").textContent=""});
+document.getElementById("check4").addEventListener("click",checkExplicit);
+document.getElementById("reset4").addEventListener("click",()=>{renderExplicit();document.getElementById("feedback4").textContent=""});
+document.getElementById("check5").addEventListener("click",()=>checkRows("collabCases",collabData,5));
+document.getElementById("reset5").addEventListener("click",()=>{renderRows("collabCases",collabData,5,[["purposeful","Purposeful collaboration"],["weak","Weak group work"],["structure","Needs more structure"],["another","Better taught another way first"]]);document.getElementById("feedback5").textContent=""});
+document.getElementById("restart").addEventListener("click",restart);
+</script>
+</body>
+</html>
