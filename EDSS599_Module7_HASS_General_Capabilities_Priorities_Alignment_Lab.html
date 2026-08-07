@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDSS599 Module 7 — HASS General Capabilities & Priorities Alignment Lab</title>
+<style>
+:root{
+  --ink:#24152f; --purple:#4b155f; --purple2:#6d2a83; --cream:#fbf8f3; --card:#fff;
+  --line:#e5dce7; --green:#176b4a; --red:#9b2c2c; --amber:#8b5a00; --muted:#6a6170;
+  --shadow:0 8px 28px rgba(42,22,50,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream);line-height:1.45}
+header{background:linear-gradient(135deg,#351047,#5a1a70);color:#fff;padding:28px 18px}
+.header-inner{max-width:1180px;margin:auto}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:700}
+h1{font-size:clamp(1.7rem,4vw,2.8rem);margin:.25rem 0 .5rem;line-height:1.08}
+header p{max-width:930px;margin:0;opacity:.92}
+main{max-width:1180px;margin:auto;padding:18px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:8px 0 18px}
+.progress-wrap{background:#eadfed;height:12px;border-radius:999px;overflow:hidden;border:1px solid #d9c9dd}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#5a1a70,#9a58ac);transition:width .35s}
+.score{font-weight:750;white-space:nowrap}
+.intro,.level,.completion{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.level.locked{opacity:.5;filter:grayscale(.35);pointer-events:none}
+.level-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.level h2{margin:0;font-size:1.35rem}
+.badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#f1e7f4;color:var(--purple);font-size:.78rem;font-weight:800}
+.instructions{color:var(--muted);margin:.35rem 0 1rem}
+.note{background:#f7f0fa;border-left:4px solid var(--purple2);padding:10px 12px;border-radius:8px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.case,.row,.profile{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.case h3,.row h3,.profile h3{margin:.1rem 0 .5rem;font-size:1rem;color:var(--purple)}
+.options{display:grid;gap:8px;margin-top:10px}
+.option{width:100%;text-align:left;background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+.option.correct{background:#eff9f3;border-color:#79b798;color:#15593f}
+.option.wrong{background:#fff3f3;border-color:#d49797;color:#7f2222}
+.option:disabled{cursor:default;opacity:1}
+.explain{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#faf7fb;border-left:3px solid #9a72a6;font-size:.9rem}
+.row-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.row-buttons button{background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1}
+.row-buttons button.selected{outline:3px solid #a87cba}
+.row-buttons button.good{background:#eff9f3;border-color:#79b798}
+.row-buttons button.bad{background:#fff3f3;border-color:#d49797}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:.93rem;cursor:pointer}
+.primary{background:var(--purple);color:white}
+.secondary{background:#eee5f1;color:var(--purple)}
+.feedback{min-height:28px;margin-top:10px;font-weight:700}
+.feedback.ok{color:var(--green)}
+.feedback.bad{color:var(--red)}
+.feedback.hint{color:var(--amber)}
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;padding:14px;border:1px dashed #baa8c0;border-radius:14px;background:#fcf9fd;min-height:100px}
+.drag-card{background:#fff;border:1px solid #d9ccdd;border-radius:13px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:grab;user-select:none}
+.drag-card.selected{outline:3px solid #a87cba;background:#faf5fc}
+.drag-card.correct{border-color:#6fb595;background:#f1fbf6}
+.dropgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+.dropzone{min-height:180px;border:2px dashed #c7b5cc;border-radius:14px;padding:10px;background:#fff}
+.dropzone h3{margin:0 0 5px;color:var(--purple);font-size:1rem}
+.dropzone p{font-size:.84rem;color:var(--muted);margin:.2rem 0 .5rem}
+.dropzone.dragover{background:#f5eafa;border-color:#6f3d7f}
+.dropzone .drag-card{margin-top:8px;cursor:pointer}
+.builder{display:grid;gap:12px}
+.builder-step{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fafafa}
+.builder-step h3{margin:.1rem 0 .45rem;color:var(--purple);font-size:1rem}
+select{width:100%;padding:10px;border:1px solid #d8cddd;border-radius:9px;background:white;color:var(--ink);font-weight:650}
+.tagline{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tag{padding:4px 8px;border-radius:999px;background:#f1e7f4;color:var(--purple);font-size:.78rem;font-weight:750}
+.small{font-size:.84rem;color:var(--muted)}
+.completion{text-align:center;display:none}
+.trophy{font-size:3rem}
+.footer{font-size:.78rem;color:var(--muted);padding:8px 2px 28px}
+@media(max-width:820px){.topbar,.dropgrid{grid-template-columns:1fr}}
+@media(max-width:620px){main{padding:10px}header{padding:22px 14px}.level,.intro{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+   <div class="eyebrow">EDSS599 • Module 7 formative activity</div>
+   <h1>HASS General Capabilities & Priorities Alignment Lab</h1>
+   <p>Practise selecting General Capabilities that genuinely support HASS learning, identifying authentic Cross-curriculum Priority integration, and building an evidence-based alignment chain.</p>
+ </div>
+</header>
+
+<main>
+ <div class="topbar">
+   <div>
+     <div class="small">Overall mastery</div>
+     <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+   </div>
+   <div class="score" id="score">0 / 5 challenges complete</div>
+ </div>
+
+ <section class="intro">
+   <h2>Alignment lens</h2>
+   <p>General Capabilities and Cross-curriculum Priorities should not be added after planning is complete. They are most meaningful when they help students engage more deeply with substantive HASS knowledge, disciplinary concepts and inquiry.</p>
+   <div class="note"><strong>Core principle:</strong> capabilities and priorities enrich HASS when they strengthen the disciplinary learning.</div>
+ </section>
+
+ <section class="level" id="level1">
+   <div class="level-head"><div><span class="badge">Challenge 1</span><h2>Capability or decoration?</h2></div><span>🎭</span></div>
+   <p class="instructions">Decide whether each example genuinely develops a General Capability or merely contains an activity that looks like it might.</p>
+   <div class="grid" id="decorationCases"></div>
+   <div class="actions"><button class="primary" id="check1">Check judgements</button><button class="secondary" id="reset1">Reset</button></div>
+   <div class="feedback" id="feedback1" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level2">
+   <div class="level-head"><div><span class="badge">Challenge 2</span><h2>Match the capability to the HASS learning</h2></div><span>🧠</span></div>
+   <p class="instructions">Choose the capability that is most directly required by the disciplinary learning in each scenario.</p>
+   <div class="grid" id="capabilityCases"></div>
+   <div class="feedback" id="feedback2" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level3">
+   <div class="level-head"><div><span class="badge">Challenge 3</span><h2>World Trade Game alignment challenge</h2></div><span>🌍</span></div>
+   <div class="profile">
+     <h3>World Trade Game</h3>
+     <p>Students trade, negotiate, manage resources, calculate profits, respond to changing conditions and debrief issues of global inequality, fairness and interdependence.</p>
+   </div>
+   <p class="instructions">Match each feature of the activity to the General Capability it most clearly develops.</p>
+   <div class="grid" id="tradeCases"></div>
+   <div class="feedback" id="feedback3" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level4">
+   <div class="level-head"><div><span class="badge">Challenge 4</span><h2>Cross-curriculum Priority authenticity check</h2></div><span>🧭</span></div>
+   <p class="instructions">Sort each example into the category that best describes the way the priority has been used. Drag cards, or tap a card and then tap a destination.</p>
+   <div class="bank" id="bank4"></div>
+   <div class="dropgrid">
+     <div class="dropzone" data-zone="authentic"><h3>Authentic integration</h3><p>The priority strengthens the intended HASS learning in a respectful, substantive way.</p></div>
+     <div class="dropzone" data-zone="token"><h3>Tokenistic inclusion</h3><p>The priority appears as decoration or an add-on without strengthening the learning.</p></div>
+     <div class="dropzone" data-zone="problematic"><h3>Stereotypical / problematic</h3><p>The example oversimplifies, stereotypes or uses an inappropriate representation.</p></div>
+     <div class="dropzone" data-zone="irrelevant"><h3>Not actually relevant</h3><p>The priority does not meaningfully connect to the intended learning.</p></div>
+   </div>
+   <div class="actions"><button class="primary" id="check4">Check sorting</button><button class="secondary" id="reset4">Reset</button></div>
+   <div class="feedback" id="feedback4" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level5">
+   <div class="level-head"><div><span class="badge">Challenge 5</span><h2>Build the alignment chain</h2></div><span>🔗</span></div>
+   <div class="profile">
+     <h3>Year 9 Geography scenario</h3>
+     <p>Students evaluate strategies for improving water security in Australia and one Asian country using rainfall, population and water-use data.</p>
+     <div class="tagline"><span class="tag">Geography</span><span class="tag">Data</span><span class="tag">Evaluation</span><span class="tag">Comparative inquiry</span></div>
+   </div>
+   <p class="instructions">Choose the strongest alignment at each stage.</p>
+   <div class="builder">
+     <div class="builder-step"><h3>1. HASS learning intention</h3>
+       <select id="b1"><option value="">Choose…</option><option value="correct">Evaluate water-security strategies using geographical evidence and justify a reasoned recommendation.</option><option value="wrong">Make an attractive poster about water.</option></select>
+     </div>
+     <div class="builder-step"><h3>2. General Capability — Numeracy</h3>
+       <select id="b2"><option value="">Choose…</option><option value="correct">Interpret rainfall, population and water-use data and compare patterns.</option><option value="wrong">Use a calculator because numeracy must appear somewhere.</option></select>
+     </div>
+     <div class="builder-step"><h3>3. General Capability — Literacy</h3>
+       <select id="b3"><option value="">Choose…</option><option value="correct">Construct an evidence-based geographical explanation using appropriate disciplinary vocabulary.</option><option value="wrong">Copy definitions into a glossary only.</option></select>
+     </div>
+     <div class="builder-step"><h3>4. Critical and Creative Thinking</h3>
+       <select id="b4"><option value="">Choose…</option><option value="correct">Evaluate competing strategies against explicit geographical criteria and justify a recommendation.</option><option value="wrong">Ask students to 'be creative' without disciplinary criteria.</option></select>
+     </div>
+     <div class="builder-step"><h3>5. Cross-curriculum Priority</h3>
+       <select id="b5"><option value="">Choose…</option><option value="correct">Use Asia and Australia’s Engagement with Asia authentically through a comparative case study, and Sustainability where environmental, social and economic trade-offs are examined.</option><option value="wrong">Mention Asia and sustainability in the lesson title without integrating them into the inquiry.</option></select>
+     </div>
+     <div class="builder-step"><h3>6. What must be explicitly taught?</h3>
+       <select id="b6"><option value="">Choose…</option><option value="correct">How to interpret the data, compare cases, apply evaluation criteria and construct a reasoned recommendation.</option><option value="wrong">Nothing — capabilities develop automatically through the activity.</option></select>
+     </div>
+     <div class="builder-step"><h3>7. Evidence of learning</h3>
+       <select id="b7"><option value="">Choose…</option><option value="correct">A recommendation that accurately interprets data, compares the two contexts and justifies the preferred strategy using geographical evidence.</option><option value="wrong">A colourful digital presentation with several images.</option></select>
+     </div>
+   </div>
+   <div class="actions"><button class="primary" id="check5">Check alignment</button><button class="secondary" id="reset5">Reset</button></div>
+   <div class="feedback" id="feedback5" aria-live="polite"></div>
+ </section>
+
+ <section class="completion" id="completion">
+   <div class="trophy">🏆</div>
+   <h2>HASS General Capabilities & Priorities Alignment Lab complete</h2>
+   <p>You have practised separating genuine capability development from decorative activity, aligning capabilities to disciplinary learning, evaluating authentic Cross-curriculum Priority integration and building a coherent HASS alignment chain.</p>
+   <div class="note"><strong>Alignment chain:</strong> What are students learning? → Which capability is genuinely required? → What must be taught or scaffolded? → What will students do? → What evidence will show both HASS learning and capability development? → Does a Cross-curriculum Priority authentically deepen the context?</div>
+   <button class="secondary" id="restart">Start again</button>
+ </section>
+
+ <div class="footer">Formative learning resource for EDSS599 Module 7. Designed to support authentic alignment of General Capabilities and Cross-curriculum Priorities within Year 7–10 HASS.</div>
+</main>
+
+<script>
+const completed=new Set();
+let selectedCard=null;
+
+const decorationData=[
+ {text:"Students work in groups to complete a worksheet, but roles, interaction and collaboration skills are never taught or monitored.",answer:"decoration",why:"Group work alone does not automatically develop Personal and Social Capability."},
+ {text:"Students evaluate competing historical interpretations using explicit criteria and justify which account is better supported by evidence.",answer:"genuine",why:"The task deliberately develops critical and creative thinking through disciplinary reasoning."},
+ {text:"Students use laptops to type an essay that could equally have been handwritten.",answer:"decoration",why:"Using a device does not by itself demonstrate or develop Digital Literacy."},
+ {text:"Students interpret a choropleth map and calculate percentage change in population before explaining the geographical pattern.",answer:"genuine",why:"Numeracy is being used purposefully to support geographical analysis."},
+ {text:"Students read two primary sources, identify perspective and use evidence to write an explanation using historical vocabulary.",answer:"genuine",why:"Literacy is embedded in the disciplinary work of reading, interpreting and communicating historical understanding."},
+ {text:"A lesson plan lists every General Capability even though the activity only requires basic recall.",answer:"decoration",why:"Not every learning activity needs to address every capability."}
+];
+
+const capabilityData=[
+ {title:"Geography",text:"Students interpret population data, calculate percentage change and explain spatial patterns.",answer:"Numeracy",options:["Numeracy","Personal and Social Capability","Ethical Understanding","Digital Literacy"],why:"The capability is directly required to interpret and reason with quantitative geographical evidence."},
+ {title:"History",text:"Students evaluate two competing accounts of the same event and justify which is better supported by evidence.",answer:"Critical and Creative Thinking",options:["Critical and Creative Thinking","Numeracy","Personal and Social Capability","Digital Literacy"],why:"The central demand is evaluation of evidence and competing interpretations."},
+ {title:"Civics and Citizenship",text:"Students analyse competing arguments about freedom, responsibility and fairness in a public-policy issue.",answer:"Ethical Understanding",options:["Ethical Understanding","Numeracy","Digital Literacy","Personal and Social Capability"],why:"The activity requires reasoned engagement with values, consequences and competing ethical considerations."},
+ {title:"Economics and Business",text:"Students negotiate in a simulated international trade activity and reflect on global inequality and interdependence.",answer:"Intercultural Understanding",options:["Intercultural Understanding","Numeracy only","Digital Literacy","Personal and Social Capability only"],why:"The activity can support intercultural understanding when students examine global relationships and diverse perspectives rather than simply trading."},
+ {title:"History",text:"Students locate, interpret and communicate evidence from digitised archival collections while evaluating source provenance.",answer:"Digital Literacy",options:["Digital Literacy","Numeracy","Personal and Social Capability","Ethical Understanding"],why:"Digital tools are integral to locating, evaluating and communicating historical information."},
+ {title:"HASS extended response",text:"Students read sources, use discipline-specific vocabulary and construct an evidence-based argument.",answer:"Literacy",options:["Literacy","Numeracy","Personal and Social Capability","Digital Literacy"],why:"The disciplinary reading and writing demands are central to the intended learning."}
+];
+
+const tradeData=[
+ {title:"Reading and negotiating",text:"Students interpret instructions, negotiate with other groups and use trade-related terminology.",answer:"Literacy",options:["Literacy","Numeracy","Ethical Understanding","Intercultural Understanding"],why:"Students are using spoken, written and disciplinary language to participate in the activity."},
+ {title:"Banking and profit",text:"Students calculate interest, manage accounts and analyse profits.",answer:"Numeracy",options:["Numeracy","Literacy","Ethical Understanding","Personal and Social Capability"],why:"The task requires meaningful financial mathematics."},
+ {title:"Adapting strategy",text:"Students respond to changing rules and limited resources by generating and evaluating strategies.",answer:"Critical and Creative Thinking",options:["Critical and Creative Thinking","Digital Literacy","Literacy only","Personal and Social Capability only"],why:"The thinking demand involves problem-solving, adaptation and evaluation."},
+ {title:"Fairness and exploitation",text:"Students debrief who benefited, who was disadvantaged and whether the system was fair.",answer:"Ethical Understanding",options:["Ethical Understanding","Numeracy","Digital Literacy","Literacy only"],why:"The debrief explicitly engages students with fairness, responsibility and moral reasoning."},
+ {title:"Global interdependence",text:"Students examine how different nations experience unequal power, resources and opportunities.",answer:"Intercultural Understanding",options:["Intercultural Understanding","Numeracy","Digital Literacy","Personal and Social Capability only"],why:"The learning can deepen understanding of international relationships and diverse experiences when carefully debriefed."}
+];
+
+const priorityData=[
+ {id:"p1",text:"Year 8 Geography students investigate local land management using local Country/Place knowledge, contemporary geographical evidence and appropriately sourced Aboriginal and Torres Strait Islander perspectives.",answer:"authentic"},
+ {id:"p2",text:"An Aboriginal flag image is added to a PowerPoint about medieval Europe, with no connection to the lesson content.",answer:"token"},
+ {id:"p3",text:"A lesson refers to one Asian nation as if it represents all Asian cultures and societies.",answer:"problematic"},
+ {id:"p4",text:"Students compare Australian and Indonesian urbanisation challenges using contemporary data and authentic case studies.",answer:"authentic"},
+ {id:"p5",text:"Students evaluate the environmental, social and economic trade-offs of renewable-energy options.",answer:"authentic"},
+ {id:"p6",text:"A lesson on an unrelated historical topic adds a sustainability logo to satisfy planning paperwork.",answer:"token"},
+ {id:"p7",text:"Students study a topic with no meaningful connection to Asia, but the teacher forces an Asia reference into one question.",answer:"irrelevant"},
+ {id:"p8",text:"A task describes Aboriginal and Torres Strait Islander communities only through deficit and disadvantage, without historical context, agency or diverse perspectives.",answer:"problematic"}
+];
+
+function updateProgress(){
+ document.getElementById("progress").style.width=(completed.size/5*100)+"%";
+ document.getElementById("score").textContent=`${completed.size} / 5 challenges complete`;
+ if(completed.size===5)document.getElementById("completion").style.display="block";
+}
+function complete(n){
+ if(completed.has(n))return;
+ completed.add(n);
+ const next=document.getElementById("level"+(n+1));
+ if(next)next.classList.remove("locked");
+ updateProgress();
+}
+
+function renderRows(){
+ const box=document.getElementById("decorationCases");box.innerHTML="";
+ decorationData.forEach((r,i)=>{
+   const d=document.createElement("div");d.className="row";d.dataset.answer=r.answer;d.innerHTML=`<h3>Example ${i+1}</h3><div>${r.text}</div>`;
+   const btns=document.createElement("div");btns.className="row-buttons";
+   [["genuine","Genuine capability development"],["decoration","Capability decoration"]].forEach(([v,label])=>{
+      const b=document.createElement("button");b.textContent=label;b.dataset.value=v;
+      b.addEventListener("click",()=>{[...btns.children].forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});
+      btns.appendChild(b);
+   });
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=r.why;d.append(btns,exp);box.appendChild(d);
+ });
+}
+function checkRows(){
+ const items=[...document.querySelectorAll("#decorationCases .row")],f=document.getElementById("feedback1");
+ if(items.some(i=>!i.querySelector("button.selected"))){f.className="feedback hint";f.textContent="Judge every example before checking.";return}
+ let correct=0;
+ items.forEach(i=>{
+   const a=i.dataset.answer,s=i.querySelector("button.selected");
+   [...i.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.dataset.value===a)b.classList.add("good")});
+   if(s.dataset.value===a)correct++; else s.classList.add("bad");
+   i.querySelector(".explain").style.display="block";
+ });
+ f.className=correct===items.length?"feedback ok":"feedback bad";
+ f.textContent=`${correct}/${items.length} matched the intended reasoning. A capability is developed when students deliberately use taught knowledge, processes or disciplinary practices — not merely because a task contains groups, technology or writing.`;
+ complete(1);
+}
+
+function renderChoice(containerId,data,level){
+ const box=document.getElementById(containerId);box.innerHTML="";
+ data.forEach(c=>{
+   const d=document.createElement("div");d.className="case";d.innerHTML=`<h3>${c.title}</h3><p>${c.text}</p>`;
+   const opts=document.createElement("div");opts.className="options";
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=c.why;
+   c.options.forEach(o=>{
+     const b=document.createElement("button");b.className="option";b.textContent=o;
+     b.addEventListener("click",()=>{
+       [...opts.children].forEach(x=>{x.disabled=true;if(x.textContent===c.answer)x.classList.add("correct")});
+       if(o!==c.answer)b.classList.add("wrong");
+       exp.style.display="block";
+       checkChoice(containerId,level);
+     });
+     opts.appendChild(b);
+   });
+   d.append(opts,exp);box.appendChild(d);
+ });
+}
+function checkChoice(containerId,level){
+ const groups=[...document.querySelectorAll(`#${containerId} .options`)];
+ if(!groups.every(g=>[...g.children].some(b=>b.disabled)))return;
+ const f=document.getElementById("feedback"+level);f.className="feedback ok";
+ if(level===2)f.textContent="Challenge complete. The most useful capability is the one that genuinely supports the disciplinary learning — not the one that is easiest to mention in a lesson plan.";
+ if(level===3)f.textContent="Challenge complete. The World Trade Game can develop multiple capabilities because students are required to use disciplinary language, numeracy, strategic thinking and reflective ethical/intercultural reasoning.";
+ complete(level);
+}
+
+function makeSortCard(i){
+ const d=document.createElement("div");d.className="drag-card";d.draggable=true;d.dataset.id=i.id;d.dataset.answer=i.answer;d.textContent=i.text;
+ d.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",i.id);selectedCard=d});
+ d.addEventListener("click",()=>{document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=d;d.classList.add("selected")});
+ return d;
+}
+function renderSort(){
+ const bank=document.getElementById("bank4");bank.innerHTML="";
+ [...priorityData].sort(()=>Math.random()-.5).forEach(i=>bank.appendChild(makeSortCard(i)));
+ document.querySelectorAll("#level4 .dropzone").forEach(z=>[...z.querySelectorAll(".drag-card")].forEach(c=>c.remove()));
+ installDrops();
+}
+function installDrops(){
+ document.querySelectorAll("#level4 .dropzone").forEach(z=>{
+   z.ondragover=e=>{e.preventDefault();z.classList.add("dragover")};
+   z.ondragleave=()=>z.classList.remove("dragover");
+   z.ondrop=e=>{e.preventDefault();z.classList.remove("dragover");const id=e.dataTransfer.getData("text/plain");const c=document.querySelector(`.drag-card[data-id="${id}"]`);if(c)z.appendChild(c);clearSel()};
+   z.onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){z.appendChild(selectedCard);clearSel()}};
+ });
+ document.getElementById("bank4").onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){e.currentTarget.appendChild(selectedCard);clearSel()}};
+}
+function clearSel(){document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=null}
+function checkSort(){
+ const cards=[...document.querySelectorAll("#level4 .drag-card")],f=document.getElementById("feedback4");let placed=0,correct=0;
+ cards.forEach(c=>{c.classList.remove("correct");const z=c.parentElement.closest(".dropzone");if(z){placed++;if(z.dataset.zone===c.dataset.answer){correct++;c.classList.add("correct")}}});
+ if(placed<cards.length){f.className="feedback hint";f.textContent=`Sort all ${cards.length} examples first. ${cards.length-placed} remain.`;return}
+ if(correct===cards.length){
+   f.className="feedback ok";
+   f.textContent="Excellent. Cross-curriculum Priorities should deepen the HASS context in authentic, respectful and evidence-based ways — never as decoration or stereotype.";
+   complete(4);
+ }else{
+   f.className="feedback bad";
+   f.textContent=`${correct}/${cards.length} are correctly placed. Green cards are correct. Reconsider the others.`;
+ }
+}
+
+function checkBuilder(){
+ const vals=[1,2,3,4,5,6,7].map(n=>document.getElementById("b"+n).value);
+ const f=document.getElementById("feedback5");
+ if(vals.some(v=>v==="")){f.className="feedback hint";f.textContent="Complete all seven parts of the alignment chain before checking.";return}
+ if(vals.every(v=>v==="correct")){
+   f.className="feedback ok";
+   f.textContent="Excellent. The capabilities and priorities are aligned because they directly support the geographical learning, are explicitly taught where needed, and generate evidence of both disciplinary understanding and capability development.";
+   complete(5);
+ }else{
+   f.className="feedback bad";
+   f.textContent="One or more parts are decorative rather than genuinely aligned. Recheck whether each capability or priority strengthens the intended geographical learning.";
+ }
+}
+
+function restart(){
+ completed.clear();updateProgress();
+ [2,3,4,5].forEach(n=>document.getElementById("level"+n).classList.add("locked"));
+ document.getElementById("completion").style.display="none";
+ ["feedback1","feedback2","feedback3","feedback4","feedback5"].forEach(id=>{const f=document.getElementById(id);f.textContent="";f.className="feedback"});
+ renderRows();
+ renderChoice("capabilityCases",capabilityData,2);
+ renderChoice("tradeCases",tradeData,3);
+ renderSort();
+ [1,2,3,4,5,6,7].forEach(n=>document.getElementById("b"+n).value="");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+renderRows();
+renderChoice("capabilityCases",capabilityData,2);
+renderChoice("tradeCases",tradeData,3);
+renderSort();
+
+document.getElementById("check1").addEventListener("click",checkRows);
+document.getElementById("reset1").addEventListener("click",()=>{renderRows();document.getElementById("feedback1").textContent=""});
+document.getElementById("check4").addEventListener("click",checkSort);
+document.getElementById("reset4").addEventListener("click",()=>{renderSort();document.getElementById("feedback4").textContent=""});
+document.getElementById("check5").addEventListener("click",checkBuilder);
+document.getElementById("reset5").addEventListener("click",()=>{[1,2,3,4,5,6,7].forEach(n=>document.getElementById("b"+n).value="");document.getElementById("feedback5").textContent=""});
+document.getElementById("restart").addEventListener("click",restart);
+</script>
+</body>
+</html>
