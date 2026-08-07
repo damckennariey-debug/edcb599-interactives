@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDCB599 Module 7 — General Capabilities & Priorities Alignment Lab</title>
+<style>
+:root{
+  --ink:#24152f; --purple:#4b155f; --purple2:#6d2a83; --cream:#fbf8f3; --card:#fff;
+  --line:#e5dce7; --green:#176b4a; --red:#9b2c2c; --amber:#8b5a00; --muted:#6a6170;
+  --shadow:0 8px 28px rgba(42,22,50,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream);line-height:1.45}
+header{background:linear-gradient(135deg,#351047,#5a1a70);color:#fff;padding:28px 18px}
+.header-inner{max-width:1180px;margin:auto}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:700}
+h1{font-size:clamp(1.7rem,4vw,2.8rem);margin:.25rem 0 .5rem;line-height:1.08}
+header p{max-width:930px;margin:0;opacity:.92}
+main{max-width:1180px;margin:auto;padding:18px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:8px 0 18px}
+.progress-wrap{background:#eadfed;height:12px;border-radius:999px;overflow:hidden;border:1px solid #d9c9dd}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#5a1a70,#9a58ac);transition:width .35s}
+.score{font-weight:750;white-space:nowrap}
+.intro,.level,.completion{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.level.locked{opacity:.5;filter:grayscale(.35);pointer-events:none}
+.level-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.level h2{margin:0;font-size:1.35rem}
+.badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#f1e7f4;color:var(--purple);font-size:.78rem;font-weight:800}
+.instructions{color:var(--muted);margin:.35rem 0 1rem}
+.note{background:#f7f0fa;border-left:4px solid var(--purple2);padding:10px 12px;border-radius:8px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.case,.row{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.case h3,.row h3{margin:.1rem 0 .5rem;font-size:1rem;color:var(--purple)}
+.options{display:grid;gap:8px;margin-top:10px}
+.option{width:100%;text-align:left;background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+.option.correct{background:#eff9f3;border-color:#79b798;color:#15593f}
+.option.wrong{background:#fff3f3;border-color:#d49797;color:#7f2222}
+.option:disabled{cursor:default;opacity:1}
+.explain{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#faf7fb;border-left:3px solid #9a72a6;font-size:.9rem}
+.row-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.row-buttons button{background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1}
+.row-buttons button.selected{outline:3px solid #a87cba}
+.row-buttons button.good{background:#eff9f3;border-color:#79b798}
+.row-buttons button.bad{background:#fff3f3;border-color:#d49797}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:.93rem;cursor:pointer}
+.primary{background:var(--purple);color:white}
+.secondary{background:#eee5f1;color:var(--purple)}
+.feedback{min-height:28px;margin-top:10px;font-weight:700}
+.feedback.ok{color:var(--green)}
+.feedback.bad{color:var(--red)}
+.feedback.hint{color:var(--amber)}
+.chain{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+.chain-step{border:1px solid var(--line);border-radius:12px;padding:10px;background:#faf7fb;min-height:150px}
+.chain-step h3{margin:.1rem 0 .5rem;color:var(--purple);font-size:.92rem}
+select{width:100%;padding:9px;border:1px solid #d8cddd;border-radius:9px;background:white;color:var(--ink);font-weight:650}
+.simulator{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.simulator .bad-plan{background:#fff8ee;border-left:4px solid #d79b45;padding:12px;border-radius:8px;margin-bottom:12px}
+.checklist{display:grid;gap:8px}
+.checkitem{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fafafa}
+.checkitem input{margin-top:4px}
+.small{font-size:.84rem;color:var(--muted)}
+.completion{text-align:center;display:none}
+.trophy{font-size:3rem}
+.footer{font-size:.78rem;color:var(--muted);padding:8px 2px 28px}
+@media(max-width:920px){.chain{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.topbar,.chain{grid-template-columns:1fr}main{padding:10px}header{padding:22px 14px}.level,.intro{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+   <div class="eyebrow">EDCB599 • Module 7 formative activity</div>
+   <h1>General Capabilities & Priorities Alignment Lab</h1>
+   <p>Test whether capabilities and Cross-curriculum Priorities are authentically embedded in Business and Economics learning, rather than added superficially after the lesson has already been planned.</p>
+ </div>
+</header>
+
+<main>
+ <div class="topbar">
+   <div>
+     <div class="small">Overall mastery</div>
+     <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+   </div>
+   <div class="score" id="score">0 / 5 challenges complete</div>
+ </div>
+
+ <section class="intro">
+   <h2>Planning lens</h2>
+   <p>Begin with the intended Business and Economics learning. Then identify which capabilities or priorities genuinely support that learning, what needs to be explicitly taught or scaffolded, what students will do, and what evidence will show development.</p>
+   <div class="note"><strong>Core principle:</strong> start with the Business learning, select only what genuinely aligns, teach the necessary knowledge and processes explicitly, and gather evidence that students actually developed them.</div>
+ </section>
+
+ <section class="level" id="level1">
+   <div class="level-head"><div><span class="badge">Challenge 1</span><h2>Capability or coincidence?</h2></div><span>🧠</span></div>
+   <p class="instructions">Decide whether the capability is genuinely being developed or merely present superficially.</p>
+   <div class="grid" id="coincidenceCases"></div>
+   <div class="feedback" id="feedback1" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level2">
+   <div class="level-head"><div><span class="badge">Challenge 2</span><h2>Choose the best-fit capability</h2></div><span>🎯</span></div>
+   <p class="instructions">Select the capability or pair of capabilities most authentically connected with the intended learning. Do not try to tick every box.</p>
+   <div class="grid" id="capabilityCases"></div>
+   <div class="feedback" id="feedback2" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level3">
+   <div class="level-head"><div><span class="badge">Challenge 3</span><h2>Fix the World Trade Game</h2></div><span>🌍</span></div>
+   <p class="instructions">The simulation below has been planned poorly. Select every change that would make it more educationally defensible.</p>
+   <div class="simulator">
+     <div class="bad-plan"><strong>Poor plan:</strong> “Give groups the names of real countries, some resources and scissors. Let them trade for 30 minutes. Students can work out what the activity means themselves. If there is time, ask which country won.”</div>
+     <div class="checklist" id="tradeChecklist"></div>
+   </div>
+   <div class="actions"><button class="primary" id="check3">Check improvements</button><button class="secondary" id="reset3">Reset</button></div>
+   <div class="feedback" id="feedback3" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level4">
+   <div class="level-head"><div><span class="badge">Challenge 4</span><h2>Authentic priority or tokenism?</h2></div><span>🧭</span></div>
+   <p class="instructions">Classify each example as <strong>authentic</strong>, <strong>needs more thought</strong>, or <strong>tokenistic/problematic</strong>.</p>
+   <div class="grid" id="priorityCases"></div>
+   <div class="actions"><button class="primary" id="check4">Check judgements</button><button class="secondary" id="reset4">Reset</button></div>
+   <div class="feedback" id="feedback4" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level5">
+   <div class="level-head"><div><span class="badge">Challenge 5</span><h2>Build the alignment chain</h2></div><span>🔗</span></div>
+   <p class="instructions">Complete the planning chain for a Sustainability-focused Business lesson. Each choice should logically connect to the next.</p>
+
+   <div class="chain">
+     <div class="chain-step">
+       <h3>1. Business learning</h3>
+       <select id="s1">
+         <option value="">Choose…</option>
+         <option value="correct">Evaluate alternative packaging options using financial, environmental and social considerations.</option>
+         <option value="wrong">Make a colourful poster about recycling.</option>
+       </select>
+     </div>
+     <div class="chain-step">
+       <h3>2. Priority / capability</h3>
+       <select id="s2">
+         <option value="">Choose…</option>
+         <option value="correct">Sustainability + Critical and Creative Thinking</option>
+         <option value="wrong">All seven General Capabilities and all three priorities</option>
+       </select>
+     </div>
+     <div class="chain-step">
+       <h3>3. Explicit teaching</h3>
+       <select id="s3">
+         <option value="">Choose…</option>
+         <option value="correct">Model criteria for comparing cost, waste, product life cycle and trade-offs.</option>
+         <option value="wrong">Assume students already know what “sustainable” means.</option>
+       </select>
+     </div>
+     <div class="chain-step">
+       <h3>4. Student activity</h3>
+       <select id="s4">
+         <option value="">Choose…</option>
+         <option value="correct">Compare two packaging options using supplied evidence and justify a recommendation.</option>
+         <option value="wrong">Decorate a reusable bag.</option>
+       </select>
+     </div>
+     <div class="chain-step">
+       <h3>5. Evidence</h3>
+       <select id="s5">
+         <option value="">Choose…</option>
+         <option value="correct">Individual evidence-based recommendation explaining trade-offs.</option>
+         <option value="wrong">Teacher observes whether students looked engaged.</option>
+       </select>
+     </div>
+   </div>
+   <div class="actions"><button class="primary" id="check5">Check alignment chain</button><button class="secondary" id="reset5">Reset</button></div>
+   <div class="feedback" id="feedback5" aria-live="polite"></div>
+ </section>
+
+ <section class="completion" id="completion">
+   <div class="trophy">🏆</div>
+   <h2>Alignment Lab complete</h2>
+   <p>You have practised distinguishing genuine capability development from superficial inclusion, selecting authentic Cross-curriculum Priority connections, improving simulations and building a coherent alignment chain from curriculum learning through to evidence.</p>
+   <button class="secondary" id="restart">Start again</button>
+ </section>
+
+ <div class="footer">Formative learning resource for EDCB599 Module 7. Designed to support authentic development of General Capabilities and Cross-curriculum Priorities through substantive Business and Economics learning.</div>
+</main>
+
+<script>
+const completed=new Set();
+
+const coincidenceData=[
+ {title:"Digital Literacy",text:"Students use a laptop to type a paragraph they already wrote on paper.",answer:"Superficial presence",options:["Genuine capability development","Superficial presence"],why:"Using a device does not automatically develop Digital Literacy. The learning needs to involve purposeful digital knowledge, processes or judgement."},
+ {title:"Numeracy",text:"Students compare loan repayments, calculate total cost and explain how the figures affect a consumer decision.",answer:"Genuine capability development",options:["Genuine capability development","Superficial presence"],why:"Students are using numerical information to support Business reasoning, not simply encountering numbers."},
+ {title:"Personal and Social Capability",text:"Students sit in groups, but one student completes the entire task while the others watch.",answer:"Superficial presence",options:["Genuine capability development","Superficial presence"],why:"Group seating alone does not develop collaboration. Roles, expectations and individual accountability matter."},
+ {title:"Critical and Creative Thinking",text:"Students compare two business strategies against stated criteria, evaluate consequences and justify which is more appropriate.",answer:"Genuine capability development",options:["Genuine capability development","Superficial presence"],why:"The task requires students to use substantive Business knowledge to analyse and justify a decision."}
+];
+
+const capabilityData=[
+ {title:"Consumer finance",text:"Students interpret repayment tables and justify which loan option better suits a given consumer.",answer:"Numeracy + Literacy",options:["Numeracy + Literacy","Digital Literacy only","Personal and Social Capability only"],why:"Students need to interpret financial information and communicate a justified recommendation."},
+ {title:"Ethical sourcing",text:"Students evaluate competing supplier options using evidence about labour practices, cost and business reputation.",answer:"Ethical Understanding + Critical and Creative Thinking",options:["Ethical Understanding + Critical and Creative Thinking","Numeracy only","Intercultural Understanding only"],why:"The task requires ethical reasoning and evidence-based evaluation of competing considerations."},
+ {title:"World Trade Game",text:"Students negotiate, allocate responsibilities and make group decisions within clearly structured roles.",answer:"Personal and Social Capability",options:["Personal and Social Capability","Literacy only","Digital Literacy only"],why:"The strongest alignment is with structured collaboration and social decision-making."},
+ {title:"Australia and a specific Asian economy",text:"Students analyse trade data between Australia and Japan and interpret how changes in demand affect businesses.",answer:"Numeracy + Intercultural Understanding",options:["Numeracy + Intercultural Understanding","Personal and Social Capability only","All seven capabilities"],why:"The learning combines interpretation of trade data with understanding a specific international economic context."}
+];
+
+const tradeData=[
+ {text:"Use fictional economies or carefully contextualised roles rather than inviting students to caricature real countries.",needed:true},
+ {text:"Explicitly teach essential trade and resource-allocation terminology before the simulation.",needed:true},
+ {text:"Explain rules, roles and participation expectations clearly.",needed:true},
+ {text:"Include a structured debrief linking the simulation back to economic concepts and its limitations.",needed:true},
+ {text:"Collect an individual response so each student demonstrates the intended Business and Economics learning.",needed:true},
+ {text:"Tell students the game accurately reproduces the lived experience of global poverty.",needed:false},
+ {text:"Skip explicit teaching so students can discover the economic concepts entirely by themselves.",needed:false},
+ {text:"Let the most confident students dominate negotiations because this makes the simulation more realistic.",needed:false}
+];
+
+const priorityData=[
+ {text:"Investigate an authorised case study of a local Aboriginal or Torres Strait Islander enterprise and connect it to entrepreneurship and business decision-making.",answer:"authentic",why:"The connection is curriculum-relevant, contemporary and capable of being developed respectfully with accurate and authorised sources."},
+ {text:"Add Aboriginal artwork to a worksheet about profit, with no connection to the Business learning.",answer:"problematic",why:"This is decorative rather than substantive and risks tokenism."},
+ {text:"Compare supply chains between an Australian business and a specific country in Asia using current data.",answer:"authentic",why:"The activity uses a specific context and evidence rather than treating Asia as a single culture or economy."},
+ {text:"Teach students that 'Asian consumers' all behave in broadly the same way.",answer:"problematic",why:"Asia should not be presented as a single market, culture or economy."},
+ {text:"Evaluate packaging choices using financial, environmental and social criteria.",answer:"authentic",why:"This authentically develops Sustainability through Business decision-making and trade-offs."},
+ {text:"Use a social enterprise example that might connect with Sustainability and First Nations perspectives, but only after checking whether both links are genuinely relevant and culturally appropriate.",answer:"needs",why:"Some contexts may support more than one priority, but the connections should be verified rather than assumed."}
+];
+
+function updateProgress(){
+ document.getElementById("progress").style.width=(completed.size/5*100)+"%";
+ document.getElementById("score").textContent=`${completed.size} / 5 challenges complete`;
+ if(completed.size===5)document.getElementById("completion").style.display="block";
+}
+function complete(n){
+ if(completed.has(n))return;
+ completed.add(n);
+ const next=document.getElementById("level"+(n+1));
+ if(next)next.classList.remove("locked");
+ updateProgress();
+}
+function renderChoice(containerId,data,level){
+ const box=document.getElementById(containerId);box.innerHTML="";
+ data.forEach(c=>{
+   const d=document.createElement("div");d.className="case";d.innerHTML=`<h3>${c.title}</h3><p>${c.text}</p>`;
+   const opts=document.createElement("div");opts.className="options";
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=c.why;
+   c.options.forEach(o=>{
+     const b=document.createElement("button");b.className="option";b.textContent=o;
+     b.addEventListener("click",()=>{
+       [...opts.children].forEach(x=>{x.disabled=true;if(x.textContent===c.answer)x.classList.add("correct")});
+       if(o!==c.answer)b.classList.add("wrong");
+       exp.style.display="block";
+       checkChoice(containerId,level);
+     });
+     opts.appendChild(b);
+   });
+   d.append(opts,exp);box.appendChild(d);
+ });
+}
+function checkChoice(containerId,level){
+ const groups=[...document.querySelectorAll(`#${containerId} .options`)];
+ if(!groups.every(g=>[...g.children].some(b=>b.disabled)))return;
+ const f=document.getElementById("feedback"+level);f.className="feedback ok";
+ f.textContent=level===1
+   ?"Challenge complete. A capability is only genuinely developed when students use relevant knowledge and processes in a purposeful way."
+   :"Challenge complete. Select capabilities because they authentically support the intended Business learning, not because they are available to tick.";
+ complete(level);
+}
+function renderTrade(){
+ const box=document.getElementById("tradeChecklist");box.innerHTML="";
+ tradeData.forEach((x,i)=>{
+   const label=document.createElement("label");label.className="checkitem";
+   label.innerHTML=`<input type="checkbox" data-i="${i}"><span>${x.text}</span>`;
+   box.appendChild(label);
+ });
+}
+function checkTrade(){
+ const checks=[...document.querySelectorAll("#tradeChecklist input")];
+ let correct=0;
+ checks.forEach((c,i)=>{
+   const should=tradeData[i].needed;
+   if(c.checked===should)correct++;
+   c.parentElement.style.borderColor=(c.checked===should)?"#79b798":"#d49797";
+   c.parentElement.style.background=(c.checked===should)?"#eff9f3":"#fff3f3";
+ });
+ const f=document.getElementById("feedback3");
+ if(correct===tradeData.length){
+   f.className="feedback ok";f.textContent="Excellent. A strong simulation requires curriculum alignment, explicit teaching, clear routines, careful cultural framing, a structured debrief and individual evidence of learning.";complete(3);
+ }else{
+   f.className="feedback bad";f.textContent=`${correct}/${tradeData.length} decisions matched the intended planning logic. Green items are correctly judged; reconsider the red items.`;
+ }
+}
+function renderPriority(){
+ const box=document.getElementById("priorityCases");box.innerHTML="";
+ priorityData.forEach((r,i)=>{
+   const d=document.createElement("div");d.className="row";d.dataset.answer=r.answer;d.innerHTML=`<h3>Example ${i+1}</h3><div>${r.text}</div>`;
+   const btns=document.createElement("div");btns.className="row-buttons";
+   [["authentic","Authentic"],["needs","Needs more thought"],["problematic","Tokenistic / problematic"]].forEach(([v,label])=>{
+      const b=document.createElement("button");b.textContent=label;b.dataset.value=v;
+      b.addEventListener("click",()=>{[...btns.children].forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});
+      btns.appendChild(b);
+   });
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=r.why;d.append(btns,exp);box.appendChild(d);
+ });
+}
+function checkPriority(){
+ const items=[...document.querySelectorAll("#priorityCases .row")],f=document.getElementById("feedback4");
+ if(items.some(i=>!i.querySelector("button.selected"))){f.className="feedback hint";f.textContent="Make a judgement for every example before checking.";return}
+ let correct=0;
+ items.forEach(i=>{
+   const a=i.dataset.answer,s=i.querySelector("button.selected");
+   [...i.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.dataset.value===a)b.classList.add("good")});
+   if(s.dataset.value===a)correct++; else s.classList.add("bad");
+   i.querySelector(".explain").style.display="block";
+ });
+ f.className=correct===items.length?"feedback ok":"feedback bad";
+ f.textContent=`${correct}/${items.length} matched the intended reasoning. Authentic alignment requires curriculum relevance, accurate context, cultural safety and avoidance of stereotypes or tokenism.`;
+ complete(4);
+}
+function checkChain(){
+ const vals=[1,2,3,4,5].map(n=>document.getElementById("s"+n).value);
+ const f=document.getElementById("feedback5");
+ if(vals.some(v=>v==="")){f.className="feedback hint";f.textContent="Complete all five parts of the chain first.";return}
+ const correct=vals.every(v=>v==="correct");
+ if(correct){f.className="feedback ok";f.textContent="Excellent. The chain is coherent from intended Business learning through capability/priority, explicit teaching, student activity and evidence.";complete(5)}
+ else{f.className="feedback bad";f.textContent="One or more links break the alignment. Recheck whether every choice directly supports the intended Business learning."}
+}
+function restart(){
+ completed.clear();updateProgress();
+ [2,3,4,5].forEach(n=>document.getElementById("level"+n).classList.add("locked"));
+ document.getElementById("completion").style.display="none";
+ ["feedback1","feedback2","feedback3","feedback4","feedback5"].forEach(id=>{const f=document.getElementById(id);f.textContent="";f.className="feedback"});
+ renderChoice("coincidenceCases",coincidenceData,1);
+ renderChoice("capabilityCases",capabilityData,2);
+ renderTrade();renderPriority();
+ [1,2,3,4,5].forEach(n=>document.getElementById("s"+n).value="");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+renderChoice("coincidenceCases",coincidenceData,1);
+renderChoice("capabilityCases",capabilityData,2);
+renderTrade();
+renderPriority();
+document.getElementById("check3").addEventListener("click",checkTrade);
+document.getElementById("reset3").addEventListener("click",()=>{renderTrade();document.getElementById("feedback3").textContent=""});
+document.getElementById("check4").addEventListener("click",checkPriority);
+document.getElementById("reset4").addEventListener("click",()=>{renderPriority();document.getElementById("feedback4").textContent=""});
+document.getElementById("check5").addEventListener("click",checkChain);
+document.getElementById("reset5").addEventListener("click",()=>{[1,2,3,4,5].forEach(n=>document.getElementById("s"+n).value="");document.getElementById("feedback5").textContent=""});
+document.getElementById("restart").addEventListener("click",restart);
+</script>
+</body>
+</html>
