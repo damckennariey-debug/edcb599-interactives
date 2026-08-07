@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDSS599 Module 1 — HASS Curriculum Navigator</title>
+<style>
+:root{
+  --ink:#24152f; --purple:#4b155f; --purple2:#6d2a83; --cream:#fbf8f3; --card:#fff;
+  --line:#e5dce7; --green:#176b4a; --red:#9b2c2c; --amber:#8b5a00; --muted:#6a6170;
+  --shadow:0 8px 28px rgba(42,22,50,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream);line-height:1.45}
+header{background:linear-gradient(135deg,#351047,#5a1a70);color:#fff;padding:28px 18px}
+.header-inner{max-width:1180px;margin:auto}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:700}
+h1{font-size:clamp(1.7rem,4vw,2.8rem);margin:.25rem 0 .5rem;line-height:1.08}
+header p{max-width:930px;margin:0;opacity:.92}
+main{max-width:1180px;margin:auto;padding:18px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:8px 0 18px}
+.progress-wrap{background:#eadfed;height:12px;border-radius:999px;overflow:hidden;border:1px solid #d9c9dd}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#5a1a70,#9a58ac);transition:width .35s}
+.score{font-weight:750;white-space:nowrap}
+.intro,.level,.completion{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.level.locked{opacity:.5;filter:grayscale(.35);pointer-events:none}
+.level-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.level h2{margin:0;font-size:1.35rem}
+.badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#f1e7f4;color:var(--purple);font-size:.78rem;font-weight:800}
+.instructions{color:var(--muted);margin:.35rem 0 1rem}
+.note{background:#f7f0fa;border-left:4px solid var(--purple2);padding:10px 12px;border-radius:8px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.case,.row{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.case h3,.row h3{margin:.1rem 0 .5rem;font-size:1rem;color:var(--purple)}
+.options{display:grid;gap:8px;margin-top:10px}
+.option{width:100%;text-align:left;background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+.option.correct{background:#eff9f3;border-color:#79b798;color:#15593f}
+.option.wrong{background:#fff3f3;border-color:#d49797;color:#7f2222}
+.option:disabled{cursor:default;opacity:1}
+.explain{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#faf7fb;border-left:3px solid #9a72a6;font-size:.9rem}
+.row-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.row-buttons button{background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1}
+.row-buttons button.selected{outline:3px solid #a87cba}
+.row-buttons button.good{background:#eff9f3;border-color:#79b798}
+.row-buttons button.bad{background:#fff3f3;border-color:#d49797}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:.93rem;cursor:pointer}
+.primary{background:var(--purple);color:white}
+.secondary{background:#eee5f1;color:var(--purple)}
+.feedback{min-height:28px;margin-top:10px;font-weight:700}
+.feedback.ok{color:var(--green)}
+.feedback.bad{color:var(--red)}
+.feedback.hint{color:var(--amber)}
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;padding:14px;border:1px dashed #baa8c0;border-radius:14px;background:#fcf9fd;min-height:100px}
+.drag-card{background:#fff;border:1px solid #d9ccdd;border-radius:13px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:grab;user-select:none}
+.drag-card.selected{outline:3px solid #a87cba;background:#faf5fc}
+.drag-card.correct{border-color:#6fb595;background:#f1fbf6}
+.dropgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+.dropzone{min-height:180px;border:2px dashed #c7b5cc;border-radius:14px;padding:10px;background:#fff}
+.dropzone h3{margin:0 0 5px;color:var(--purple);font-size:1rem}
+.dropzone p{font-size:.84rem;color:var(--muted);margin:.2rem 0 .5rem}
+.dropzone.dragover{background:#f5eafa;border-color:#6f3d7f}
+.dropzone .drag-card{margin-top:8px;cursor:pointer}
+.chain{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+.chain-step{border:1px solid var(--line);border-radius:12px;padding:10px;background:#faf7fb;min-height:150px}
+.chain-step h3{margin:.1rem 0 .5rem;color:var(--purple);font-size:.92rem}
+select{width:100%;padding:9px;border:1px solid #d8cddd;border-radius:9px;background:white;color:var(--ink);font-weight:650}
+.small{font-size:.84rem;color:var(--muted)}
+.completion{text-align:center;display:none}
+.trophy{font-size:3rem}
+.footer{font-size:.78rem;color:var(--muted);padding:8px 2px 28px}
+@media(max-width:920px){.chain{grid-template-columns:1fr 1fr}}
+@media(max-width:820px){.topbar,.dropgrid{grid-template-columns:1fr}}
+@media(max-width:620px){.chain{grid-template-columns:1fr}main{padding:10px}header{padding:22px 14px}.level,.intro{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+   <div class="eyebrow">EDSS599 • Module 1 formative activity</div>
+   <h1>HASS Curriculum Navigator</h1>
+   <p>Build confidence navigating Year 7–10 HASS by identifying the four disciplines, choosing the correct jurisdictional curriculum source, recognising curriculum architecture, interpreting progression and distinguishing familiarity from genuine curriculum understanding.</p>
+ </div>
+</header>
+
+<main>
+ <div class="topbar">
+   <div>
+     <div class="small">Overall mastery</div>
+     <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+   </div>
+   <div class="score" id="score">0 / 5 challenges complete</div>
+ </div>
+
+ <section class="intro">
+   <h2>Your curriculum navigation brief</h2>
+   <p>Use this activity before completing the module’s curriculum mapping and self-audit tasks. The aim is to organise your HASS curriculum knowledge so that you can locate the right documents, recognise how they are structured and identify where further professional learning may be needed.</p>
+   <div class="note"><strong>Core principle:</strong> curriculum familiarity is not the same as curriculum understanding. Strong curriculum knowledge means being able to explain what students need to learn, how that learning progresses and how achievement is demonstrated.</div>
+ </section>
+
+ <section class="level" id="level1">
+   <div class="level-head"><div><span class="badge">Challenge 1</span><h2>Know the HASS family</h2></div><span>🧭</span></div>
+   <p class="instructions">Match each learning focus to the HASS discipline it most clearly belongs to.</p>
+   <div class="grid" id="disciplineCases"></div>
+   <div class="feedback" id="feedback1" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level2">
+   <div class="level-head"><div><span class="badge">Challenge 2</span><h2>Which curriculum do I actually use?</h2></div><span>🗺️</span></div>
+   <p class="instructions">Choose the curriculum source a beginning teacher should consult first in each jurisdictional scenario.</p>
+   <div class="grid" id="jurisdictionCases"></div>
+   <div class="feedback" id="feedback2" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level3">
+   <div class="level-head"><div><span class="badge">Challenge 3</span><h2>Curriculum architecture challenge</h2></div><span>🏗️</span></div>
+   <p class="instructions">Sort each curriculum component into the category it best represents. Drag cards, or tap a card and then tap a destination.</p>
+   <div class="bank" id="bank3"></div>
+   <div class="dropgrid">
+     <div class="dropzone" data-zone="purpose"><h3>Purpose and direction</h3><p>Rationale, aims and broad intentions.</p></div>
+     <div class="dropzone" data-zone="content"><h3>Curriculum content</h3><p>Knowledge, concepts, descriptions and inquiry skills.</p></div>
+     <div class="dropzone" data-zone="standards"><h3>Achievement evidence</h3><p>What students are expected to demonstrate.</p></div>
+     <div class="dropzone" data-zone="connections"><h3>Connections and inclusion</h3><p>Student diversity, General Capabilities and Cross-curriculum Priorities.</p></div>
+   </div>
+   <div class="actions"><button class="primary" id="check3">Check sorting</button><button class="secondary" id="reset3">Reset</button></div>
+   <div class="feedback" id="feedback3" aria-live="polite"></div>
+
+   <div class="note" style="margin-top:18px"><strong>Then think relationally:</strong> curriculum mapping is stronger when you can explain how purpose, content, teaching, evidence and standards connect rather than simply listing headings.</div>
+
+   <div class="chain">
+     <div class="chain-step">
+       <h3>1. Purpose</h3>
+       <select id="c1">
+         <option value="">Choose…</option>
+         <option value="correct">Rationale and aims</option>
+         <option value="wrong">Student engagement activity</option>
+       </select>
+     </div>
+     <div class="chain-step">
+       <h3>2. What is taught</h3>
+       <select id="c2">
+         <option value="">Choose…</option>
+         <option value="correct">Curriculum content and inquiry skills</option>
+         <option value="wrong">Random topic chosen because it is interesting</option>
+       </select>
+     </div>
+     <div class="chain-step">
+       <h3>3. Teaching</h3>
+       <select id="c3">
+         <option value="">Choose…</option>
+         <option value="correct">Planned explanation, modelling, inquiry and scaffolding</option>
+         <option value="wrong">Activity selected before the learning is identified</option>
+       </select>
+     </div>
+     <div class="chain-step">
+       <h3>4. Evidence</h3>
+       <select id="c4">
+         <option value="">Choose…</option>
+         <option value="correct">Student work that demonstrates intended knowledge and skills</option>
+         <option value="wrong">Whether students appeared busy</option>
+       </select>
+     </div>
+     <div class="chain-step">
+       <h3>5. Judgement</h3>
+       <select id="c5">
+         <option value="">Choose…</option>
+         <option value="correct">Achievement standard / jurisdictional standard</option>
+         <option value="wrong">Teacher preference</option>
+       </select>
+     </div>
+   </div>
+   <div class="actions"><button class="primary" id="checkChain">Check relationship chain</button><button class="secondary" id="resetChain">Reset chain</button></div>
+   <div class="feedback" id="chainFeedback" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level4">
+   <div class="level-head"><div><span class="badge">Challenge 4</span><h2>Progression detective</h2></div><span>🔍</span></div>
+   <p class="instructions">Decide whether each example is mainly <strong>content knowledge</strong>, a <strong>disciplinary/inquiry skill</strong>, or evidence of <strong>increasing sophistication</strong>.</p>
+   <div class="grid" id="progressionCases"></div>
+   <div class="actions"><button class="primary" id="check4">Check progression</button><button class="secondary" id="reset4">Reset</button></div>
+   <div class="feedback" id="feedback4" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level5">
+   <div class="level-head"><div><span class="badge">Challenge 5</span><h2>Curriculum confidence reality check</h2></div><span>🧠</span></div>
+   <p class="instructions">Classify each statement as <strong>genuine understanding</strong>, <strong>familiarity only</strong>, or <strong>professional learning needed</strong>.</p>
+   <div class="grid" id="confidenceCases"></div>
+   <div class="actions"><button class="primary" id="check5">Check judgements</button><button class="secondary" id="reset5">Reset</button></div>
+   <div class="feedback" id="feedback5" aria-live="polite"></div>
+ </section>
+
+ <section class="completion" id="completion">
+   <div class="trophy">🏆</div>
+   <h2>HASS Curriculum Navigator complete</h2>
+   <p>You have rehearsed the core curriculum decisions needed before completing the module’s concept-map and self-audit tasks: recognising the HASS disciplines, locating the correct curriculum source, understanding curriculum architecture, identifying progression and making realistic judgements about your own curriculum knowledge.</p>
+   <div class="note"><strong>Next move:</strong> choose one HASS discipline and use the module activities to map its curriculum structure, identify your current strengths and select one purposeful professional-learning priority.</div>
+   <button class="secondary" id="restart">Start again</button>
+ </section>
+
+ <div class="footer">Formative learning resource for EDSS599 Module 1. Designed to support Year 7–10 HASS curriculum navigation, curriculum mapping and professional self-audit.</div>
+</main>
+
+<script>
+const completed=new Set();
+let selectedCard=null;
+let architectureSorted=false, chainDone=false;
+
+const disciplineData=[
+ {title:"Learning focus A",text:"Students analyse primary and secondary sources to explain causes, consequences and differing perspectives on past events.",answer:"History",options:["History","Geography","Civics and Citizenship","Economics and Business"],why:"The emphasis on evidence about the past, causation and perspectives is characteristic of History."},
+ {title:"Learning focus B",text:"Students interpret maps and spatial data to explain how environmental and human processes shape places.",answer:"Geography",options:["History","Geography","Civics and Citizenship","Economics and Business"],why:"Spatial patterns, places, environments and geographical data are central to Geography."},
+ {title:"Learning focus C",text:"Students examine democratic institutions, laws, rights, responsibilities and ways citizens participate in decision-making.",answer:"Civics and Citizenship",options:["History","Geography","Civics and Citizenship","Economics and Business"],why:"Institutions, rights, responsibilities and civic participation are core Civics and Citizenship concerns."},
+ {title:"Learning focus D",text:"Students investigate consumer choices, business decisions, resource allocation and economic consequences.",answer:"Economics and Business",options:["History","Geography","Civics and Citizenship","Economics and Business"],why:"Consumer, business and economic decision-making are central to Economics and Business."}
+];
+
+const jurisdictionData=[
+ {title:"Queensland",text:"You are preparing a Year 8 HASS unit in Queensland. Where should you begin?",answer:"Australian Curriculum v9 / relevant QCAA implementation guidance",options:["Australian Curriculum v9 / relevant QCAA implementation guidance","NSW NESA HSIE syllabuses","Victorian Curriculum F–10","WA Curriculum (SCSA)"],why:"Queensland implements the Australian Curriculum directly, with QCAA providing jurisdictional implementation and assessment guidance."},
+ {title:"New South Wales",text:"You begin a Year 9 Commerce or HSIE placement in NSW. Which curriculum source should guide your planning?",answer:"NSW NESA syllabuses",options:["Australian Curriculum only","NSW NESA syllabuses","Victorian Curriculum F–10","WA Curriculum (SCSA)"],why:"NSW uses distinct NESA syllabuses for HSIE subjects, aligned with but not simply identical to the Australian Curriculum."},
+ {title:"Victoria",text:"You are teaching Year 7 Geography in Victoria.",answer:"Victorian Curriculum F–10",options:["Australian Curriculum only","NSW NESA syllabuses","Victorian Curriculum F–10","WA Curriculum (SCSA)"],why:"Victoria uses the Victorian Curriculum F–10, adapted to the jurisdictional context."},
+ {title:"Western Australia",text:"You are planning Year 8 HASS in Western Australia.",answer:"WA Curriculum (SCSA)",options:["Australian Curriculum only","NSW NESA syllabuses","Victorian Curriculum F–10","WA Curriculum (SCSA)"],why:"Western Australia uses the SCSA HASS curriculum for Years 7–10."},
+ {title:"South Australia",text:"You are starting a Year 10 HASS placement in South Australia.",answer:"Australian Curriculum v9",options:["Australian Curriculum v9","NSW NESA syllabuses","Victorian Curriculum F–10","WA Curriculum (SCSA)"],why:"South Australia implements the Australian Curriculum directly for these HASS subjects."}
+];
+
+const architectureData=[
+ {id:"a1",text:"Rationale",answer:"purpose"},
+ {id:"a2",text:"Aims",answer:"purpose"},
+ {id:"a3",text:"Content descriptions / curriculum content",answer:"content"},
+ {id:"a4",text:"Inquiry and disciplinary skills",answer:"content"},
+ {id:"a5",text:"Achievement standards",answer:"standards"},
+ {id:"a6",text:"Evidence of increasing sophistication across year levels",answer:"standards"},
+ {id:"a7",text:"General Capabilities",answer:"connections"},
+ {id:"a8",text:"Cross-curriculum Priorities",answer:"connections"},
+ {id:"a9",text:"Student diversity and access considerations",answer:"connections"}
+];
+
+const progressionData=[
+ {text:"Understanding the meaning of opportunity cost.",answer:"content",why:"This is primarily subject content/conceptual knowledge."},
+ {text:"Using a source to identify explicit information.",answer:"skill",why:"This is a disciplinary inquiry skill rather than a particular body of content."},
+ {text:"Moving from identifying information in sources to comparing perspectives and evaluating usefulness.",answer:"sophistication",why:"The sequence reflects increasingly sophisticated disciplinary thinking."},
+ {text:"Knowing the features of Australia’s democratic system.",answer:"content",why:"This is Civics and Citizenship knowledge."},
+ {text:"Interpreting a thematic map and identifying a spatial pattern.",answer:"skill",why:"This is a geographical inquiry/data interpretation skill."},
+ {text:"Moving from describing a spatial pattern to explaining relationships and evaluating possible responses.",answer:"sophistication",why:"This demonstrates growth in the complexity of geographical reasoning."}
+];
+
+const confidenceData=[
+ {text:"I recognise the term 'Sustainability' and have seen the Cross-curriculum Priority page before.",answer:"familiarity",why:"Recognition is useful, but it does not yet demonstrate the capacity to teach the priority authentically."},
+ {text:"I can explain a concept accurately, anticipate likely misconceptions, model the reasoning and design a check for understanding.",answer:"genuine",why:"This is evidence of usable subject and pedagogical content knowledge."},
+ {text:"I am expected to teach source evaluation, but I am not yet confident distinguishing reliability, usefulness and perspective.",answer:"pl",why:"This identifies a specific area requiring further subject and disciplinary learning."},
+ {text:"I can locate the achievement standard and explain how it relates to the evidence students need to demonstrate in a task.",answer:"genuine",why:"This demonstrates curriculum understanding rather than simple familiarity."},
+ {text:"I know the name of the relevant curriculum website but have not yet explored how content and skills progress across Years 7–10.",answer:"familiarity",why:"Knowing where the curriculum lives is different from understanding its progression."},
+ {text:"I want to include Aboriginal and Torres Strait Islander Histories and Cultures but I am unsure about local context, authorised sources and appropriate consultation.",answer:"pl",why:"The uncertainty points to a clear and important professional-learning need before designing the learning experience."}
+];
+
+function updateProgress(){
+ document.getElementById("progress").style.width=(completed.size/5*100)+"%";
+ document.getElementById("score").textContent=`${completed.size} / 5 challenges complete`;
+ if(completed.size===5)document.getElementById("completion").style.display="block";
+}
+function complete(n){
+ if(completed.has(n))return;
+ completed.add(n);
+ const next=document.getElementById("level"+(n+1));
+ if(next)next.classList.remove("locked");
+ updateProgress();
+}
+function renderChoice(containerId,data,level){
+ const box=document.getElementById(containerId);box.innerHTML="";
+ data.forEach(c=>{
+   const d=document.createElement("div");d.className="case";d.innerHTML=`<h3>${c.title}</h3><p>${c.text}</p>`;
+   const opts=document.createElement("div");opts.className="options";
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=c.why;
+   c.options.forEach(o=>{
+     const b=document.createElement("button");b.className="option";b.textContent=o;
+     b.addEventListener("click",()=>{
+       [...opts.children].forEach(x=>{x.disabled=true;if(x.textContent===c.answer)x.classList.add("correct")});
+       if(o!==c.answer)b.classList.add("wrong");
+       exp.style.display="block";
+       checkChoice(containerId,level);
+     });
+     opts.appendChild(b);
+   });
+   d.append(opts,exp);box.appendChild(d);
+ });
+}
+function checkChoice(containerId,level){
+ const groups=[...document.querySelectorAll(`#${containerId} .options`)];
+ if(!groups.every(g=>[...g.children].some(b=>b.disabled)))return;
+ const f=document.getElementById("feedback"+level);f.className="feedback ok";
+ if(level===1)f.textContent="Challenge complete. HASS brings four distinct but connected disciplines together.";
+ if(level===2)f.textContent="Challenge complete. Curriculum planning starts by locating the correct jurisdictional source.";
+ complete(level);
+}
+function makeCard(i){
+ const d=document.createElement("div");d.className="drag-card";d.draggable=true;d.dataset.id=i.id;d.dataset.answer=i.answer;d.textContent=i.text;
+ d.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",i.id);selectedCard=d});
+ d.addEventListener("click",()=>{document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=d;d.classList.add("selected")});
+ return d;
+}
+function renderArchitecture(){
+ const bank=document.getElementById("bank3");bank.innerHTML="";
+ [...architectureData].sort(()=>Math.random()-.5).forEach(i=>bank.appendChild(makeCard(i)));
+ document.querySelectorAll("#level3 .dropzone").forEach(z=>[...z.querySelectorAll(".drag-card")].forEach(c=>c.remove()));
+ installDrops();
+ architectureSorted=false;chainDone=false;
+}
+function installDrops(){
+ document.querySelectorAll("#level3 .dropzone").forEach(z=>{
+   z.ondragover=e=>{e.preventDefault();z.classList.add("dragover")};
+   z.ondragleave=()=>z.classList.remove("dragover");
+   z.ondrop=e=>{e.preventDefault();z.classList.remove("dragover");const id=e.dataTransfer.getData("text/plain");const c=document.querySelector(`.drag-card[data-id="${id}"]`);if(c)z.appendChild(c);clearSel()};
+   z.onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){z.appendChild(selectedCard);clearSel()}};
+ });
+ document.getElementById("bank3").onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){e.currentTarget.appendChild(selectedCard);clearSel()}};
+}
+function clearSel(){document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=null}
+function checkArchitecture(){
+ const cards=[...document.querySelectorAll("#level3 .drag-card")],f=document.getElementById("feedback3");let placed=0,correct=0;
+ cards.forEach(c=>{c.classList.remove("correct");const z=c.parentElement.closest(".dropzone");if(z){placed++;if(z.dataset.zone===c.dataset.answer){correct++;c.classList.add("correct")}}});
+ if(placed<cards.length){f.className="feedback hint";f.textContent=`Sort all ${cards.length} components first. ${cards.length-placed} remain.`;return}
+ if(correct===cards.length){f.className="feedback ok";f.textContent="Excellent. You have organised the major curriculum components. Now complete the relationship chain below.";architectureSorted=true;maybeComplete3()}
+ else{f.className="feedback bad";f.textContent=`${correct}/${cards.length} are correctly placed. Green cards are correct. Reconsider the others.`}
+}
+function checkChain(){
+ const vals=[1,2,3,4,5].map(n=>document.getElementById("c"+n).value);
+ const f=document.getElementById("chainFeedback");
+ if(vals.some(v=>v==="")){f.className="feedback hint";f.textContent="Complete all five links first.";return}
+ if(vals.every(v=>v==="correct")){f.className="feedback ok";f.textContent="Strong curriculum mapping connects purpose, content, teaching, evidence and standards rather than treating them as isolated headings.";chainDone=true;maybeComplete3()}
+ else{f.className="feedback bad";f.textContent="One or more links break the curriculum relationship. Recheck the sequence."}
+}
+function maybeComplete3(){if(architectureSorted && chainDone)complete(3)}
+function renderRows(containerId,data){
+ const box=document.getElementById(containerId);box.innerHTML="";
+ data.forEach((r,i)=>{
+   const d=document.createElement("div");d.className="row";d.dataset.answer=r.answer;d.innerHTML=`<h3>Example ${i+1}</h3><div>${r.text}</div>`;
+   const btns=document.createElement("div");btns.className="row-buttons";
+   const choices=containerId==="progressionCases"
+      ? [["content","Content knowledge"],["skill","Disciplinary / inquiry skill"],["sophistication","Increasing sophistication"]]
+      : [["genuine","Genuine understanding"],["familiarity","Familiarity only"],["pl","Professional learning needed"]];
+   choices.forEach(([v,label])=>{
+      const b=document.createElement("button");b.textContent=label;b.dataset.value=v;
+      b.addEventListener("click",()=>{[...btns.children].forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});
+      btns.appendChild(b);
+   });
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=r.why;d.append(btns,exp);box.appendChild(d);
+ });
+}
+function checkRows(containerId,level){
+ const items=[...document.querySelectorAll(`#${containerId} .row`)],f=document.getElementById("feedback"+level);
+ if(items.some(i=>!i.querySelector("button.selected"))){f.className="feedback hint";f.textContent="Make a judgement for every example before checking.";return}
+ let correct=0;
+ items.forEach(i=>{
+   const a=i.dataset.answer,s=i.querySelector("button.selected");
+   [...i.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.dataset.value===a)b.classList.add("good")});
+   if(s.dataset.value===a)correct++; else s.classList.add("bad");
+   i.querySelector(".explain").style.display="block";
+ });
+ f.className=correct===items.length?"feedback ok":"feedback bad";
+ if(level===4)f.textContent=`${correct}/${items.length} matched the intended reasoning. Curriculum progression includes both new content and increasingly sophisticated disciplinary thinking.`;
+ if(level===5)f.textContent=`${correct}/${items.length} matched the intended reasoning. Use the results as a prompt for your self-audit and professional-learning plan.`;
+ complete(level);
+}
+function restart(){
+ completed.clear();updateProgress();
+ [2,3,4,5].forEach(n=>document.getElementById("level"+n).classList.add("locked"));
+ document.getElementById("completion").style.display="none";
+ ["feedback1","feedback2","feedback3","feedback4","feedback5","chainFeedback"].forEach(id=>{const f=document.getElementById(id);f.textContent="";f.className="feedback"});
+ renderChoice("disciplineCases",disciplineData,1);
+ renderChoice("jurisdictionCases",jurisdictionData,2);
+ renderArchitecture();
+ [1,2,3,4,5].forEach(n=>document.getElementById("c"+n).value="");
+ renderRows("progressionCases",progressionData);
+ renderRows("confidenceCases",confidenceData);
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+renderChoice("disciplineCases",disciplineData,1);
+renderChoice("jurisdictionCases",jurisdictionData,2);
+renderArchitecture();
+renderRows("progressionCases",progressionData);
+renderRows("confidenceCases",confidenceData);
+
+document.getElementById("check3").addEventListener("click",checkArchitecture);
+document.getElementById("reset3").addEventListener("click",()=>{renderArchitecture();document.getElementById("feedback3").textContent="";[1,2,3,4,5].forEach(n=>document.getElementById("c"+n).value="");document.getElementById("chainFeedback").textContent=""});
+document.getElementById("checkChain").addEventListener("click",checkChain);
+document.getElementById("resetChain").addEventListener("click",()=>{[1,2,3,4,5].forEach(n=>document.getElementById("c"+n).value="");chainDone=false;document.getElementById("chainFeedback").textContent=""});
+document.getElementById("check4").addEventListener("click",()=>checkRows("progressionCases",4));
+document.getElementById("reset4").addEventListener("click",()=>{renderRows("progressionCases",progressionData);document.getElementById("feedback4").textContent=""});
+document.getElementById("check5").addEventListener("click",()=>checkRows("confidenceCases",5));
+document.getElementById("reset5").addEventListener("click",()=>{renderRows("confidenceCases",confidenceData);document.getElementById("feedback5").textContent=""});
+document.getElementById("restart").addEventListener("click",restart);
+</script>
+</body>
+</html>
