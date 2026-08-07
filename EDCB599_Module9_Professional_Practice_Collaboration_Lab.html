@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDCB599 Module 9 — Professional Practice & Collaboration Lab</title>
+<style>
+:root{
+  --ink:#24152f; --purple:#4b155f; --purple2:#6d2a83; --cream:#fbf8f3; --card:#fff;
+  --line:#e5dce7; --green:#176b4a; --red:#9b2c2c; --amber:#8b5a00; --muted:#6a6170;
+  --shadow:0 8px 28px rgba(42,22,50,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream);line-height:1.45}
+header{background:linear-gradient(135deg,#351047,#5a1a70);color:#fff;padding:28px 18px}
+.header-inner{max-width:1180px;margin:auto}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:700}
+h1{font-size:clamp(1.7rem,4vw,2.8rem);margin:.25rem 0 .5rem;line-height:1.08}
+header p{max-width:930px;margin:0;opacity:.92}
+main{max-width:1180px;margin:auto;padding:18px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:8px 0 18px}
+.progress-wrap{background:#eadfed;height:12px;border-radius:999px;overflow:hidden;border:1px solid #d9c9dd}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#5a1a70,#9a58ac);transition:width .35s}
+.score{font-weight:750;white-space:nowrap}
+.intro,.level,.completion{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.level.locked{opacity:.5;filter:grayscale(.35);pointer-events:none}
+.level-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.level h2{margin:0;font-size:1.35rem}
+.badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#f1e7f4;color:var(--purple);font-size:.78rem;font-weight:800}
+.instructions{color:var(--muted);margin:.35rem 0 1rem}
+.note{background:#f7f0fa;border-left:4px solid var(--purple2);padding:10px 12px;border-radius:8px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.case,.row{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.case h3,.row h3{margin:.1rem 0 .5rem;font-size:1rem;color:var(--purple)}
+.options{display:grid;gap:8px;margin-top:10px}
+.option{width:100%;text-align:left;background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+.option.correct{background:#eff9f3;border-color:#79b798;color:#15593f}
+.option.wrong{background:#fff3f3;border-color:#d49797;color:#7f2222}
+.option:disabled{cursor:default;opacity:1}
+.explain{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#faf7fb;border-left:3px solid #9a72a6;font-size:.9rem}
+.row-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.row-buttons button{background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1}
+.row-buttons button.selected{outline:3px solid #a87cba}
+.row-buttons button.good{background:#eff9f3;border-color:#79b798}
+.row-buttons button.bad{background:#fff3f3;border-color:#d49797}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:.93rem;cursor:pointer}
+.primary{background:var(--purple);color:white}
+.secondary{background:#eee5f1;color:var(--purple)}
+.feedback{min-height:28px;margin-top:10px;font-weight:700}
+.feedback.ok{color:var(--green)}
+.feedback.bad{color:var(--red)}
+.feedback.hint{color:var(--amber)}
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;padding:14px;border:1px dashed #baa8c0;border-radius:14px;background:#fcf9fd;min-height:100px}
+.drag-card{background:#fff;border:1px solid #d9ccdd;border-radius:13px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:grab;user-select:none}
+.drag-card.selected{outline:3px solid #a87cba;background:#faf5fc}
+.drag-card.correct{border-color:#6fb595;background:#f1fbf6}
+.dropgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+.dropzone{min-height:180px;border:2px dashed #c7b5cc;border-radius:14px;padding:10px;background:#fff}
+.dropzone h3{margin:0 0 5px;color:var(--purple);font-size:1rem}
+.dropzone p{font-size:.84rem;color:var(--muted);margin:.2rem 0 .5rem}
+.dropzone.dragover{background:#f5eafa;border-color:#6f3d7f}
+.dropzone .drag-card{margin-top:8px;cursor:pointer}
+.profile{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff;margin-bottom:12px}
+.profile h3{margin:.1rem 0 .4rem;color:var(--purple)}
+.plan-list{display:grid;gap:8px}
+.plan-item{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fafafa}
+.plan-item input{margin-top:4px}
+.small{font-size:.84rem;color:var(--muted)}
+.completion{text-align:center;display:none}
+.trophy{font-size:3rem}
+.footer{font-size:.78rem;color:var(--muted);padding:8px 2px 28px}
+@media(max-width:820px){.topbar,.dropgrid{grid-template-columns:1fr}}
+@media(max-width:520px){main{padding:10px}header{padding:22px 14px}.level,.intro{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+   <div class="eyebrow">EDCB599 • Module 9 formative activity</div>
+   <h1>Professional Practice & Collaboration Lab</h1>
+   <p>Practise deciding who to seek support from, how to work effectively with colleagues and support staff, how to choose credible professional learning, and how to build an evidence-informed professional growth plan.</p>
+ </div>
+</header>
+
+<main>
+ <div class="topbar">
+   <div>
+     <div class="small">Overall mastery</div>
+     <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+   </div>
+   <div class="score" id="score">0 / 5 challenges complete</div>
+ </div>
+
+ <section class="intro">
+   <h2>Professional practice lens</h2>
+   <p>Teaching is collaborative. Beginning Business teachers work with colleagues, support staff, leaders, families, professional bodies and wider networks. The aim is not to collect contacts or attend random professional development, but to use the right source of support for the right professional need.</p>
+   <div class="note"><strong>Core principle:</strong> identify the professional need, choose credible and relevant support, apply what you learn, gather evidence and refine your practice.</div>
+ </section>
+
+ <section class="level" id="level1">
+   <div class="level-head"><div><span class="badge">Challenge 1</span><h2>Who do you go to?</h2></div><span>🧭</span></div>
+   <p class="instructions">Choose the most appropriate source of support for each professional situation.</p>
+   <div class="grid" id="supportCases"></div>
+   <div class="feedback" id="feedback1" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level2">
+   <div class="level-head"><div><span class="badge">Challenge 2</span><h2>Collaborate or delegate?</h2></div><span>🤝</span></div>
+   <p class="instructions">Classify each practice as <strong>effective collaboration</strong>, <strong>needs clarification</strong>, or <strong>problematic</strong>.</p>
+   <div class="grid" id="collabCases"></div>
+   <div class="actions"><button class="primary" id="check2">Check judgements</button><button class="secondary" id="reset2">Reset</button></div>
+   <div class="feedback" id="feedback2" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level3">
+   <div class="level-head"><div><span class="badge">Challenge 3</span><h2>Choose the professional learning</h2></div><span>📚</span></div>
+   <p class="instructions">Select the professional learning option that best matches the identified need and is most likely to improve practice.</p>
+   <div class="grid" id="pdCases"></div>
+   <div class="feedback" id="feedback3" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level4">
+   <div class="level-head"><div><span class="badge">Challenge 4</span><h2>Professional network sorter</h2></div><span>🗂️</span></div>
+   <p class="instructions">Sort each organisation or body by its primary function. Drag cards, or tap a card and then tap a destination.</p>
+   <div class="bank" id="bank4"></div>
+   <div class="dropgrid">
+     <div class="dropzone" data-zone="regulator"><h3>Teacher regulatory authority</h3><p>Registration, professional standards and regulatory requirements.</p></div>
+     <div class="dropzone" data-zone="business"><h3>Business education professional association</h3><p>Subject-specific professional learning, resources and networks.</p></div>
+     <div class="dropzone" data-zone="peak"><h3>Professional association / peak body</h3><p>Supports professional teaching associations and professional networks.</p></div>
+     <div class="dropzone" data-zone="union"><h3>Union / industrial representation</h3><p>Employment conditions, industrial representation and member advocacy.</p></div>
+   </div>
+   <div class="actions"><button class="primary" id="check4">Check sorting</button><button class="secondary" id="reset4">Reset</button></div>
+   <div class="feedback" id="feedback4" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level5">
+   <div class="level-head"><div><span class="badge">Challenge 5</span><h2>Build your first-year growth plan</h2></div><span>🚀</span></div>
+   <p class="instructions">Select the actions that form a sensible evidence-informed growth plan for this beginning teacher.</p>
+   <div class="profile">
+     <h3>Beginning-teacher profile</h3>
+     <p>You are six weeks into your first Business teaching role. Your explanations are improving, but you are uncertain about assessment moderation, you have limited experience supporting EAL/D students, and you will teach a new Year 9 Business unit next term.</p>
+   </div>
+   <div class="plan-list" id="growthPlan"></div>
+   <div class="actions"><button class="primary" id="check5">Check growth plan</button><button class="secondary" id="reset5">Reset</button></div>
+   <div class="feedback" id="feedback5" aria-live="polite"></div>
+ </section>
+
+ <section class="completion" id="completion">
+   <div class="trophy">🏆</div>
+   <h2>Professional Practice & Collaboration Lab complete</h2>
+   <p>You have practised selecting appropriate professional support, collaborating effectively, distinguishing professional bodies and building a focused growth plan. Effective professional learning is ongoing, collaborative and tied to evidence about what will strengthen teaching and student learning.</p>
+   <button class="secondary" id="restart">Start again</button>
+ </section>
+
+ <div class="footer">Formative learning resource for EDCB599 Module 9. Designed to support collaboration, professional learning, professional networks and reflective growth for beginning Business teachers.</div>
+</main>
+
+<script>
+const completed=new Set();
+let selectedCard=null;
+
+const supportData=[
+ {title:"Registration question",text:"You need clarification about maintaining teacher registration and the professional requirements that apply in your jurisdiction.",answer:"Teacher regulatory authority",options:["Teacher regulatory authority","Business education professional association","Union","Teacher aide"],why:"Registration and regulatory requirements sit with the relevant teacher regulatory authority."},
+ {title:"Business-specific resources",text:"You want subject-specific resources and professional learning for teaching Year 9 Business and Economics.",answer:"Business education professional association",options:["Teacher regulatory authority","Business education professional association","Union","Parent association"],why:"A subject professional association is designed to support discipline-specific teaching, resources and networks."},
+ {title:"Employment conditions",text:"You want advice about pay, workload, an industrial agreement or employment conditions.",answer:"Union",options:["Teacher regulatory authority","Business education professional association","Union","Curriculum authority"],why:"Industrial representation and employment-condition advice are functions associated with unions."},
+ {title:"Student adjustment",text:"You are unsure how an agreed student adjustment should operate during your lesson.",answer:"Supervising teacher / relevant support staff",options:["Supervising teacher / relevant support staff","Union","Business education professional association","Random online forum"],why:"The response should be informed by the student’s existing plan, school processes and staff who know the context."},
+ {title:"Different marking judgements",text:"Two teachers interpret the same assessment standard differently.",answer:"Collaborative moderation with colleagues",options:["Collaborative moderation with colleagues","Union","Teacher regulatory authority","Ask students to vote"],why:"The appropriate response is to examine standards, evidence and judgement collaboratively."}
+];
+
+const collabData=[
+ {text:"Before the lesson, brief the teacher aide on the learning objective, agreed supports and their role, then discuss what students demonstrated afterwards.",answer:"effective",why:"This keeps the teacher responsible for teaching and uses clear communication and shared learning priorities."},
+ {text:"Ask the teacher aide to independently design and teach all work for students requiring additional support while you teach the rest of the class.",answer:"problematic",why:"This risks separating students from the intended learning and shifting teacher responsibility inappropriately."},
+ {text:"A colleague offers a resource, but you are not sure whether it aligns with your current curriculum objective.",answer:"needs",why:"Collaboration is useful, but resources still need to be evaluated against curriculum purpose and student need."},
+ {text:"Schedule joint planning time with another Business teacher to compare resources, assessment design and likely misconceptions.",answer:"effective",why:"Joint planning can strengthen curriculum knowledge, consistency and instructional quality."},
+ {text:"Give support staff last-minute instructions only after students enter the room.",answer:"problematic",why:"Effective collaboration requires clear roles, expectations and communication before the learning begins."},
+ {text:"Ask a specialist staff member for advice about a student’s access needs, then integrate that advice with the curriculum purpose and the student’s views.",answer:"effective",why:"Responsive teaching is strengthened by appropriate consultation and collaborative problem-solving."}
+];
+
+const pdData=[
+ {title:"Financial literacy knowledge",text:"You are teaching consumer credit next term but your subject knowledge is weak.",answer:"Undertake current curriculum-authority or Business-education professional learning focused on the relevant content and teaching requirements.",options:[
+   "Attend a generic motivational seminar because it is engaging.",
+   "Undertake current curriculum-authority or Business-education professional learning focused on the relevant content and teaching requirements.",
+   "Use a social-media post that claims one trick can teach all students finance."
+ ],why:"The professional learning directly addresses the identified subject-matter and curriculum need."},
+ {title:"Questioning practice",text:"Your mentor observes that your questions are often answered by the same confident students.",answer:"Observe a skilled colleague or mentor, trial a structured questioning routine and gather evidence about participation and understanding.",options:[
+   "Buy a book of icebreakers.",
+   "Observe a skilled colleague or mentor, trial a structured questioning routine and gather evidence about participation and understanding.",
+   "Assume students are simply shy."
+ ],why:"The action is targeted, practical and includes evidence to evaluate whether practice improves."},
+ {title:"Neuromyth alert",text:"A workshop promises to identify each student’s 'left-brain or right-brain learning profile' and tailor teaching accordingly.",answer:"Do not rely on it; seek professional learning grounded in credible contemporary evidence about learning.",options:[
+   "Attend because neuroscience terminology guarantees quality.",
+   "Do not rely on it; seek professional learning grounded in credible contemporary evidence about learning.",
+   "Use it only for students who struggle."
+ ],why:"Professional learning should be evaluated against contemporary evidence rather than unsupported claims or neuromyths."},
+ {title:"Moderation uncertainty",text:"You are unsure how to apply a new marking guide consistently.",answer:"Participate in collaborative moderation using sample responses, the standards and the published criteria.",options:[
+   "Mark alone until you feel more confident.",
+   "Participate in collaborative moderation using sample responses, the standards and the published criteria.",
+   "Copy the grades given by the most experienced teacher without discussion."
+ ],why:"Moderation develops shared understanding through evidence and professional dialogue."}
+];
+
+const networkData=[
+ {id:"n1",text:"Queensland College of Teachers (QCT)",answer:"regulator"},
+ {id:"n2",text:"NSW Education Standards Authority (NESA) — teacher accreditation/registration functions",answer:"regulator"},
+ {id:"n3",text:"Business Educators Association of Queensland (BEAQ)",answer:"business"},
+ {id:"n4",text:"Economics and Business Educators NSW (EBE NSW)",answer:"business"},
+ {id:"n5",text:"Victorian Commercial Teachers Association (VCTA)",answer:"business"},
+ {id:"n6",text:"Australian Professional Teachers Association (APTA)",answer:"peak"},
+ {id:"n7",text:"Joint Council of Queensland Teachers’ Associations (JCQTA)",answer:"peak"},
+ {id:"n8",text:"Queensland Teachers' Union (QTU)",answer:"union"}
+];
+
+const growthData=[
+ {text:"Ask a mentor to observe one lesson and provide feedback on explanations and questioning.",needed:true},
+ {text:"Join or access subject-association resources before planning the new Year 9 Business unit.",needed:true},
+ {text:"Participate in a moderation meeting using sample responses and the relevant criteria.",needed:true},
+ {text:"Seek targeted professional learning or specialist guidance on supporting EAL/D students in Business tasks.",needed:true},
+ {text:"Gather student work or formative evidence to see whether changes to teaching are improving learning.",needed:true},
+ {text:"Attend as many unrelated conferences as possible, regardless of relevance.",needed:false},
+ {text:"Use only resources that are popular on social media because popularity indicates credibility.",needed:false},
+ {text:"Avoid seeking feedback until the end of the year so your teaching style can develop independently.",needed:false}
+];
+
+function updateProgress(){
+ document.getElementById("progress").style.width=(completed.size/5*100)+"%";
+ document.getElementById("score").textContent=`${completed.size} / 5 challenges complete`;
+ if(completed.size===5)document.getElementById("completion").style.display="block";
+}
+function complete(n){
+ if(completed.has(n))return;
+ completed.add(n);
+ const next=document.getElementById("level"+(n+1));
+ if(next)next.classList.remove("locked");
+ updateProgress();
+}
+function renderChoice(containerId,data,level){
+ const box=document.getElementById(containerId);box.innerHTML="";
+ data.forEach(c=>{
+   const d=document.createElement("div");d.className="case";d.innerHTML=`<h3>${c.title}</h3><p>${c.text}</p>`;
+   const opts=document.createElement("div");opts.className="options";
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=c.why;
+   c.options.forEach(o=>{
+     const b=document.createElement("button");b.className="option";b.textContent=o;
+     b.addEventListener("click",()=>{
+       [...opts.children].forEach(x=>{x.disabled=true;if(x.textContent===c.answer)x.classList.add("correct")});
+       if(o!==c.answer)b.classList.add("wrong");
+       exp.style.display="block";
+       checkChoice(containerId,level);
+     });
+     opts.appendChild(b);
+   });
+   d.append(opts,exp);box.appendChild(d);
+ });
+}
+function checkChoice(containerId,level){
+ const groups=[...document.querySelectorAll(`#${containerId} .options`)];
+ if(!groups.every(g=>[...g.children].some(b=>b.disabled)))return;
+ const f=document.getElementById("feedback"+level);f.className="feedback ok";
+ f.textContent=level===1
+   ?"Challenge complete. Different professional needs require different sources of support."
+   :"Challenge complete. Strong professional learning is targeted, credible, relevant and connected to evidence about practice.";
+ complete(level);
+}
+function renderCollab(){
+ const box=document.getElementById("collabCases");box.innerHTML="";
+ collabData.forEach((r,i)=>{
+   const d=document.createElement("div");d.className="row";d.dataset.answer=r.answer;d.innerHTML=`<h3>Practice ${i+1}</h3><div>${r.text}</div>`;
+   const btns=document.createElement("div");btns.className="row-buttons";
+   [["effective","Effective collaboration"],["needs","Needs clarification"],["problematic","Problematic"]].forEach(([v,label])=>{
+     const b=document.createElement("button");b.textContent=label;b.dataset.value=v;
+     b.addEventListener("click",()=>{[...btns.children].forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});
+     btns.appendChild(b);
+   });
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=r.why;d.append(btns,exp);box.appendChild(d);
+ });
+}
+function checkCollab(){
+ const items=[...document.querySelectorAll("#collabCases .row")],f=document.getElementById("feedback2");
+ if(items.some(i=>!i.querySelector("button.selected"))){f.className="feedback hint";f.textContent="Make a judgement for every practice before checking.";return}
+ let correct=0;
+ items.forEach(i=>{
+   const a=i.dataset.answer,s=i.querySelector("button.selected");
+   [...i.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.dataset.value===a)b.classList.add("good")});
+   if(s.dataset.value===a)correct++; else s.classList.add("bad");
+   i.querySelector(".explain").style.display="block";
+ });
+ f.className=correct===items.length?"feedback ok":"feedback bad";
+ f.textContent=`${correct}/${items.length} matched the intended reasoning. Effective collaboration depends on clear roles, communication, shared learning priorities and appropriate professional responsibility.`;
+ complete(2);
+}
+function makeCard(i){
+ const d=document.createElement("div");d.className="drag-card";d.draggable=true;d.dataset.id=i.id;d.dataset.answer=i.answer;d.textContent=i.text;
+ d.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",i.id);selectedCard=d});
+ d.addEventListener("click",()=>{document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=d;d.classList.add("selected")});
+ return d;
+}
+function renderNetwork(){
+ const bank=document.getElementById("bank4");bank.innerHTML="";
+ [...networkData].sort(()=>Math.random()-.5).forEach(i=>bank.appendChild(makeCard(i)));
+ document.querySelectorAll("#level4 .dropzone").forEach(z=>[...z.querySelectorAll(".drag-card")].forEach(c=>c.remove()));
+ installDrops();
+}
+function installDrops(){
+ document.querySelectorAll("#level4 .dropzone").forEach(z=>{
+   z.ondragover=e=>{e.preventDefault();z.classList.add("dragover")};
+   z.ondragleave=()=>z.classList.remove("dragover");
+   z.ondrop=e=>{e.preventDefault();z.classList.remove("dragover");const id=e.dataTransfer.getData("text/plain");const c=document.querySelector(`.drag-card[data-id="${id}"]`);if(c)z.appendChild(c);clearSel()};
+   z.onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){z.appendChild(selectedCard);clearSel()}};
+ });
+ document.getElementById("bank4").onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){e.currentTarget.appendChild(selectedCard);clearSel()}};
+}
+function clearSel(){document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=null}
+function checkNetwork(){
+ const cards=[...document.querySelectorAll("#level4 .drag-card")],f=document.getElementById("feedback4");let placed=0,correct=0;
+ cards.forEach(c=>{c.classList.remove("correct");const z=c.parentElement.closest(".dropzone");if(z){placed++;if(z.dataset.zone===c.dataset.answer){correct++;c.classList.add("correct")}}});
+ if(placed<cards.length){f.className="feedback hint";f.textContent=`Sort all ${cards.length} organisations first. ${cards.length-placed} remain.`;return}
+ if(correct===cards.length){f.className="feedback ok";f.textContent="Excellent. The key is understanding the primary function of each professional body rather than memorising a list of names.";complete(4)}
+ else{f.className="feedback bad";f.textContent=`${correct}/${cards.length} are correctly placed. Green cards are correct. Reconsider the others.`}
+}
+function renderGrowth(){
+ const box=document.getElementById("growthPlan");box.innerHTML="";
+ growthData.forEach((x,i)=>{
+   const label=document.createElement("label");label.className="plan-item";
+   label.innerHTML=`<input type="checkbox" data-i="${i}"><span>${x.text}</span>`;
+   box.appendChild(label);
+ });
+}
+function checkGrowth(){
+ const checks=[...document.querySelectorAll("#growthPlan input")];
+ let correct=0;
+ checks.forEach((c,i)=>{
+   const should=growthData[i].needed;
+   if(c.checked===should)correct++;
+   c.parentElement.style.borderColor=(c.checked===should)?"#79b798":"#d49797";
+   c.parentElement.style.background=(c.checked===should)?"#eff9f3":"#fff3f3";
+ });
+ const f=document.getElementById("feedback5");
+ if(correct===growthData.length){
+   f.className="feedback ok";
+   f.textContent="Excellent. The plan is focused, collaborative and evidence-informed: identify a need, seek relevant support, apply learning, gather evidence and refine practice.";
+   complete(5);
+ }else{
+   f.className="feedback bad";
+   f.textContent=`${correct}/${growthData.length} decisions matched the intended growth plan. Green items are correctly judged; reconsider the red items.`;
+ }
+}
+function restart(){
+ completed.clear();updateProgress();
+ [2,3,4,5].forEach(n=>document.getElementById("level"+n).classList.add("locked"));
+ document.getElementById("completion").style.display="none";
+ ["feedback1","feedback2","feedback3","feedback4","feedback5"].forEach(id=>{const f=document.getElementById(id);f.textContent="";f.className="feedback"});
+ renderChoice("supportCases",supportData,1);
+ renderCollab();
+ renderChoice("pdCases",pdData,3);
+ renderNetwork();
+ renderGrowth();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+renderChoice("supportCases",supportData,1);
+renderCollab();
+renderChoice("pdCases",pdData,3);
+renderNetwork();
+renderGrowth();
+
+document.getElementById("check2").addEventListener("click",checkCollab);
+document.getElementById("reset2").addEventListener("click",()=>{renderCollab();document.getElementById("feedback2").textContent=""});
+document.getElementById("check4").addEventListener("click",checkNetwork);
+document.getElementById("reset4").addEventListener("click",()=>{renderNetwork();document.getElementById("feedback4").textContent=""});
+document.getElementById("check5").addEventListener("click",checkGrowth);
+document.getElementById("reset5").addEventListener("click",()=>{renderGrowth();document.getElementById("feedback5").textContent=""});
+document.getElementById("restart").addEventListener("click",restart);
+</script>
+</body>
+</html>
