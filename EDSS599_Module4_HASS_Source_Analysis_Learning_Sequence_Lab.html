@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDSS599 Module 4 — HASS Source Analysis & Learning Sequence Lab</title>
+<style>
+:root{
+  --ink:#24152f; --purple:#4b155f; --purple2:#6d2a83; --cream:#fbf8f3; --card:#fff;
+  --line:#e5dce7; --green:#176b4a; --red:#9b2c2c; --amber:#8b5a00; --muted:#6a6170;
+  --shadow:0 8px 28px rgba(42,22,50,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream);line-height:1.45}
+header{background:linear-gradient(135deg,#351047,#5a1a70);color:#fff;padding:28px 18px}
+.header-inner{max-width:1180px;margin:auto}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:700}
+h1{font-size:clamp(1.7rem,4vw,2.8rem);margin:.25rem 0 .5rem;line-height:1.08}
+header p{max-width:930px;margin:0;opacity:.92}
+main{max-width:1180px;margin:auto;padding:18px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:8px 0 18px}
+.progress-wrap{background:#eadfed;height:12px;border-radius:999px;overflow:hidden;border:1px solid #d9c9dd}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#5a1a70,#9a58ac);transition:width .35s}
+.score{font-weight:750;white-space:nowrap}
+.intro,.level,.completion{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.level.locked{opacity:.5;filter:grayscale(.35);pointer-events:none}
+.level-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.level h2{margin:0;font-size:1.35rem}
+.badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#f1e7f4;color:var(--purple);font-size:.78rem;font-weight:800}
+.instructions{color:var(--muted);margin:.35rem 0 1rem}
+.note{background:#f7f0fa;border-left:4px solid var(--purple2);padding:10px 12px;border-radius:8px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.case,.row,.source-box{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.case h3,.row h3,.source-box h3{margin:.1rem 0 .5rem;font-size:1rem;color:var(--purple)}
+.options{display:grid;gap:8px;margin-top:10px}
+.option{width:100%;text-align:left;background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+.option.correct{background:#eff9f3;border-color:#79b798;color:#15593f}
+.option.wrong{background:#fff3f3;border-color:#d49797;color:#7f2222}
+.option:disabled{cursor:default;opacity:1}
+.explain{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#faf7fb;border-left:3px solid #9a72a6;font-size:.9rem}
+.row-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.row-buttons button{background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1}
+.row-buttons button.selected{outline:3px solid #a87cba}
+.row-buttons button.good{background:#eff9f3;border-color:#79b798}
+.row-buttons button.bad{background:#fff3f3;border-color:#d49797}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:.93rem;cursor:pointer}
+.primary{background:var(--purple);color:white}
+.secondary{background:#eee5f1;color:var(--purple)}
+.feedback{min-height:28px;margin-top:10px;font-weight:700}
+.feedback.ok{color:var(--green)}
+.feedback.bad{color:var(--red)}
+.feedback.hint{color:var(--amber)}
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;padding:14px;border:1px dashed #baa8c0;border-radius:14px;background:#fcf9fd;min-height:100px}
+.drag-card{background:#fff;border:1px solid #d9ccdd;border-radius:13px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:grab;user-select:none}
+.drag-card.selected{outline:3px solid #a87cba;background:#faf5fc}
+.drag-card.correct{border-color:#6fb595;background:#f1fbf6}
+.dropgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.dropzone{min-height:180px;border:2px dashed #c7b5cc;border-radius:14px;padding:10px;background:#fff}
+.dropzone h3{margin:0 0 5px;color:var(--purple);font-size:1rem}
+.dropzone p{font-size:.84rem;color:var(--muted);margin:.2rem 0 .5rem}
+.dropzone.dragover{background:#f5eafa;border-color:#6f3d7f}
+.dropzone .drag-card{margin-top:8px;cursor:pointer}
+.timeline{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:14px}
+.slot{min-height:175px;border:2px dashed #c7b5cc;border-radius:14px;padding:8px;background:#fff}
+.slot h3{font-size:.84rem;margin:0 0 6px;color:var(--purple)}
+.slot.dragover{background:#f5eafa;border-color:#6f3d7f}
+.slot .drag-card{margin-top:6px}
+.source{background:#fcfaf7;border:1px solid #eadfce;border-radius:12px;padding:14px;font-family:Georgia,serif;font-size:1rem}
+.small{font-size:.84rem;color:var(--muted)}
+.completion{text-align:center;display:none}
+.trophy{font-size:3rem}
+.footer{font-size:.78rem;color:var(--muted);padding:8px 2px 28px}
+@media(max-width:1050px){.timeline{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.dropgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:820px){.topbar{grid-template-columns:1fr}}
+@media(max-width:620px){.timeline,.dropgrid{grid-template-columns:1fr}main{padding:10px}header{padding:22px 14px}.level,.intro{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+   <div class="eyebrow">EDSS599 • Module 4 formative activity</div>
+   <h1>HASS Source Analysis & Learning Sequence Lab</h1>
+   <p>Practise turning learning goals into clear evidence, teaching source analysis explicitly, calibrating scaffolds, sequencing learning across lessons, and avoiding common “higher-order thinking” traps.</p>
+ </div>
+</header>
+
+<main>
+ <div class="topbar">
+   <div>
+     <div class="small">Overall mastery</div>
+     <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+   </div>
+   <div class="score" id="score">0 / 5 challenges complete</div>
+ </div>
+
+ <section class="intro">
+   <h2>Planning lens</h2>
+   <p>Strong HASS planning begins with what students need to learn, the prior knowledge and skills they require, and the evidence that will show success. Source analysis is not simply something students are told to “do”; unfamiliar disciplinary reasoning needs to be explained, modelled, practised and gradually released.</p>
+   <div class="note"><strong>Core principle:</strong> source analysis is taught, not assigned.</div>
+ </section>
+
+ <section class="level" id="level1">
+   <div class="level-head"><div><span class="badge">Challenge 1</span><h2>Learning goal, success criteria or activity?</h2></div><span>🎯</span></div>
+   <p class="instructions">Classify each statement according to what it actually represents.</p>
+   <div class="grid" id="goalCases"></div>
+   <div class="actions"><button class="primary" id="check1">Check classifications</button><button class="secondary" id="reset1">Reset</button></div>
+   <div class="feedback" id="feedback1" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level2">
+   <div class="level-head"><div><span class="badge">Challenge 2</span><h2>Source analysis detective</h2></div><span>🔎</span></div>
+   <div class="source-box">
+     <h3>Simulated historical source</h3>
+     <div class="source">
+       “The new settlement policy will bring order and opportunity. Families who follow the regulations will benefit from improved services and greater prosperity.”<br><br>
+       <em>Extract from a government promotional pamphlet, 1952.</em>
+     </div>
+   </div>
+   <p class="instructions">Work through the source as a disciplinary analyst. Choose the most defensible response to each question.</p>
+   <div class="grid" id="sourceCases"></div>
+   <div class="feedback" id="feedback2" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level3">
+   <div class="level-head"><div><span class="badge">Challenge 3</span><h2>Scaffold the novice analyst</h2></div><span>🪜</span></div>
+   <p class="instructions">Sort each support into the stage where it is most appropriate. Drag cards, or tap a card and then tap a destination.</p>
+   <div class="bank" id="bank3"></div>
+   <div class="dropgrid">
+     <div class="dropzone" data-zone="novice"><h3>Novice</h3><p>High guidance, explicit modelling and structured prompts.</p></div>
+     <div class="dropzone" data-zone="developing"><h3>Developing</h3><p>Guided practice with partial scaffolds and prompts.</p></div>
+     <div class="dropzone" data-zone="proficient"><h3>More proficient</h3><p>Independent application, comparison and judgement.</p></div>
+   </div>
+   <div class="actions"><button class="primary" id="check3">Check scaffolding</button><button class="secondary" id="reset3">Reset</button></div>
+   <div class="feedback" id="feedback3" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level4">
+   <div class="level-head"><div><span class="badge">Challenge 4</span><h2>Build the learning sequence</h2></div><span>🧩</span></div>
+   <p class="instructions">Arrange the eight learning moves into a coherent progression for Year 9 History source analysis. Drag cards, or tap a card and then tap a slot.</p>
+   <div class="bank" id="bank4"></div>
+   <div class="timeline" id="timeline4">
+     <div class="slot" data-slot="1"><h3>1</h3></div>
+     <div class="slot" data-slot="2"><h3>2</h3></div>
+     <div class="slot" data-slot="3"><h3>3</h3></div>
+     <div class="slot" data-slot="4"><h3>4</h3></div>
+     <div class="slot" data-slot="5"><h3>5</h3></div>
+     <div class="slot" data-slot="6"><h3>6</h3></div>
+     <div class="slot" data-slot="7"><h3>7</h3></div>
+     <div class="slot" data-slot="8"><h3>8</h3></div>
+   </div>
+   <div class="actions"><button class="primary" id="check4">Check sequence</button><button class="secondary" id="reset4">Reset</button></div>
+   <div class="feedback" id="feedback4" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level5">
+   <div class="level-head"><div><span class="badge">Challenge 5</span><h2>Higher-order thinking trap</h2></div><span>⚠️</span></div>
+   <p class="instructions">For each “higher-order” activity, identify what students need first for the task to become genuinely productive.</p>
+   <div class="grid" id="hotCases"></div>
+   <div class="feedback" id="feedback5" aria-live="polite"></div>
+ </section>
+
+ <section class="completion" id="completion">
+   <div class="trophy">🏆</div>
+   <h2>HASS Source Analysis & Learning Sequence Lab complete</h2>
+   <p>You have practised distinguishing learning from activity, analysing a source, selecting and fading scaffolds, sequencing source-analysis learning and identifying the knowledge and guided practice that make higher-order reasoning possible.</p>
+   <div class="note"><strong>Source-analysis chain:</strong> What should students notice? → What knowledge do they need? → What reasoning must I model? → How will they practise? → When can I remove support? → What evidence will show independent analysis?</div>
+   <button class="secondary" id="restart">Start again</button>
+ </section>
+
+ <div class="footer">Formative learning resource for EDSS599 Module 4. Designed to support source analysis, explicit modelling, scaffolding and coherent HASS learning sequences.</div>
+</main>
+
+<script>
+const completed=new Set();
+let selectedCard=null;
+
+const goalData=[
+ {text:"Students will explain how a source’s context may shape the perspective it presents.",answer:"goal",why:"This describes intended learning rather than a task format."},
+ {text:"Students will complete a Y-Chart about a historical source.",answer:"activity",why:"This describes what students will do, not what they will necessarily learn."},
+ {text:"I can identify a source’s perspective, support my judgement with evidence and explain one contextual influence.",answer:"criteria",why:"This makes visible what successful performance looks like."},
+ {text:"Students will use a Double Bubble Map to compare two sources.",answer:"activity",why:"The organiser is a strategy or activity. Its value depends on the learning purpose."},
+ {text:"Students will compare how two sources represent the same event.",answer:"goal",why:"This identifies a disciplinary learning outcome."},
+ {text:"I can explain one similarity and one difference between the sources using specific evidence.",answer:"criteria",why:"This is observable evidence that the comparison goal has been achieved."}
+];
+
+const sourceData=[
+ {title:"What can you observe directly?",text:"Which claim is directly supported by the words of the source?",answer:"The pamphlet presents the policy in positive terms and links compliance with future benefits.",options:["The policy definitely improved families’ lives.","The pamphlet presents the policy in positive terms and links compliance with future benefits.","All citizens supported the policy."],why:"Observation stays close to what the source actually says."},
+ {title:"What can you infer?",text:"Which inference is most defensible?",answer:"The pamphlet may have been designed to persuade readers to view the policy favourably.",options:["The author privately opposed the policy.","The pamphlet may have been designed to persuade readers to view the policy favourably.","The policy was universally successful."],why:"The promotional context supports an inference about persuasive purpose, but not claims about private motives or outcomes."},
+ {title:"Perspective",text:"What is the most likely perspective represented?",answer:"An official or government-supporting perspective that presents the policy positively.",options:["A neutral account with no perspective.","An official or government-supporting perspective that presents the policy positively.","A family criticising the policy."],why:"The provenance and language indicate an official promotional perspective."},
+ {title:"Context needed",text:"What additional knowledge would most strengthen analysis?",answer:"Who the policy affected, what the regulations required and how different groups experienced the policy.",options:["The colour of the pamphlet cover.","Who the policy affected, what the regulations required and how different groups experienced the policy.","Whether the writer used a typewriter."],why:"Contextual knowledge helps students interpret purpose, perspective and consequences."},
+ {title:"Usefulness",text:"What makes the source potentially useful?",answer:"It provides evidence of how the government publicly represented and promoted the policy.",options:["It proves the policy worked.","It provides evidence of how the government publicly represented and promoted the policy.","It is useful only if every claim is factually correct."],why:"A source can be useful for understanding representation and purpose even when it is partial or persuasive."},
+ {title:"Limitation",text:"What is an important limitation?",answer:"It gives only an official promotional perspective and does not show how affected families experienced the policy.",options:["It contains bias, so it has no historical value.","It gives only an official promotional perspective and does not show how affected families experienced the policy.","It is too old to analyse."],why:"Perspective limits what the source can tell us, but does not make it worthless."}
+];
+
+const scaffoldData=[
+ {id:"a1",text:"Explicitly teach terms such as perspective, context, usefulness and reliability.",answer:"novice"},
+ {id:"a2",text:"Teacher models a think-aloud analysis of one source.",answer:"novice"},
+ {id:"a3",text:"Use a structured Y-Chart or source-analysis organiser with prompting questions.",answer:"novice"},
+ {id:"a4",text:"Analyse a second source together and ask students to justify responses with evidence.",answer:"developing"},
+ {id:"a5",text:"Provide a partially completed analysis scaffold that students finish with teacher feedback.",answer:"developing"},
+ {id:"a6",text:"Use paired comparison of two sources with prompts gradually reduced.",answer:"developing"},
+ {id:"a7",text:"Students independently analyse an unfamiliar source.",answer:"proficient"},
+ {id:"a8",text:"Students compare usefulness across sources and construct an evidence-based judgement.",answer:"proficient"}
+];
+
+const sequenceData=[
+ {id:"s1",text:"Activate relevant background knowledge about the historical context.",order:1},
+ {id:"s2",text:"Explicitly teach key source-analysis concepts and vocabulary.",order:2},
+ {id:"s3",text:"Model analysis of one source using a think-aloud.",order:3},
+ {id:"s4",text:"Complete a guided analysis of a second source together.",order:4},
+ {id:"s5",text:"Students compare two contrasting sources using a scaffold.",order:5},
+ {id:"s6",text:"Students independently analyse a fresh source.",order:6},
+ {id:"s7",text:"Teacher gives feedback and students refine their analysis.",order:7},
+ {id:"s8",text:"Students construct an evidence-based written judgement using multiple sources.",order:8}
+];
+
+const hotData=[
+ {title:"Evaluate source reliability",text:"Students are told to evaluate whether a historical source is reliable.",answer:"Relevant contextual knowledge, understanding of source type/purpose, modelled evaluation and guided practice.",options:["A list of higher-order verbs.","Relevant contextual knowledge, understanding of source type/purpose, modelled evaluation and guided practice.","A more colourful worksheet."],why:"Evaluation depends on knowledge and disciplinary criteria; the verb alone does not create sophisticated thinking."},
+ {title:"Decision Making Matrix",text:"Students use a DMM to recommend the best response to coastal erosion.",answer:"Knowledge of coastal processes, relevant evidence, clear criteria and practice applying those criteria.",options:["Knowledge of coastal processes, relevant evidence, clear criteria and practice applying those criteria.","Only the DMM template.","A competitive group prize."],why:"The organiser supports thinking only when students possess the knowledge and criteria needed to judge options."},
+ {title:"Judge Jury activity",text:"Students must judge whether a historical actor made the 'right' decision.",answer:"Sufficient contextual knowledge, evidence from multiple perspectives and explicit criteria for the judgement.",options:["Sufficient contextual knowledge, evidence from multiple perspectives and explicit criteria for the judgement.","No prior teaching so opinions are spontaneous.","A timer to make the task harder."],why:"Reasoned judgement requires evidence and context, not merely personal opinion."},
+ {title:"Independent source comparison",text:"Students compare two unfamiliar sources and explain which is more useful.",answer:"Previous modelling and guided practice in perspective, purpose, context and usefulness.",options:["Previous modelling and guided practice in perspective, purpose, context and usefulness.","A larger font.","No support, because comparison is inherently higher order."],why:"Independent comparison should follow sufficient instruction and supported practice."},
+ {title:"SWOT analysis",text:"Students complete a SWOT analysis of an economic policy.",answer:"Accurate policy knowledge, relevant economic concepts and criteria for distinguishing strengths, weaknesses, opportunities and threats.",options:["Accurate policy knowledge, relevant economic concepts and criteria for distinguishing strengths, weaknesses, opportunities and threats.","Only the four-box template.","A video explaining what SWOT stands for."],why:"Graphic organisers do not substitute for subject knowledge or evaluative criteria."}
+];
+
+function updateProgress(){
+ document.getElementById("progress").style.width=(completed.size/5*100)+"%";
+ document.getElementById("score").textContent=`${completed.size} / 5 challenges complete`;
+ if(completed.size===5)document.getElementById("completion").style.display="block";
+}
+function complete(n){
+ if(completed.has(n))return;
+ completed.add(n);
+ const next=document.getElementById("level"+(n+1));
+ if(next)next.classList.remove("locked");
+ updateProgress();
+}
+function renderRows(){
+ const box=document.getElementById("goalCases");box.innerHTML="";
+ goalData.forEach((r,i)=>{
+   const d=document.createElement("div");d.className="row";d.dataset.answer=r.answer;d.innerHTML=`<h3>Statement ${i+1}</h3><div>${r.text}</div>`;
+   const btns=document.createElement("div");btns.className="row-buttons";
+   [["goal","Learning goal"],["criteria","Success criteria"],["activity","Activity"]].forEach(([v,label])=>{
+      const b=document.createElement("button");b.textContent=label;b.dataset.value=v;
+      b.addEventListener("click",()=>{[...btns.children].forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});
+      btns.appendChild(b);
+   });
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=r.why;d.append(btns,exp);box.appendChild(d);
+ });
+}
+function checkRows(){
+ const items=[...document.querySelectorAll("#goalCases .row")],f=document.getElementById("feedback1");
+ if(items.some(i=>!i.querySelector("button.selected"))){f.className="feedback hint";f.textContent="Classify every statement before checking.";return}
+ let correct=0;
+ items.forEach(i=>{
+   const a=i.dataset.answer,s=i.querySelector("button.selected");
+   [...i.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.dataset.value===a)b.classList.add("good")});
+   if(s.dataset.value===a)correct++; else s.classList.add("bad");
+   i.querySelector(".explain").style.display="block";
+ });
+ f.className=correct===items.length?"feedback ok":"feedback bad";
+ f.textContent=`${correct}/${items.length} matched the intended reasoning. Learning goals describe learning; success criteria make achievement visible; activities are the means, not the end.`;
+ complete(1);
+}
+function renderChoice(containerId,data,level){
+ const box=document.getElementById(containerId);box.innerHTML="";
+ data.forEach(c=>{
+   const d=document.createElement("div");d.className="case";d.innerHTML=`<h3>${c.title}</h3><p>${c.text}</p>`;
+   const opts=document.createElement("div");opts.className="options";
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=c.why;
+   c.options.forEach(o=>{
+     const b=document.createElement("button");b.className="option";b.textContent=o;
+     b.addEventListener("click",()=>{
+       [...opts.children].forEach(x=>{x.disabled=true;if(x.textContent===c.answer)x.classList.add("correct")});
+       if(o!==c.answer)b.classList.add("wrong");
+       exp.style.display="block";
+       checkChoice(containerId,level);
+     });
+     opts.appendChild(b);
+   });
+   d.append(opts,exp);box.appendChild(d);
+ });
+}
+function checkChoice(containerId,level){
+ const groups=[...document.querySelectorAll(`#${containerId} .options`)];
+ if(!groups.every(g=>[...g.children].some(b=>b.disabled)))return;
+ const f=document.getElementById("feedback"+level);f.className="feedback ok";
+ if(level===2)f.textContent="Challenge complete. Strong source analysis separates observation from inference, considers perspective and context, and judges usefulness without assuming that bias makes a source worthless.";
+ if(level===5)f.textContent="Challenge complete. Higher-order thinking depends on relevant knowledge, criteria, modelling and supported practice — not simply on the name of an activity.";
+ complete(level);
+}
+function makeSortCard(i){
+ const d=document.createElement("div");d.className="drag-card";d.draggable=true;d.dataset.id=i.id;d.dataset.answer=i.answer;d.textContent=i.text;
+ d.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",i.id);selectedCard=d});
+ d.addEventListener("click",()=>{document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=d;d.classList.add("selected")});
+ return d;
+}
+function renderScaffolds(){
+ const bank=document.getElementById("bank3");bank.innerHTML="";
+ [...scaffoldData].sort(()=>Math.random()-.5).forEach(i=>bank.appendChild(makeSortCard(i)));
+ document.querySelectorAll("#level3 .dropzone").forEach(z=>[...z.querySelectorAll(".drag-card")].forEach(c=>c.remove()));
+ installSortDrops();
+}
+function installSortDrops(){
+ document.querySelectorAll("#level3 .dropzone").forEach(z=>{
+   z.ondragover=e=>{e.preventDefault();z.classList.add("dragover")};
+   z.ondragleave=()=>z.classList.remove("dragover");
+   z.ondrop=e=>{e.preventDefault();z.classList.remove("dragover");const id=e.dataTransfer.getData("text/plain");const c=document.querySelector(`.drag-card[data-id="${id}"]`);if(c)z.appendChild(c);clearSel()};
+   z.onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){z.appendChild(selectedCard);clearSel()}};
+ });
+ document.getElementById("bank3").onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){e.currentTarget.appendChild(selectedCard);clearSel()}};
+}
+function clearSel(){document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=null}
+function checkScaffolds(){
+ const cards=[...document.querySelectorAll("#level3 .drag-card")],f=document.getElementById("feedback3");let placed=0,correct=0;
+ cards.forEach(c=>{c.classList.remove("correct");const z=c.parentElement.closest(".dropzone");if(z){placed++;if(z.dataset.zone===c.dataset.answer){correct++;c.classList.add("correct")}}});
+ if(placed<cards.length){f.className="feedback hint";f.textContent=`Sort all ${cards.length} supports first. ${cards.length-placed} remain.`;return}
+ if(correct===cards.length){
+   f.className="feedback ok";
+   f.textContent="Excellent. Scaffolds should support access to the disciplinary thinking and then be faded as students become more proficient.";
+   complete(3);
+ }else{
+   f.className="feedback bad";
+   f.textContent=`${correct}/${cards.length} are correctly placed. Green cards are correct. Reconsider the others.`;
+ }
+}
+function makeSeqCard(i){
+ const d=document.createElement("div");d.className="drag-card";d.draggable=true;d.dataset.id=i.id;d.dataset.order=i.order;d.textContent=i.text;
+ d.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",i.id);selectedCard=d});
+ d.addEventListener("click",()=>{document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=d;d.classList.add("selected")});
+ return d;
+}
+function renderSequence(){
+ const bank=document.getElementById("bank4");bank.innerHTML="";
+ [...sequenceData].sort(()=>Math.random()-.5).forEach(i=>bank.appendChild(makeSeqCard(i)));
+ document.querySelectorAll("#timeline4 .slot").forEach(z=>[...z.querySelectorAll(".drag-card")].forEach(c=>c.remove()));
+ installTimelineDrops();
+}
+function installTimelineDrops(){
+ document.querySelectorAll("#timeline4 .slot").forEach(z=>{
+   z.ondragover=e=>{e.preventDefault();z.classList.add("dragover")};
+   z.ondragleave=()=>z.classList.remove("dragover");
+   z.ondrop=e=>{
+     e.preventDefault();z.classList.remove("dragover");
+     const id=e.dataTransfer.getData("text/plain");const c=document.querySelector(`.drag-card[data-id="${id}"]`);
+     if(c){const existing=z.querySelector(".drag-card");if(existing)document.getElementById("bank4").appendChild(existing);z.appendChild(c)}clearSel()
+   };
+   z.onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){const existing=z.querySelector(".drag-card");if(existing)document.getElementById("bank4").appendChild(existing);z.appendChild(selectedCard);clearSel()}};
+ });
+ document.getElementById("bank4").onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){e.currentTarget.appendChild(selectedCard);clearSel()}};
+}
+function checkSequence(){
+ const slots=[...document.querySelectorAll("#timeline4 .slot")],f=document.getElementById("feedback4");
+ if(slots.some(s=>!s.querySelector(".drag-card"))){f.className="feedback hint";f.textContent="Place one learning move in every slot before checking.";return}
+ let correct=0;
+ slots.forEach((s,i)=>{
+   const c=s.querySelector(".drag-card");c.classList.remove("correct");
+   if(Number(c.dataset.order)===i+1){correct++;c.classList.add("correct")}
+ });
+ if(correct===slots.length){
+   f.className="feedback ok";
+   f.textContent="Excellent. The progression builds the necessary knowledge and source-analysis routines before expecting independent comparison and evidence-based judgement.";
+   complete(4);
+ }else{
+   f.className="feedback bad";
+   f.textContent=`${correct}/${slots.length} are in the intended sequence. Green cards are correct. Reconsider the movement from background knowledge and modelling towards independent judgement.`;
+ }
+}
+function restart(){
+ completed.clear();updateProgress();
+ [2,3,4,5].forEach(n=>document.getElementById("level"+n).classList.add("locked"));
+ document.getElementById("completion").style.display="none";
+ ["feedback1","feedback2","feedback3","feedback4","feedback5"].forEach(id=>{const f=document.getElementById(id);f.textContent="";f.className="feedback"});
+ renderRows();
+ renderChoice("sourceCases",sourceData,2);
+ renderScaffolds();
+ renderSequence();
+ renderChoice("hotCases",hotData,5);
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+renderRows();
+renderChoice("sourceCases",sourceData,2);
+renderScaffolds();
+renderSequence();
+renderChoice("hotCases",hotData,5);
+
+document.getElementById("check1").addEventListener("click",checkRows);
+document.getElementById("reset1").addEventListener("click",()=>{renderRows();document.getElementById("feedback1").textContent=""});
+document.getElementById("check3").addEventListener("click",checkScaffolds);
+document.getElementById("reset3").addEventListener("click",()=>{renderScaffolds();document.getElementById("feedback3").textContent=""});
+document.getElementById("check4").addEventListener("click",checkSequence);
+document.getElementById("reset4").addEventListener("click",()=>{renderSequence();document.getElementById("feedback4").textContent=""});
+document.getElementById("restart").addEventListener("click",restart);
+</script>
+</body>
+</html>
