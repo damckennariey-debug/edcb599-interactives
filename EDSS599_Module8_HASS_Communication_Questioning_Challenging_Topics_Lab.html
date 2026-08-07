@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDSS599 Module 8 — HASS Communication, Questioning & Challenging Topics Lab</title>
+<style>
+:root{
+  --ink:#24152f; --purple:#4b155f; --purple2:#6d2a83; --cream:#fbf8f3; --card:#fff;
+  --line:#e5dce7; --green:#176b4a; --red:#9b2c2c; --amber:#8b5a00; --muted:#6a6170;
+  --shadow:0 8px 28px rgba(42,22,50,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream);line-height:1.45}
+header{background:linear-gradient(135deg,#351047,#5a1a70);color:#fff;padding:28px 18px}
+.header-inner{max-width:1180px;margin:auto}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:700}
+h1{font-size:clamp(1.7rem,4vw,2.8rem);margin:.25rem 0 .5rem;line-height:1.08}
+header p{max-width:930px;margin:0;opacity:.92}
+main{max-width:1180px;margin:auto;padding:18px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:8px 0 18px}
+.progress-wrap{background:#eadfed;height:12px;border-radius:999px;overflow:hidden;border:1px solid #d9c9dd}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#5a1a70,#9a58ac);transition:width .35s}
+.score{font-weight:750;white-space:nowrap}
+.intro,.level,.completion{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.level.locked{opacity:.5;filter:grayscale(.35);pointer-events:none}
+.level-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.level h2{margin:0;font-size:1.35rem}
+.badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#f1e7f4;color:var(--purple);font-size:.78rem;font-weight:800}
+.instructions{color:var(--muted);margin:.35rem 0 1rem}
+.note{background:#f7f0fa;border-left:4px solid var(--purple2);padding:10px 12px;border-radius:8px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.case,.row,.profile{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.case h3,.row h3,.profile h3{margin:.1rem 0 .5rem;font-size:1rem;color:var(--purple)}
+.options{display:grid;gap:8px;margin-top:10px}
+.option{width:100%;text-align:left;background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+.option.correct{background:#eff9f3;border-color:#79b798;color:#15593f}
+.option.wrong{background:#fff3f3;border-color:#d49797;color:#7f2222}
+.option:disabled{cursor:default;opacity:1}
+.explain{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#faf7fb;border-left:3px solid #9a72a6;font-size:.9rem}
+.row-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.row-buttons button{background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1}
+.row-buttons button.selected{outline:3px solid #a87cba}
+.row-buttons button.good{background:#eff9f3;border-color:#79b798}
+.row-buttons button.bad{background:#fff3f3;border-color:#d49797}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:.93rem;cursor:pointer}
+.primary{background:var(--purple);color:white}
+.secondary{background:#eee5f1;color:var(--purple)}
+.feedback{min-height:28px;margin-top:10px;font-weight:700}
+.feedback.ok{color:var(--green)}
+.feedback.bad{color:var(--red)}
+.feedback.hint{color:var(--amber)}
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;padding:14px;border:1px dashed #baa8c0;border-radius:14px;background:#fcf9fd;min-height:100px}
+.drag-card{background:#fff;border:1px solid #d9ccdd;border-radius:13px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:grab;user-select:none}
+.drag-card.selected{outline:3px solid #a87cba;background:#faf5fc}
+.drag-card.correct{border-color:#6fb595;background:#f1fbf6}
+.dropgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.dropzone{min-height:180px;border:2px dashed #c7b5cc;border-radius:14px;padding:10px;background:#fff}
+.dropzone h3{margin:0 0 5px;color:var(--purple);font-size:1rem}
+.dropzone p{font-size:.84rem;color:var(--muted);margin:.2rem 0 .5rem}
+.dropzone.dragover{background:#f5eafa;border-color:#6f3d7f}
+.dropzone .drag-card{margin-top:8px;cursor:pointer}
+.timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}
+.slot{min-height:170px;border:2px dashed #c7b5cc;border-radius:14px;padding:8px;background:#fff}
+.slot h3{font-size:.84rem;margin:0 0 6px;color:var(--purple)}
+.slot.dragover{background:#f5eafa;border-color:#6f3d7f}
+.slot .drag-card{margin-top:6px}
+.small{font-size:.84rem;color:var(--muted)}
+.completion{text-align:center;display:none}
+.trophy{font-size:3rem}
+.footer{font-size:.78rem;color:var(--muted);padding:8px 2px 28px}
+@media(max-width:1050px){.timeline{grid-template-columns:1fr 1fr 1fr}.dropgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:820px){.topbar{grid-template-columns:1fr}}
+@media(max-width:620px){.timeline,.dropgrid{grid-template-columns:1fr}main{padding:10px}header{padding:22px 14px}.level,.intro{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+   <div class="eyebrow">EDSS599 • Module 8 formative activity</div>
+   <h1>HASS Communication, Questioning & Challenging Topics Lab</h1>
+   <p>Practise asking better questions, opening lessons purposefully, writing learning intentions, modelling disciplinary thinking and facilitating sensitive or contested HASS topics respectfully.</p>
+ </div>
+</header>
+
+<main>
+ <div class="topbar">
+   <div>
+     <div class="small">Overall mastery</div>
+     <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+   </div>
+   <div class="score" id="score">0 / 5 challenges complete</div>
+ </div>
+
+ <section class="intro">
+   <h2>Communication lens</h2>
+   <p>Teacher communication is part of pedagogy and classroom management. Explanations, modelling, questioning, instructions, feedback and discussion structures help students understand what they are learning, how HASS reasoning works, what is expected and how to improve.</p>
+   <div class="note"><strong>Core principle:</strong> teacher talk should make the learning clearer — not simply make the teacher talk more.</div>
+ </section>
+
+ <section class="level" id="level1">
+   <div class="level-head"><div><span class="badge">Challenge 1</span><h2>Questioning that moves thinking</h2></div><span>❓</span></div>
+   <p class="instructions">Choose the question that best serves the stated teaching purpose.</p>
+   <div class="grid" id="questionCases"></div>
+   <div class="feedback" id="feedback1" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level2">
+   <div class="level-head"><div><span class="badge">Challenge 2</span><h2>Build the lesson opener</h2></div><span>🚪</span></div>
+   <div class="profile">
+     <h3>Year 9 Geography — Rainforests</h3>
+     <p>Students have already studied biomes and are beginning a rainforest case study. Arrange the opening five minutes so prior knowledge is retrieved and the new learning is made purposeful.</p>
+   </div>
+   <div class="bank" id="bank2"></div>
+   <div class="timeline" id="timeline2">
+     <div class="slot" data-slot="1"><h3>1</h3></div>
+     <div class="slot" data-slot="2"><h3>2</h3></div>
+     <div class="slot" data-slot="3"><h3>3</h3></div>
+     <div class="slot" data-slot="4"><h3>4</h3></div>
+     <div class="slot" data-slot="5"><h3>5</h3></div>
+   </div>
+   <div class="actions"><button class="primary" id="check2">Check opener</button><button class="secondary" id="reset2">Reset</button></div>
+   <div class="feedback" id="feedback2" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level3">
+   <div class="level-head"><div><span class="badge">Challenge 3</span><h2>Learning intention or activity?</h2></div><span>🎯</span></div>
+   <p class="instructions">Classify each statement according to what it represents.</p>
+   <div class="grid" id="intentionCases"></div>
+   <div class="actions"><button class="primary" id="check3">Check classifications</button><button class="secondary" id="reset3">Reset</button></div>
+   <div class="feedback" id="feedback3" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level4">
+   <div class="level-head"><div><span class="badge">Challenge 4</span><h2>I Do → We Do → You Do communication simulator</h2></div><span>🪜</span></div>
+   <p class="instructions">Sort the teaching moves into the phase where they best fit. The skill is analysing perspective in a historical source.</p>
+   <div class="bank" id="bank4"></div>
+   <div class="dropgrid">
+     <div class="dropzone" data-zone="ido"><h3>I Do</h3><p>Teacher explains and models the disciplinary thinking.</p></div>
+     <div class="dropzone" data-zone="wedo"><h3>We Do</h3><p>Teacher and students analyse together with prompts and feedback.</p></div>
+     <div class="dropzone" data-zone="youdo"><h3>You Do</h3><p>Students independently apply the skill to a fresh source.</p></div>
+     <div class="dropzone" data-zone="notyet"><h3>Not yet</h3><p>A move that is premature before the process is taught.</p></div>
+   </div>
+   <div class="actions"><button class="primary" id="check4">Check sorting</button><button class="secondary" id="reset4">Reset</button></div>
+   <div class="feedback" id="feedback4" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level5">
+   <div class="level-head"><div><span class="badge">Challenge 5</span><h2>Challenging topics — facilitator decisions</h2></div><span>🗣️</span></div>
+   <p class="instructions">Choose the most professional, balanced and evidence-informed teacher response.</p>
+   <div class="grid" id="challengeCases"></div>
+   <div class="feedback" id="feedback5" aria-live="polite"></div>
+ </section>
+
+ <section class="completion" id="completion">
+   <div class="trophy">🏆</div>
+   <h2>HASS Communication, Questioning & Challenging Topics Lab complete</h2>
+   <p>You have practised selecting purposeful questions, building a retrieval-rich lesson opener, distinguishing learning from activity, communicating disciplinary thinking through gradual release, and facilitating sensitive HASS discussions respectfully.</p>
+   <div class="note"><strong>Communication chain:</strong> What do students need to notice? → What prior knowledge should I retrieve? → What explanation or modelling is needed? → Which question will reveal or extend thinking? → How will everyone participate? → What scaffold can later be removed? → How will I keep difficult discussion respectful, balanced and evidence-informed?</div>
+   <button class="secondary" id="restart">Start again</button>
+ </section>
+
+ <div class="footer">Formative learning resource for EDSS599 Module 8. Designed to support effective HASS communication, questioning, explicit modelling, participation and respectful inquiry.</div>
+</main>
+
+<script>
+const completed=new Set();
+let selectedCard=null;
+
+const questionData=[
+ {title:"Probe an interpretation",text:"Students are interpreting a World War I recruitment poster. You want them to justify their claim with evidence.",answer:"What evidence in the poster supports your interpretation of its message?",options:["What evidence in the poster supports your interpretation of its message?","What colour is the poster?","Do you like the poster?"],why:"A probing question asks students to justify or extend their reasoning using evidence."},
+ {title:"Open up possibilities",text:"You want students to consider how a source might differ under changed circumstances.",answer:"If this poster had been produced by the opposing campaign, how might its imagery and message have changed?",options:["Who produced the poster?","If this poster had been produced by the opposing campaign, how might its imagery and message have changed?","What year was it produced?"],why:"A hypothetical question invites reasoned consideration of an alternative situation."},
+ {title:"Check factual knowledge",text:"You need a quick check that students can identify the issue represented in the source.",answer:"What issue is this poster about?",options:["How effective was the poster?","What issue is this poster about?","How might audiences respond differently?"],why:"A thin/closed question is appropriate when the purpose is a simple factual check."},
+ {title:"Extend historical reasoning",text:"You want students to make a judgement requiring evidence and explanation.",answer:"To what extent can this poster be considered useful evidence about attitudes towards conscription?",options:["Who is pictured?","To what extent can this poster be considered useful evidence about attitudes towards conscription?","What is the largest word?"],why:"A thick question requires explanation, criteria and evidence rather than recall."},
+ {title:"Focus on people represented",text:"You want students to analyse how an individual in the source is positioned emotionally.",answer:"How do you think the mother is being portrayed, and what response is that intended to evoke?",options:["How do you think the mother is being portrayed, and what response is that intended to evoke?","What issue is the source about?","Which side produced it?"],why:"A person-centred question focuses attention on how people are represented or affected."},
+ {title:"Focus on the historical issue",text:"You want students to move beyond individuals to the wider conscription debate.",answer:"What does this source suggest about the arguments used by opponents of conscription?",options:["How might the child feel?","What does this source suggest about the arguments used by opponents of conscription?","What colour is the background?"],why:"A subject-centred question directs attention to the broader issue or concept."}
+];
+
+const openerData=[
+ {id:"o1",text:"Ask students to retrieve the definition of biome from the previous lesson.",order:1},
+ {id:"o2",text:"Show a world map with rainforest regions highlighted but not labelled.",order:2},
+ {id:"o3",text:"Ask students to infer which biome is shown and justify how they know.",order:3},
+ {id:"o4",text:"Prompt students to connect climate, latitude and rainforest distribution with a partner.",order:4},
+ {id:"o5",text:"State the learning intention for the rainforest case study and link it to the retrieved knowledge.",order:5}
+];
+
+const intentionData=[
+ {text:"Complete a source analysis worksheet.",answer:"activity",why:"This describes what students will do rather than what they will learn."},
+ {text:"To identify the major causes of World War I.",answer:"knowledge",why:"The intention focuses on knowledge students should know."},
+ {text:"To be able to analyse the perspective represented in a historical source.",answer:"skill",why:"This specifies a disciplinary skill students should be able to perform."},
+ {text:"To understand how multiple causes contributed to the outbreak of World War I.",answer:"understanding",why:"This requires explanation and interpretation rather than simple recall."},
+ {text:"Create a rainforest poster.",answer:"activity",why:"The product is an activity; it does not define the intended learning."},
+ {text:"To be able to interpret a topographic map using area references.",answer:"skill",why:"This identifies a transferable skill."}
+];
+
+const explicitData=[
+ {id:"e1",text:"Teacher explains provenance, perspective and purpose using a short worked example.",answer:"ido"},
+ {id:"e2",text:"Teacher thinks aloud while identifying language and imagery that reveal perspective.",answer:"ido"},
+ {id:"e3",text:"Teacher and class analyse a second source together and co-construct a judgement.",answer:"wedo"},
+ {id:"e4",text:"Students suggest evidence while the teacher prompts, questions and corrects misconceptions.",answer:"wedo"},
+ {id:"e5",text:"Students independently analyse a fresh source and justify the perspective with evidence.",answer:"youdo"},
+ {id:"e6",text:"Teacher circulates, checks understanding and gives brief feedback during independent analysis.",answer:"youdo"},
+ {id:"e7",text:"Students begin an unstructured debate about source reliability before the analysis concepts have been taught.",answer:"notyet"},
+ {id:"e8",text:"Students independently write a complex source evaluation before seeing a model or guided example.",answer:"notyet"}
+];
+
+const challengeData=[
+ {title:"Migration discussion",text:"Two students begin criticising each other personally during a discussion about migration policy.",answer:"Re-establish the discussion protocol, redirect students to critique claims rather than people, and require evidence for assertions.",options:["End the topic permanently.","Allow the argument because controversy is authentic.","Re-establish the discussion protocol, redirect students to critique claims rather than people, and require evidence for assertions.","Tell students the teacher's personal position so they know the correct answer."],why:"Respectful protocols and evidence-based critique protect participation without shutting down legitimate inquiry."},
+ {title:"Contested public policy",text:"Students are examining a controversial civic issue with competing viewpoints.",answer:"Frame an inquiry question, provide credible sources representing relevant perspectives, and guide students to evaluate claims using evidence.",options:["Frame an inquiry question, provide credible sources representing relevant perspectives, and guide students to evaluate claims using evidence.","Select only sources that support the teacher's preferred position.","Avoid all disagreement.","Ask students to vote before they learn the issue."],why:"Balanced, evidence-informed inquiry supports informed disagreement and disciplinary reasoning."},
+ {title:"Colonisation",text:"A class is beginning a topic on colonisation and its impacts on Aboriginal and Torres Strait Islander Peoples.",answer:"Select culturally appropriate sources, include Aboriginal and Torres Strait Islander perspectives, establish respectful protocols and teach the necessary historical context.",options:["Select culturally appropriate sources, include Aboriginal and Torres Strait Islander perspectives, establish respectful protocols and teach the necessary historical context.","Use one generic source and treat it as representative of all communities.","Avoid the topic because it may be sensitive.","Begin with an open debate before building contextual knowledge."],why:"Sensitive content requires careful source selection, historical context, respectful participation and authentic perspectives."},
+ {title:"Climate change",text:"Students make strong claims based on social media posts during a Geography discussion.",answer:"Redirect the discussion to source quality, geographical evidence and the distinction between opinion and evidence.",options:["Accept all claims equally to remain neutral.","Redirect the discussion to source quality, geographical evidence and the distinction between opinion and evidence.","Ban discussion of climate change.","Provide only the teacher's opinion."],why:"Professional facilitation is balanced but not evidence-free."},
+ {title:"Economic inequality",text:"Students have limited prior knowledge but are asked to evaluate competing explanations for inequality.",answer:"Build the necessary economic concepts and vocabulary first, then scaffold comparison of evidence and perspectives.",options:["Build the necessary economic concepts and vocabulary first, then scaffold comparison of evidence and perspectives.","Begin with an unstructured debate.","Ask students to rely on personal experience only.","Skip explicit teaching because evaluation is a higher-order skill."],why:"Complex evaluation depends on secure disciplinary knowledge and sufficient guidance."},
+ {title:"War and conflict",text:"A discussion becomes emotionally charged because students have different family experiences connected to conflict.",answer:"Acknowledge the sensitivity, reinforce respectful participation, offer structured ways to contribute and keep the inquiry focused on evidence and historical interpretation.",options:["Acknowledge the sensitivity, reinforce respectful participation, offer structured ways to contribute and keep the inquiry focused on evidence and historical interpretation.","Require every student to disclose personal experiences.","Dismiss emotional responses as irrelevant.","Abandon historical evidence and focus only on feelings."],why:"Responsive teaching protects participation while maintaining the disciplinary purpose of the lesson."}
+];
+
+function updateProgress(){
+ document.getElementById("progress").style.width=(completed.size/5*100)+"%";
+ document.getElementById("score").textContent=`${completed.size} / 5 challenges complete`;
+ if(completed.size===5)document.getElementById("completion").style.display="block";
+}
+function complete(n){
+ if(completed.has(n))return;
+ completed.add(n);
+ const next=document.getElementById("level"+(n+1));
+ if(next)next.classList.remove("locked");
+ updateProgress();
+}
+
+function renderChoice(containerId,data,level){
+ const box=document.getElementById(containerId);box.innerHTML="";
+ data.forEach(c=>{
+   const d=document.createElement("div");d.className="case";d.innerHTML=`<h3>${c.title}</h3><p>${c.text}</p>`;
+   const opts=document.createElement("div");opts.className="options";
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=c.why;
+   c.options.forEach(o=>{
+     const b=document.createElement("button");b.className="option";b.textContent=o;
+     b.addEventListener("click",()=>{
+       [...opts.children].forEach(x=>{x.disabled=true;if(x.textContent===c.answer)x.classList.add("correct")});
+       if(o!==c.answer)b.classList.add("wrong");
+       exp.style.display="block";
+       checkChoice(containerId,level);
+     });
+     opts.appendChild(b);
+   });
+   d.append(opts,exp);box.appendChild(d);
+ });
+}
+function checkChoice(containerId,level){
+ const groups=[...document.querySelectorAll(`#${containerId} .options`)];
+ if(!groups.every(g=>[...g.children].some(b=>b.disabled)))return;
+ const f=document.getElementById("feedback"+level);f.className="feedback ok";
+ if(level===1)f.textContent="Challenge complete. Good questioning starts with the purpose: retrieve knowledge, probe evidence, extend reasoning, open possibilities or focus attention.";
+ if(level===5)f.textContent="Challenge complete. Challenging HASS topics require respectful protocols, balanced facilitation, credible evidence, multiple perspectives and enough disciplinary knowledge for students to reason well.";
+ complete(level);
+}
+
+function makeSeqCard(i){
+ const d=document.createElement("div");d.className="drag-card";d.draggable=true;d.dataset.id=i.id;d.dataset.order=i.order;d.textContent=i.text;
+ d.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",i.id);selectedCard=d});
+ d.addEventListener("click",()=>{document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=d;d.classList.add("selected")});
+ return d;
+}
+function renderOpener(){
+ const bank=document.getElementById("bank2");bank.innerHTML="";
+ [...openerData].sort(()=>Math.random()-.5).forEach(i=>bank.appendChild(makeSeqCard(i)));
+ document.querySelectorAll("#timeline2 .slot").forEach(z=>[...z.querySelectorAll(".drag-card")].forEach(c=>c.remove()));
+ installTimelineDrops();
+}
+function installTimelineDrops(){
+ document.querySelectorAll("#timeline2 .slot").forEach(z=>{
+   z.ondragover=e=>{e.preventDefault();z.classList.add("dragover")};
+   z.ondragleave=()=>z.classList.remove("dragover");
+   z.ondrop=e=>{
+     e.preventDefault();z.classList.remove("dragover");
+     const id=e.dataTransfer.getData("text/plain");const c=document.querySelector(`.drag-card[data-id="${id}"]`);
+     if(c){const existing=z.querySelector(".drag-card");if(existing)document.getElementById("bank2").appendChild(existing);z.appendChild(c)}clearSel()
+   };
+   z.onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){const existing=z.querySelector(".drag-card");if(existing)document.getElementById("bank2").appendChild(existing);z.appendChild(selectedCard);clearSel()}};
+ });
+ document.getElementById("bank2").onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){e.currentTarget.appendChild(selectedCard);clearSel()}};
+}
+function checkOpener(){
+ const slots=[...document.querySelectorAll("#timeline2 .slot")],f=document.getElementById("feedback2");
+ if(slots.some(s=>!s.querySelector(".drag-card"))){f.className="feedback hint";f.textContent="Place one lesson-opening move in every slot before checking.";return}
+ let correct=0;
+ slots.forEach((s,i)=>{
+   const c=s.querySelector(".drag-card");c.classList.remove("correct");
+   if(Number(c.dataset.order)===i+1){correct++;c.classList.add("correct")}
+ });
+ if(correct===slots.length){
+   f.className="feedback ok";
+   f.textContent="Excellent. The opener retrieves prior knowledge, uses a purposeful stimulus, invites reasoning and then makes the new learning explicit.";
+   complete(2);
+ }else{
+   f.className="feedback bad";
+   f.textContent=`${correct}/${slots.length} are in the intended sequence. Green cards are correct. Reconsider the movement from retrieval towards today's learning intention.`;
+ }
+}
+
+function renderIntentions(){
+ const box=document.getElementById("intentionCases");box.innerHTML="";
+ intentionData.forEach((r,i)=>{
+   const d=document.createElement("div");d.className="row";d.dataset.answer=r.answer;d.innerHTML=`<h3>Statement ${i+1}</h3><div>${r.text}</div>`;
+   const btns=document.createElement("div");btns.className="row-buttons";
+   [["knowledge","Knowledge"],["skill","Skill"],["understanding","Understanding"],["activity","Activity"]].forEach(([v,label])=>{
+      const b=document.createElement("button");b.textContent=label;b.dataset.value=v;
+      b.addEventListener("click",()=>{[...btns.children].forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});
+      btns.appendChild(b);
+   });
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=r.why;d.append(btns,exp);box.appendChild(d);
+ });
+}
+function checkIntentions(){
+ const items=[...document.querySelectorAll("#intentionCases .row")],f=document.getElementById("feedback3");
+ if(items.some(i=>!i.querySelector("button.selected"))){f.className="feedback hint";f.textContent="Classify every statement before checking.";return}
+ let correct=0;
+ items.forEach(i=>{
+   const a=i.dataset.answer,s=i.querySelector("button.selected");
+   [...i.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.dataset.value===a)b.classList.add("good")});
+   if(s.dataset.value===a)correct++; else s.classList.add("bad");
+   i.querySelector(".explain").style.display="block";
+ });
+ f.className=correct===items.length?"feedback ok":"feedback bad";
+ f.textContent=`${correct}/${items.length} matched the intended reasoning. Learning intentions direct attention to what students will know, understand or be able to do — not merely the activity they will complete.`;
+ complete(3);
+}
+
+function makeSortCard(i){
+ const d=document.createElement("div");d.className="drag-card";d.draggable=true;d.dataset.id=i.id;d.dataset.answer=i.answer;d.textContent=i.text;
+ d.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",i.id);selectedCard=d});
+ d.addEventListener("click",()=>{document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=d;d.classList.add("selected")});
+ return d;
+}
+function renderExplicit(){
+ const bank=document.getElementById("bank4");bank.innerHTML="";
+ [...explicitData].sort(()=>Math.random()-.5).forEach(i=>bank.appendChild(makeSortCard(i)));
+ document.querySelectorAll("#level4 .dropzone").forEach(z=>[...z.querySelectorAll(".drag-card")].forEach(c=>c.remove()));
+ installSortDrops();
+}
+function installSortDrops(){
+ document.querySelectorAll("#level4 .dropzone").forEach(z=>{
+   z.ondragover=e=>{e.preventDefault();z.classList.add("dragover")};
+   z.ondragleave=()=>z.classList.remove("dragover");
+   z.ondrop=e=>{e.preventDefault();z.classList.remove("dragover");const id=e.dataTransfer.getData("text/plain");const c=document.querySelector(`.drag-card[data-id="${id}"]`);if(c)z.appendChild(c);clearSel()};
+   z.onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){z.appendChild(selectedCard);clearSel()}};
+ });
+ document.getElementById("bank4").onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){e.currentTarget.appendChild(selectedCard);clearSel()}};
+}
+function clearSel(){document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=null}
+function checkExplicit(){
+ const cards=[...document.querySelectorAll("#level4 .drag-card")],f=document.getElementById("feedback4");let placed=0,correct=0;
+ cards.forEach(c=>{c.classList.remove("correct");const z=c.parentElement.closest(".dropzone");if(z){placed++;if(z.dataset.zone===c.dataset.answer){correct++;c.classList.add("correct")}}});
+ if(placed<cards.length){f.className="feedback hint";f.textContent=`Sort all ${cards.length} teaching moves first. ${cards.length-placed} remain.`;return}
+ if(correct===cards.length){
+   f.className="feedback ok";
+   f.textContent="Excellent. Effective communication makes disciplinary thinking visible, supports guided participation and gradually shifts responsibility as students become more independent.";
+   complete(4);
+ }else{
+   f.className="feedback bad";
+   f.textContent=`${correct}/${cards.length} are correctly placed. Green cards are correct. Reconsider the others.`;
+ }
+}
+
+function restart(){
+ completed.clear();updateProgress();
+ [2,3,4,5].forEach(n=>document.getElementById("level"+n).classList.add("locked"));
+ document.getElementById("completion").style.display="none";
+ ["feedback1","feedback2","feedback3","feedback4","feedback5"].forEach(id=>{const f=document.getElementById(id);f.textContent="";f.className="feedback"});
+ renderChoice("questionCases",questionData,1);
+ renderOpener();
+ renderIntentions();
+ renderExplicit();
+ renderChoice("challengeCases",challengeData,5);
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+renderChoice("questionCases",questionData,1);
+renderOpener();
+renderIntentions();
+renderExplicit();
+renderChoice("challengeCases",challengeData,5);
+
+document.getElementById("check2").addEventListener("click",checkOpener);
+document.getElementById("reset2").addEventListener("click",()=>{renderOpener();document.getElementById("feedback2").textContent=""});
+document.getElementById("check3").addEventListener("click",checkIntentions);
+document.getElementById("reset3").addEventListener("click",()=>{renderIntentions();document.getElementById("feedback3").textContent=""});
+document.getElementById("check4").addEventListener("click",checkExplicit);
+document.getElementById("reset4").addEventListener("click",()=>{renderExplicit();document.getElementById("feedback4").textContent=""});
+document.getElementById("restart").addEventListener("click",restart);
+</script>
+</body>
+</html>
