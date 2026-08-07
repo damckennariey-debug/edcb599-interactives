@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Australian Curriculum v9.0 — Economics & Business Curriculum Builder</title>
+<style>
+:root{
+  --ink:#24152f; --purple:#4b155f; --purple2:#6d2a83; --cream:#fbf8f3; --card:#fff;
+  --line:#e5dce7; --green:#176b4a; --red:#9b2c2c; --amber:#8b5a00; --muted:#6a6170;
+  --blue:#225ea8; --shadow:0 8px 28px rgba(42,22,50,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream);line-height:1.45}
+header{background:linear-gradient(135deg,#351047,#5a1a70);color:#fff;padding:28px 18px}
+.header-inner{max-width:1180px;margin:auto}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:700}
+h1{font-size:clamp(1.7rem,4vw,2.8rem);margin:.25rem 0 .5rem;line-height:1.08}
+header p{max-width:850px;margin:0;opacity:.92}
+main{max-width:1180px;margin:auto;padding:18px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:8px 0 18px}
+.progress-wrap{background:#eadfed;height:12px;border-radius:999px;overflow:hidden;border:1px solid #d9c9dd}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#5a1a70,#9a58ac);transition:width .35s}
+.score{font-weight:750;white-space:nowrap}
+.intro,.level,.completion{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.level.locked{opacity:.55;filter:grayscale(.35);pointer-events:none}
+.level-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.level h2{margin:0;font-size:1.35rem}
+.badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#f1e7f4;color:var(--purple);font-size:.78rem;font-weight:800}
+.instructions{color:var(--muted);margin:.35rem 0 1rem}
+.note{background:#f7f0fa;border-left:4px solid var(--purple2);padding:10px 12px;border-radius:8px;margin:10px 0}
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;padding:14px;border:1px dashed #baa8c0;border-radius:14px;background:#fcf9fd;min-height:90px}
+.card-item{background:#fff;border:1px solid #d9ccdD;border-radius:12px;padding:11px;cursor:grab;box-shadow:0 2px 8px rgba(0,0,0,.05);user-select:none}
+.card-item:hover{border-color:#9a78a4}
+.card-item.selected{outline:3px solid #a87cba;background:#faf5fc}
+.card-item.correct{border-color:#6fb595;background:#f1fbf6}
+.card-item .code{display:inline-block;font-weight:800;color:var(--purple);font-size:.76rem;margin-bottom:5px}
+.card-item .type{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.dropgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.dropzone{min-height:165px;border:2px dashed #c7b5cc;border-radius:14px;padding:10px;background:#fff}
+.dropzone h3{margin:0 0 8px;font-size:1rem;color:var(--purple)}
+.dropzone.dragover{background:#f5eafa;border-color:#6f3d7f}
+.dropzone .card-item{margin-bottom:8px;cursor:pointer}
+.architecture{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.arch-zone{border:2px dashed #c7b5cc;border-radius:14px;padding:12px;min-height:130px}
+.arch-zone h3{margin:.1rem 0 .35rem}
+.arch-zone p{color:var(--muted);font-size:.88rem;margin:.2rem 0 .6rem}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:.93rem;cursor:pointer}
+.primary{background:var(--purple);color:white}
+.secondary{background:#eee5f1;color:var(--purple)}
+.ghost{background:#f4f0f5;color:#4f4553}
+button:disabled{opacity:.45;cursor:not-allowed}
+.feedback{min-height:28px;margin-top:10px;font-weight:700}
+.feedback.ok{color:var(--green)}
+.feedback.bad{color:var(--red)}
+.feedback.hint{color:var(--amber)}
+.pair-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.list-zone{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
+.list-zone h3{margin:.1rem 0 .8rem}
+.match-row{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:start;margin:8px 0}
+.match-row label{font-weight:800;color:var(--purple)}
+select{width:100%;padding:10px;border:1px solid #cdbfd1;border-radius:9px;background:white;color:var(--ink);font:inherit}
+.small{font-size:.84rem;color:var(--muted)}
+.reveal{margin-top:10px;padding:10px;background:#f5f1f7;border-radius:10px;display:none}
+.completion{text-align:center;display:none}
+.trophy{font-size:3rem}
+.footer{font-size:.78rem;color:var(--muted);padding:8px 2px 28px}
+kbd{background:#eee7f0;border:1px solid #d8cbdc;border-radius:5px;padding:1px 5px}
+@media(max-width:820px){
+ .dropgrid{grid-template-columns:1fr 1fr}
+ .architecture,.pair-grid{grid-template-columns:1fr}
+ .topbar{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+ main{padding:10px}
+ .dropgrid{grid-template-columns:1fr}
+ header{padding:22px 14px}
+ .level,.intro{padding:15px}
+}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+   <div class="eyebrow">EDCB599 • Module 1 formative activity</div>
+   <h1>Build the Business & Economics Curriculum</h1>
+   <p>Use drag-and-drop — or tap a card then tap a destination — to reconstruct key parts of the Australian Curriculum Version 9.0 for Economics and Business, Years 7–10.</p>
+ </div>
+</header>
+
+<main>
+ <div class="topbar">
+   <div>
+     <div class="small">Overall mastery</div>
+     <div class="progress-wrap" aria-label="Progress"><div class="progress" id="progress"></div></div>
+   </div>
+   <div class="score" id="score">0 / 4 levels complete</div>
+ </div>
+
+ <section class="intro">
+   <h2>How this works</h2>
+   <p>This is a retrieval and reconstruction task, not a replacement for your concept map. Try each level <strong>before</strong> returning to the curriculum website. Incorrect attempts are part of the activity: use the feedback to work out which relationships you need to revisit.</p>
+   <div class="note"><strong>Touch-screen friendly:</strong> on a phone or tablet, tap a card to select it, then tap the destination. On a computer you can also drag cards.</div>
+ </section>
+
+ <section class="level" id="level1" data-level="1">
+  <div class="level-head"><div><span class="badge">Level 1</span><h2>Curriculum architecture</h2></div><span>🧭</span></div>
+  <p class="instructions">Sort each element into the part of the curriculum architecture it best represents.</p>
+  <div class="bank" id="bank1"></div>
+  <div class="architecture">
+    <div class="arch-zone dropzone" data-zone="learning"><h3>Learning area curriculum</h3><p>What students learn within Economics and Business.</p></div>
+    <div class="arch-zone dropzone" data-zone="dimensions"><h3>Other curriculum dimensions</h3><p>Dimensions developed through learning-area content.</p></div>
+    <div class="arch-zone dropzone" data-zone="standards"><h3>Standards & progression</h3><p>Statements used to understand expected learning and development.</p></div>
+    <div class="arch-zone dropzone" data-zone="guidance"><h3>Teaching guidance</h3><p>Optional or supporting material that helps teachers interpret content.</p></div>
+  </div>
+  <div class="actions"><button class="primary check" data-check="1">Check Level 1</button><button class="secondary reset" data-reset="1">Reset</button></div>
+  <div class="feedback" id="feedback1" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level2" data-level="2">
+  <div class="level-head"><div><span class="badge">Level 2</span><h2>Which year does it belong to?</h2></div><span>🗂️</span></div>
+  <p class="instructions">These are <strong>knowledge and understanding</strong> content descriptions. Sort each card into Year 7, 8, 9 or 10. The codes are included deliberately: learn how to read them rather than ignoring them.</p>
+  <div class="bank" id="bank2"></div>
+  <div class="dropgrid">
+    <div class="dropzone" data-zone="7"><h3>Year 7</h3></div>
+    <div class="dropzone" data-zone="8"><h3>Year 8</h3></div>
+    <div class="dropzone" data-zone="9"><h3>Year 9</h3></div>
+    <div class="dropzone" data-zone="10"><h3>Year 10</h3></div>
+  </div>
+  <div class="actions"><button class="primary check" data-check="2">Check Level 2</button><button class="secondary reset" data-reset="2">Reset</button><button class="ghost" id="hint2">Give me a hint</button></div>
+  <div class="feedback" id="feedback2" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level3" data-level="3">
+  <div class="level-head"><div><span class="badge">Level 3</span><h2>Spot the progression in skills</h2></div><span>📈</span></div>
+  <p class="instructions">The skills strand becomes more sophisticated across Years 7–10. Sort the skill statements to the year level where that wording appears.</p>
+  <div class="bank" id="bank3"></div>
+  <div class="dropgrid">
+    <div class="dropzone" data-zone="7"><h3>Year 7</h3></div>
+    <div class="dropzone" data-zone="8"><h3>Year 8</h3></div>
+    <div class="dropzone" data-zone="9"><h3>Year 9</h3></div>
+    <div class="dropzone" data-zone="10"><h3>Year 10</h3></div>
+  </div>
+  <div class="actions"><button class="primary check" data-check="3">Check Level 3</button><button class="secondary reset" data-reset="3">Reset</button></div>
+  <div class="feedback" id="feedback3" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level4" data-level="4">
+  <div class="level-head"><div><span class="badge">Level 4</span><h2>Achievement-standard detective</h2></div><span>🔎</span></div>
+  <p class="instructions">Match each achievement-standard excerpt to the year level it describes. Focus on the conceptual progression, not just isolated keywords.</p>
+  <div class="list-zone" id="matches"></div>
+  <div class="actions"><button class="primary" id="check4">Check Level 4</button><button class="secondary" id="reset4">Reset</button></div>
+  <div class="feedback" id="feedback4" aria-live="polite"></div>
+ </section>
+
+ <section class="completion" id="completion">
+   <div class="trophy">🏆</div>
+   <h2>Curriculum reconstructed!</h2>
+   <p>You have successfully rebuilt key relationships in the Years 7–10 Economics and Business curriculum. Now return to your concept map: what connections could you add, revise or make more explicit?</p>
+   <button class="secondary" id="restart">Start again</button>
+ </section>
+
+ <div class="footer">
+  Formative learning resource for EDCB599. Curriculum wording is drawn from Australian Curriculum Version 9.0 Economics and Business alignment resources published by the Queensland Curriculum and Assessment Authority (QCAA), with Australian Curriculum material attributed to ACARA under CC BY 4.0. This activity uses selected curriculum elements for educational revision and should be used alongside the official curriculum.
+ </div>
+</main>
+
+<script>
+const data = {
+  1: [
+    {id:"a1",text:"Content descriptions",answer:"learning"},
+    {id:"a2",text:"Knowledge and understanding strand",answer:"learning"},
+    {id:"a3",text:"Skills strand",answer:"learning"},
+    {id:"a4",text:"General Capabilities",answer:"dimensions"},
+    {id:"a5",text:"Cross-curriculum Priorities",answer:"dimensions"},
+    {id:"a6",text:"Achievement standard",answer:"standards"},
+    {id:"a7",text:"Progression across year levels",answer:"standards"},
+    {id:"a8",text:"Elaborations",answer:"guidance"}
+  ],
+  2: [
+    {id:"y7a",code:"AC9HE7K01",text:"why opportunity cost exists as decisions are made to allocate limited resources to meet unlimited needs and wants",answer:"7"},
+    {id:"y7b",code:"AC9HE7K03",text:"characteristics of entrepreneurs and how these influence the success of a business",answer:"7"},
+    {id:"y7c",code:"AC9HE7K05",text:"the rights and responsibilities of individuals and businesses in relation to consumer and financial products and services",answer:"7"},
+    {id:"y8a",code:"AC9HE8K01",text:"how markets influence decisions about the allocation of resources to the production of goods and services, and the effect of prices on these decisions",answer:"8"},
+    {id:"y8b",code:"AC9HE8K04",text:"the importance of Australia’s system of taxation and how this system affects decision-making by individuals and businesses",answer:"8"},
+    {id:"y8c",code:"AC9HE8K05",text:"processes that individuals and/or businesses use to plan and budget to achieve short-term and long-term financial objectives",answer:"8"},
+    {id:"y9a",code:"AC9HE9K01",text:"the role of Australia’s financial sector and its effect on economic decision-making by individuals, businesses and global markets",answer:"9"},
+    {id:"y9b",code:"AC9HE9K03",text:"the reasons Australia trades with other nations, and the patterns of trade between Australia and Asia",answer:"9"},
+    {id:"y9c",code:"AC9HE9K04",text:"processes that businesses use to create and maintain competitive advantage, including the role of entrepreneurs",answer:"9"},
+    {id:"y10a",code:"AC9HE10K01",text:"how and why the economic indicators influence economic decision-making",answer:"10"},
+    {id:"y10b",code:"AC9HE10K02",text:"the ways that government intervenes in the economy to improve economic performance and living standards within Australian society",answer:"10"},
+    {id:"y10c",code:"AC9HE10K04",text:"the importance of Australia’s superannuation system and how this system affects consumer and financial decision-making",answer:"10"}
+  ],
+  3: [
+    {id:"s7a",code:"AC9HE7S01",text:"develop questions to investigate a contemporary economic and business issue",answer:"7"},
+    {id:"s7b",code:"AC9HE7S04",text:"develop a response to an economic and business issue, identifying potential costs and benefits",answer:"7"},
+    {id:"s8a",code:"AC9HE8S03",text:"interpret information and data to identify economic and business issues, trends and economic cause-and-effect relationships",answer:"8"},
+    {id:"s8b",code:"AC9HE8S05",text:"create descriptions and explanations, using economic and business knowledge, concepts and terms, and referencing information and data from sources",answer:"8"},
+    {id:"s9a",code:"AC9HE9S01",text:"develop and modify questions to investigate a contemporary economic and business issue",answer:"9"},
+    {id:"s9b",code:"AC9HE9S04",text:"develop and evaluate a response to an economic and business issue, using cost-benefit analysis or criteria to decide on a course of action",answer:"9"},
+    {id:"s10a",code:"AC9HE10S02",text:"locate, select and analyse information and data from a range of sources",answer:"10"},
+    {id:"s10b",code:"AC9HE10S05",text:"create descriptions, explanations and arguments, using economic and business knowledge, concepts and terms that incorporate and acknowledge research findings",answer:"10"}
+  ]
+};
+
+const achievement = [
+ {text:"Students describe how decisions are made to allocate limited resources to individuals and communities in an economy.",answer:"7"},
+ {text:"Students explain how markets influence the allocation of resources to the production of goods and services.",answer:"8"},
+ {text:"Students explain the role of Australia’s financial sector and its effect on economic decision-making by individuals and businesses.",answer:"9"},
+ {text:"Students analyse how economic indicators influence Australian Government decision-making.",answer:"10"},
+ {text:"Students identify the rights and responsibilities of individuals and businesses in terms of products and services.",answer:"7"},
+ {text:"Students explain why individuals and/or businesses budget and plan.",answer:"8"},
+ {text:"They explain the reasons for trade and Australia’s pattern of trade with Asia.",answer:"9"},
+ {text:"They explain ways that government intervenes to improve economic performance and living standards.",answer:"10"}
+];
+
+let selected = null;
+let completed = new Set();
+
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-.5); }
+
+function makeCard(item, level){
+ const d=document.createElement("div");
+ d.className="card-item";
+ d.draggable=true;
+ d.dataset.id=item.id;
+ d.dataset.answer=item.answer;
+ d.dataset.level=level;
+ if(item.code) d.innerHTML=`<span class="code">${item.code}</span><div>${item.text}</div>`;
+ else d.textContent=item.text;
+ d.addEventListener("dragstart",e=>{ e.dataTransfer.setData("text/plain",item.id); selected=d; });
+ d.addEventListener("click",()=>selectCard(d));
+ return d;
+}
+
+function selectCard(card){
+ document.querySelectorAll(".card-item.selected").forEach(c=>c.classList.remove("selected"));
+ selected=card;
+ card.classList.add("selected");
+}
+
+function renderLevel(level){
+ const bank=document.getElementById("bank"+level);
+ bank.innerHTML="";
+ shuffle(data[level]).forEach(i=>bank.appendChild(makeCard(i,level)));
+}
+
+function installDrops(){
+ document.querySelectorAll(".dropzone").forEach(z=>{
+   z.addEventListener("dragover",e=>{e.preventDefault();z.classList.add("dragover")});
+   z.addEventListener("dragleave",()=>z.classList.remove("dragover"));
+   z.addEventListener("drop",e=>{
+     e.preventDefault(); z.classList.remove("dragover");
+     const id=e.dataTransfer.getData("text/plain");
+     const card=document.querySelector(`.card-item[data-id="${id}"]`);
+     if(card) z.appendChild(card);
+     clearSelection();
+   });
+   z.addEventListener("click",e=>{
+     if(e.target.closest(".card-item")) return;
+     if(selected){ z.appendChild(selected); clearSelection(); }
+   });
+ });
+ document.querySelectorAll(".bank").forEach(bank=>{
+   bank.addEventListener("click",e=>{
+     if(e.target.closest(".card-item")) return;
+     if(selected){ bank.appendChild(selected); clearSelection(); }
+   });
+ });
+}
+function clearSelection(){
+ document.querySelectorAll(".card-item.selected").forEach(c=>c.classList.remove("selected"));
+ selected=null;
+}
+function checkDragLevel(level){
+ const section=document.getElementById("level"+level);
+ const cards=[...section.querySelectorAll(".card-item")];
+ let placed=0, correct=0;
+ cards.forEach(c=>{
+   const zone=c.parentElement.closest(".dropzone");
+   c.classList.remove("correct");
+   if(zone){
+     placed++;
+     if(zone.dataset.zone===c.dataset.answer){ correct++; c.classList.add("correct");}
+   }
+ });
+ const f=document.getElementById("feedback"+level);
+ if(placed<cards.length){
+   f.className="feedback hint"; f.textContent=`Place all ${cards.length} cards before checking. ${cards.length-placed} still to go.`;
+   return;
+ }
+ if(correct===cards.length){
+   f.className="feedback ok"; f.textContent=`Excellent — ${correct}/${cards.length} correct. Level ${level} complete.`;
+   complete(level);
+ } else {
+   f.className="feedback bad"; f.textContent=`${correct}/${cards.length} correct. The green cards are correctly placed. Reconsider the remaining ${cards.length-correct}.`;
+ }
+}
+function resetLevel(level){
+ renderLevel(level); installDrops();
+ const f=document.getElementById("feedback"+level);
+ f.className="feedback"; f.textContent="";
+}
+function complete(level){
+ completed.add(level);
+ const next=document.getElementById("level"+(level+1));
+ if(next) next.classList.remove("locked");
+ updateProgress();
+ if(completed.size===4) document.getElementById("completion").style.display="block";
+}
+function updateProgress(){
+ document.getElementById("progress").style.width=(completed.size/4*100)+"%";
+ document.getElementById("score").textContent=`${completed.size} / 4 levels complete`;
+}
+function renderMatches(){
+ const box=document.getElementById("matches"); box.innerHTML="";
+ shuffle(achievement).forEach((a,i)=>{
+   const row=document.createElement("div"); row.className="match-row";
+   const lab=document.createElement("label"); lab.textContent=`Excerpt ${i+1}`;
+   const wrap=document.createElement("div");
+   const p=document.createElement("div"); p.textContent=a.text;
+   const sel=document.createElement("select"); sel.dataset.answer=a.answer;
+   sel.setAttribute("aria-label",`Choose year level for excerpt ${i+1}`);
+   sel.innerHTML='<option value="">Choose year…</option><option value="7">Year 7</option><option value="8">Year 8</option><option value="9">Year 9</option><option value="10">Year 10</option>';
+   wrap.append(p,sel); row.append(lab,wrap); box.append(row);
+ });
+}
+function check4(){
+ const sels=[...document.querySelectorAll("#matches select")];
+ const unanswered=sels.filter(s=>!s.value).length;
+ const f=document.getElementById("feedback4");
+ if(unanswered){f.className="feedback hint";f.textContent=`Choose a year for all excerpts. ${unanswered} still unanswered.`;return;}
+ let correct=0;
+ sels.forEach(s=>{ if(s.value===s.dataset.answer){correct++; s.style.borderColor="#6fb595"; s.style.background="#f1fbf6"} else {s.style.borderColor="#d88";s.style.background="#fff7f7"}});
+ if(correct===sels.length){f.className="feedback ok";f.textContent=`Excellent — ${correct}/${sels.length} correct. You have completed the curriculum builder.`;complete(4)}
+ else {f.className="feedback bad";f.textContent=`${correct}/${sels.length} correct. Revisit the excerpts marked in red and look for the progression in the verbs and concepts.`}
+}
+function restart(){
+ completed.clear(); updateProgress();
+ [2,3,4].forEach(n=>document.getElementById("level"+n).classList.add("locked"));
+ [1,2,3].forEach(renderLevel); renderMatches();
+ ["feedback1","feedback2","feedback3","feedback4"].forEach(id=>{const f=document.getElementById(id);f.textContent="";f.className="feedback"});
+ document.getElementById("completion").style.display="none";
+ window.scrollTo({top:0,behavior:"smooth"});
+ installDrops();
+}
+[1,2,3].forEach(renderLevel);
+renderMatches();
+installDrops();
+document.querySelectorAll(".check").forEach(b=>b.addEventListener("click",()=>checkDragLevel(Number(b.dataset.check))));
+document.querySelectorAll(".reset").forEach(b=>b.addEventListener("click",()=>resetLevel(Number(b.dataset.reset))));
+document.getElementById("check4").addEventListener("click",check4);
+document.getElementById("reset4").addEventListener("click",()=>{renderMatches();document.getElementById("feedback4").textContent=""});
+document.getElementById("restart").addEventListener("click",restart);
+document.getElementById("hint2").addEventListener("click",()=>{
+ const f=document.getElementById("feedback2"); f.className="feedback hint";
+ f.innerHTML="Hint: decode the code. In <strong>AC9HE8K04</strong>, the number immediately after <strong>HE</strong> identifies the year level; <strong>K</strong> identifies Knowledge and understanding.";
+});
+</script>
+</body>
+</html>
