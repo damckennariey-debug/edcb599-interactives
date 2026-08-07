@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDSS599 Module 9 — HASS Professional Practice, Collaboration & Networks Lab</title>
+<style>
+:root{
+  --ink:#24152f; --purple:#4b155f; --purple2:#6d2a83; --cream:#fbf8f3; --card:#fff;
+  --line:#e5dce7; --green:#176b4a; --red:#9b2c2c; --amber:#8b5a00; --muted:#6a6170;
+  --shadow:0 8px 28px rgba(42,22,50,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream);line-height:1.45}
+header{background:linear-gradient(135deg,#351047,#5a1a70);color:#fff;padding:28px 18px}
+.header-inner{max-width:1180px;margin:auto}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:700}
+h1{font-size:clamp(1.7rem,4vw,2.8rem);margin:.25rem 0 .5rem;line-height:1.08}
+header p{max-width:930px;margin:0;opacity:.92}
+main{max-width:1180px;margin:auto;padding:18px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:8px 0 18px}
+.progress-wrap{background:#eadfed;height:12px;border-radius:999px;overflow:hidden;border:1px solid #d9c9dd}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#5a1a70,#9a58ac);transition:width .35s}
+.score{font-weight:750;white-space:nowrap}
+.intro,.level,.completion{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.level.locked{opacity:.5;filter:grayscale(.35);pointer-events:none}
+.level-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.level h2{margin:0;font-size:1.35rem}
+.badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#f1e7f4;color:var(--purple);font-size:.78rem;font-weight:800}
+.instructions{color:var(--muted);margin:.35rem 0 1rem}
+.note{background:#f7f0fa;border-left:4px solid var(--purple2);padding:10px 12px;border-radius:8px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.case,.row,.profile{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.case h3,.row h3,.profile h3{margin:.1rem 0 .5rem;font-size:1rem;color:var(--purple)}
+.options{display:grid;gap:8px;margin-top:10px}
+.option{width:100%;text-align:left;background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+.option.correct{background:#eff9f3;border-color:#79b798;color:#15593f}
+.option.wrong{background:#fff3f3;border-color:#d49797;color:#7f2222}
+.option:disabled{cursor:default;opacity:1}
+.explain{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#faf7fb;border-left:3px solid #9a72a6;font-size:.9rem}
+.row-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.row-buttons button{background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1}
+.row-buttons button.selected{outline:3px solid #a87cba}
+.row-buttons button.good{background:#eff9f3;border-color:#79b798}
+.row-buttons button.bad{background:#fff3f3;border-color:#d49797}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:.93rem;cursor:pointer}
+.primary{background:var(--purple);color:white}
+.secondary{background:#eee5f1;color:var(--purple)}
+.feedback{min-height:28px;margin-top:10px;font-weight:700}
+.feedback.ok{color:var(--green)}
+.feedback.bad{color:var(--red)}
+.feedback.hint{color:var(--amber)}
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;padding:14px;border:1px dashed #baa8c0;border-radius:14px;background:#fcf9fd;min-height:100px}
+.drag-card{background:#fff;border:1px solid #d9ccdd;border-radius:13px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:grab;user-select:none}
+.drag-card.selected{outline:3px solid #a87cba;background:#faf5fc}
+.drag-card.correct{border-color:#6fb595;background:#f1fbf6}
+.dropgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.dropzone{min-height:180px;border:2px dashed #c7b5cc;border-radius:14px;padding:10px;background:#fff}
+.dropzone h3{margin:0 0 5px;color:var(--purple);font-size:1rem}
+.dropzone p{font-size:.84rem;color:var(--muted);margin:.2rem 0 .5rem}
+.dropzone.dragover{background:#f5eafa;border-color:#6f3d7f}
+.dropzone .drag-card{margin-top:8px;cursor:pointer}
+.builder{display:grid;gap:12px}
+.builder-step{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fafafa}
+.builder-step h3{margin:.1rem 0 .45rem;color:var(--purple);font-size:1rem}
+select{width:100%;padding:10px;border:1px solid #d8cddd;border-radius:9px;background:white;color:var(--ink);font-weight:650}
+.small{font-size:.84rem;color:var(--muted)}
+.completion{text-align:center;display:none}
+.trophy{font-size:3rem}
+.footer{font-size:.78rem;color:var(--muted);padding:8px 2px 28px}
+@media(max-width:1050px){.dropgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:820px){.topbar{grid-template-columns:1fr}}
+@media(max-width:620px){.dropgrid{grid-template-columns:1fr}main{padding:10px}header{padding:22px 14px}.level,.intro{padding:15px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+   <div class="eyebrow">EDSS599 • Module 9 formative activity</div>
+   <h1>HASS Professional Practice, Collaboration & Networks Lab</h1>
+   <p>Practise evaluating professional learning, identifying the right collaborators, using professional associations strategically, selecting authentic learning opportunities beyond the classroom, and planning your professional growth as a beginning HASS teacher.</p>
+ </div>
+</header>
+
+<main>
+ <div class="topbar">
+   <div>
+     <div class="small">Overall mastery</div>
+     <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+   </div>
+   <div class="score" id="score">0 / 5 challenges complete</div>
+ </div>
+
+ <section class="intro">
+   <h2>Professional practice lens</h2>
+   <p>Professional growth is strongest when it responds to real teaching problems, draws on credible evidence, involves purposeful collaboration, and improves curriculum, pedagogy, assessment or student participation.</p>
+   <div class="note"><strong>Core principle:</strong> professional growth should solve real teaching problems.</div>
+ </section>
+
+ <section class="level" id="level1">
+   <div class="level-head"><div><span class="badge">Challenge 1</span><h2>Professional learning: worth your time?</h2></div><span>🧠</span></div>
+   <p class="instructions">Judge the professional learning opportunity according to its evidence base and relevance to the identified teaching need.</p>
+   <div class="grid" id="plCases"></div>
+   <div class="actions"><button class="primary" id="check1">Check judgements</button><button class="secondary" id="reset1">Reset</button></div>
+   <div class="feedback" id="feedback1" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level2">
+   <div class="level-head"><div><span class="badge">Challenge 2</span><h2>Who should I collaborate with?</h2></div><span>🤝</span></div>
+   <p class="instructions">Choose the collaborator or network most directly suited to each professional problem.</p>
+   <div class="grid" id="collabCases"></div>
+   <div class="feedback" id="feedback2" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level3">
+   <div class="level-head"><div><span class="badge">Challenge 3</span><h2>Professional association navigator</h2></div><span>🧭</span></div>
+   <p class="instructions">Match the professional goal with the type of association or network most likely to help.</p>
+   <div class="grid" id="associationCases"></div>
+   <div class="feedback" id="feedback3" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level4">
+   <div class="level-head"><div><span class="badge">Challenge 4</span><h2>Beyond the classroom — authentic or just exciting?</h2></div><span>🌏</span></div>
+   <p class="instructions">Sort each opportunity according to whether it meaningfully deepens HASS learning. Drag cards, or tap a card and then tap a destination.</p>
+   <div class="bank" id="bank4"></div>
+   <div class="dropgrid">
+     <div class="dropzone" data-zone="authentic"><h3>Authentic disciplinary learning</h3><p>The experience clearly strengthens intended HASS knowledge or inquiry.</p></div>
+     <div class="dropzone" data-zone="potential"><h3>Useful with stronger alignment</h3><p>Promising, but needs a clearer inquiry purpose or evidence task.</p></div>
+     <div class="dropzone" data-zone="engaging"><h3>Engaging but weakly aligned</h3><p>Interesting experience without a clear curriculum or disciplinary purpose.</p></div>
+     <div class="dropzone" data-zone="poorfit"><h3>Poor fit for the learning goal</h3><p>The resource or experience does not support the intended HASS learning.</p></div>
+   </div>
+   <div class="actions"><button class="primary" id="check4">Check sorting</button><button class="secondary" id="reset4">Reset</button></div>
+   <div class="feedback" id="feedback4" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level5">
+   <div class="level-head"><div><span class="badge">Challenge 5</span><h2>Build your beginning-teacher professional plan</h2></div><span>🧩</span></div>
+   <div class="profile">
+     <h3>Scenario</h3>
+     <p>You are beginning your first HASS teaching role and have been allocated Year 8 History, Year 9 Geography and Year 10 Civics. You have noticed that students' historical source-analysis responses are weaker than expected and you want to improve your teaching.</p>
+   </div>
+   <p class="instructions">Choose the strongest professional response at each stage.</p>
+   <div class="builder">
+     <div class="builder-step"><h3>1. Identify the professional learning need</h3>
+       <select id="b1"><option value="">Choose…</option><option value="correct">Improve explicit teaching, modelling and feedback for historical source analysis.</option><option value="wrong">Attend whichever workshop happens to be available first.</option></select>
+     </div>
+     <div class="builder-step"><h3>2. Who can support you?</h3>
+       <select id="b2"><option value="">Choose…</option><option value="correct">Work with your mentor, History colleagues and HOD to review planning and student work.</option><option value="wrong">Work alone so your practice remains independent.</option></select>
+     </div>
+     <div class="builder-step"><h3>3. Professional network</h3>
+       <select id="b3"><option value="">Choose…</option><option value="correct">Use a relevant History teachers association for curriculum updates, subject-specific professional learning and resources.</option><option value="wrong">Choose a network unrelated to the subject because it has more social media followers.</option></select>
+     </div>
+     <div class="builder-step"><h3>4. Evidence and resources</h3>
+       <select id="b4"><option value="">Choose…</option><option value="correct">Use curriculum expectations, credible research, moderated student work and high-quality source-analysis exemplars.</option><option value="wrong">Base the change mainly on a commercial teaching trend with no clear evidence base.</option></select>
+     </div>
+     <div class="builder-step"><h3>5. Learning beyond the classroom</h3>
+       <select id="b5"><option value="">Choose…</option><option value="correct">Use an archival collection or museum source set that lets students practise provenance, perspective and evidence analysis.</option><option value="wrong">Book an excursion with no inquiry question because students will enjoy leaving school.</option></select>
+     </div>
+     <div class="builder-step"><h3>6. Evaluate impact</h3>
+       <select id="b6"><option value="">Choose…</option><option value="correct">Compare student source-analysis evidence across comparable opportunities and discuss patterns with colleagues.</option><option value="wrong">Assume the professional learning worked because you enjoyed the session.</option></select>
+     </div>
+   </div>
+   <div class="actions"><button class="primary" id="check5">Check professional plan</button><button class="secondary" id="reset5">Reset</button></div>
+   <div class="feedback" id="feedback5" aria-live="polite"></div>
+ </section>
+
+ <section class="completion" id="completion">
+   <div class="trophy">🏆</div>
+   <h2>HASS Professional Practice, Collaboration & Networks Lab complete</h2>
+   <p>You have practised evaluating professional learning, choosing collaborators strategically, using professional associations, aligning external experiences with disciplinary learning, and building an evidence-informed plan for professional growth.</p>
+   <div class="note"><strong>Professional growth chain:</strong> What do I need to improve? → What evidence informs that need? → Who can I learn with? → Which professional network or resource is relevant? → How will this improve HASS learning? → What evidence will tell me whether it worked?</div>
+   <button class="secondary" id="restart">Start again</button>
+ </section>
+
+ <div class="footer">Formative learning resource for EDSS599 Module 9. Designed to support professional learning, collaboration, mentoring, networks and authentic HASS learning beyond the classroom.</div>
+</main>
+
+<script>
+const completed=new Set();
+let selectedCard=null;
+
+const plData=[
+ {text:"A workshop on retrieval practice draws on current learning science and demonstrates how retrieval can be used in History to strengthen prerequisite knowledge.",answer:"evidence",why:"The professional learning is evidence-informed and directly connected to classroom practice."},
+ {text:"A commercial seminar claims every student has one fixed 'learning style' and teachers should design different lessons for visual, auditory and kinaesthetic learners.",answer:"weak",why:"Fixed learning-styles claims are not a sound evidence base for professional practice."},
+ {text:"A Geography teacher whose identified need is improving fieldwork assessment attends a general AI-tools showcase because it is popular.",answer:"irrelevant",why:"Professional learning should be connected to an identified teaching need rather than selected simply because it is fashionable."},
+ {text:"A professional association webinar introduces a new syllabus update, provides annotated examples and gives teachers time to discuss implications for planning.",answer:"evidence",why:"This is relevant subject-specific professional learning with a clear connection to curriculum implementation."},
+ {text:"A session presents a promising classroom strategy but provides little evidence about why it works or when it should be used.",answer:"scrutiny",why:"The strategy may be useful, but claims should be examined against credible evidence and the local teaching context."},
+ {text:"A teacher collects certificates from unrelated sessions simply to accumulate required professional learning hours.",answer:"irrelevant",why:"Meeting an hour requirement is not the same as purposeful professional growth."}
+];
+
+const collabData=[
+ {title:"Moderation",text:"Two teachers are interpreting a Year 9 History standard differently.",answer:"Teaching team / HOD / moderation colleagues",options:["Teaching team / HOD / moderation colleagues","Parent community only","External excursion provider","Students only"],why:"The issue requires collaborative standards-based moderation using shared evidence."},
+ {title:"Reasonable adjustment",text:"An adjustment for a student is not working as intended.",answer:"Student, relevant family/carer, specialist staff and school colleagues",options:["Student, relevant family/carer, specialist staff and school colleagues","Professional association only","A random online forum","No-one — maintain the original plan"],why:"Responsive teaching requires consultation with the people who know the student and the adjustment context."},
+ {title:"New Geography fieldwork unit",text:"You are planning fieldwork for the first time.",answer:"Experienced Geography colleagues, mentor and relevant external/community expertise",options:["Experienced Geography colleagues, mentor and relevant external/community expertise","Only students","Only the school finance office","No collaboration is needed"],why:"Curriculum, safety, logistics and disciplinary quality all benefit from purposeful collaboration."},
+ {title:"Classroom consistency",text:"Students receive different behaviour expectations across the HASS teaching team.",answer:"HASS colleagues, HOD and relevant school leaders/support staff",options:["HASS colleagues, HOD and relevant school leaders/support staff","Professional association only","Parents only","Ignore it because each teacher is different"],why:"Consistent routines and roles require collaboration within agreed school frameworks."},
+ {title:"Curriculum update",text:"You are unsure how a recent subject change affects your planning.",answer:"HOD, experienced colleagues and relevant professional association",options:["HOD, experienced colleagues and relevant professional association","Students only","A museum guide","No-one"],why:"School curriculum leadership and subject-specific professional networks are appropriate sources of support."}
+];
+
+const associationData=[
+ {title:"Geography curriculum update",text:"You want current Geography-specific curriculum information and professional learning.",answer:"Geography teachers association",options:["Geography teachers association","History teachers association","Legal Studies association","General tourism website"],why:"Subject associations provide targeted curriculum updates, resources and professional learning."},
+ {title:"History source analysis",text:"You want subject-specific resources and professional learning on historical thinking.",answer:"History teachers association",options:["History teachers association","Economics educators association","Geography association","Sporting body"],why:"A History association is best aligned to historical inquiry and source-analysis practice."},
+ {title:"Economics and Business",text:"You want classroom resources, curriculum support and networking in Economics and Business.",answer:"Economics / Business educators association",options:["Economics / Business educators association","History teachers association","Geography association","Museum membership"],why:"The most relevant network is the one aligned to the subject and professional need."},
+ {title:"Legal Studies",text:"You want current legal education resources and subject networking.",answer:"Legal Studies association",options:["Legal Studies association","Geography association","History association","Library network"],why:"A Legal Studies association provides subject-specific professional support."}
+];
+
+const beyondData=[
+ {id:"x1",text:"Year 9 Geography students test water quality, examine catchment conditions, identify stakeholders and propose a management strategy.",answer:"authentic"},
+ {id:"x2",text:"Students visit a museum because 'museums are engaging', but there is no inquiry question, source task or connection to the unit.",answer:"engaging"},
+ {id:"x3",text:"Year 9 History students use Australian War Memorial records to investigate individual experiences of WWI and evaluate primary-source evidence.",answer:"authentic"},
+ {id:"x4",text:"Students use current ASX data to examine price change, supply, demand and market behaviour.",answer:"authentic"},
+ {id:"x5",text:"A virtual tour has relevant material, but students are only asked to watch it. Adding a focused inquiry question and evidence task would strengthen the learning.",answer:"potential"},
+ {id:"x6",text:"A Geography class uses a generic online game that has no spatial, environmental or geographical reasoning connected to the unit.",answer:"poorfit"},
+ {id:"x7",text:"Students use Parliamentary Education Office resources to investigate the role and structure of the Australian Parliament before a Civics inquiry.",answer:"authentic"},
+ {id:"x8",text:"A field trip includes strong curriculum-relevant observations, but students have no structured way to record, analyse or use the evidence afterwards.",answer:"potential"}
+];
+
+function updateProgress(){
+ document.getElementById("progress").style.width=(completed.size/5*100)+"%";
+ document.getElementById("score").textContent=`${completed.size} / 5 challenges complete`;
+ if(completed.size===5)document.getElementById("completion").style.display="block";
+}
+function complete(n){
+ if(completed.has(n))return;
+ completed.add(n);
+ const next=document.getElementById("level"+(n+1));
+ if(next)next.classList.remove("locked");
+ updateProgress();
+}
+
+function renderRows(){
+ const box=document.getElementById("plCases");box.innerHTML="";
+ plData.forEach((r,i)=>{
+   const d=document.createElement("div");d.className="row";d.dataset.answer=r.answer;d.innerHTML=`<h3>Opportunity ${i+1}</h3><div>${r.text}</div>`;
+   const btns=document.createElement("div");btns.className="row-buttons";
+   [["evidence","Evidence-informed & worthwhile"],["scrutiny","Useful but needs scrutiny"],["weak","Weak / unsupported claim"],["irrelevant","Not aligned to the need"]].forEach(([v,label])=>{
+      const b=document.createElement("button");b.textContent=label;b.dataset.value=v;
+      b.addEventListener("click",()=>{[...btns.children].forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});
+      btns.appendChild(b);
+   });
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=r.why;d.append(btns,exp);box.appendChild(d);
+ });
+}
+function checkRows(){
+ const items=[...document.querySelectorAll("#plCases .row")],f=document.getElementById("feedback1");
+ if(items.some(i=>!i.querySelector("button.selected"))){f.className="feedback hint";f.textContent="Judge every professional learning opportunity before checking.";return}
+ let correct=0;
+ items.forEach(i=>{
+   const a=i.dataset.answer,s=i.querySelector("button.selected");
+   [...i.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.dataset.value===a)b.classList.add("good")});
+   if(s.dataset.value===a)correct++; else s.classList.add("bad");
+   i.querySelector(".explain").style.display="block";
+ });
+ f.className=correct===items.length?"feedback ok":"feedback bad";
+ f.textContent=`${correct}/${items.length} matched the intended reasoning. Strong professional learning is credible, relevant to a real teaching need and capable of changing practice.`;
+ complete(1);
+}
+
+function renderChoice(containerId,data,level){
+ const box=document.getElementById(containerId);box.innerHTML="";
+ data.forEach(c=>{
+   const d=document.createElement("div");d.className="case";d.innerHTML=`<h3>${c.title}</h3><p>${c.text}</p>`;
+   const opts=document.createElement("div");opts.className="options";
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=c.why;
+   c.options.forEach(o=>{
+     const b=document.createElement("button");b.className="option";b.textContent=o;
+     b.addEventListener("click",()=>{
+       [...opts.children].forEach(x=>{x.disabled=true;if(x.textContent===c.answer)x.classList.add("correct")});
+       if(o!==c.answer)b.classList.add("wrong");
+       exp.style.display="block";
+       checkChoice(containerId,level);
+     });
+     opts.appendChild(b);
+   });
+   d.append(opts,exp);box.appendChild(d);
+ });
+}
+function checkChoice(containerId,level){
+ const groups=[...document.querySelectorAll(`#${containerId} .options`)];
+ if(!groups.every(g=>[...g.children].some(b=>b.disabled)))return;
+ const f=document.getElementById("feedback"+level);f.className="feedback ok";
+ if(level===2)f.textContent="Challenge complete. Collaboration is most effective when the people involved match the professional problem — curriculum, moderation, student support, fieldwork or whole-school consistency.";
+ if(level===3)f.textContent="Challenge complete. Professional associations are useful because they connect teachers with subject-specific curriculum updates, resources, professional learning and networks.";
+ complete(level);
+}
+
+function makeSortCard(i){
+ const d=document.createElement("div");d.className="drag-card";d.draggable=true;d.dataset.id=i.id;d.dataset.answer=i.answer;d.textContent=i.text;
+ d.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",i.id);selectedCard=d});
+ d.addEventListener("click",()=>{document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=d;d.classList.add("selected")});
+ return d;
+}
+function renderSort(){
+ const bank=document.getElementById("bank4");bank.innerHTML="";
+ [...beyondData].sort(()=>Math.random()-.5).forEach(i=>bank.appendChild(makeSortCard(i)));
+ document.querySelectorAll("#level4 .dropzone").forEach(z=>[...z.querySelectorAll(".drag-card")].forEach(c=>c.remove()));
+ installDrops();
+}
+function installDrops(){
+ document.querySelectorAll("#level4 .dropzone").forEach(z=>{
+   z.ondragover=e=>{e.preventDefault();z.classList.add("dragover")};
+   z.ondragleave=()=>z.classList.remove("dragover");
+   z.ondrop=e=>{e.preventDefault();z.classList.remove("dragover");const id=e.dataTransfer.getData("text/plain");const c=document.querySelector(`.drag-card[data-id="${id}"]`);if(c)z.appendChild(c);clearSel()};
+   z.onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){z.appendChild(selectedCard);clearSel()}};
+ });
+ document.getElementById("bank4").onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){e.currentTarget.appendChild(selectedCard);clearSel()}};
+}
+function clearSel(){document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=null}
+function checkSort(){
+ const cards=[...document.querySelectorAll("#level4 .drag-card")],f=document.getElementById("feedback4");let placed=0,correct=0;
+ cards.forEach(c=>{c.classList.remove("correct");const z=c.parentElement.closest(".dropzone");if(z){placed++;if(z.dataset.zone===c.dataset.answer){correct++;c.classList.add("correct")}}});
+ if(placed<cards.length){f.className="feedback hint";f.textContent=`Sort all ${cards.length} opportunities first. ${cards.length-placed} remain.`;return}
+ if(correct===cards.length){
+   f.className="feedback ok";
+   f.textContent="Excellent. Learning beyond the classroom is strongest when the experience generates disciplinary evidence, inquiry or application — not simply engagement.";
+   complete(4);
+ }else{
+   f.className="feedback bad";
+   f.textContent=`${correct}/${cards.length} are correctly placed. Green cards are correct. Reconsider the others.`;
+ }
+}
+
+function checkBuilder(){
+ const vals=[1,2,3,4,5,6].map(n=>document.getElementById("b"+n).value);
+ const f=document.getElementById("feedback5");
+ if(vals.some(v=>v==="")){f.className="feedback hint";f.textContent="Complete all six parts of the professional plan before checking.";return}
+ if(vals.every(v=>v==="correct")){
+   f.className="feedback ok";
+   f.textContent="Excellent. Your professional plan starts with an identified teaching problem, uses evidence and collaboration, connects with subject networks, and evaluates impact through student learning evidence.";
+   complete(5);
+ }else{
+   f.className="feedback bad";
+   f.textContent="One or more choices are disconnected from the identified teaching problem. Recheck whether each step contributes directly to improving HASS practice and student learning.";
+ }
+}
+
+function restart(){
+ completed.clear();updateProgress();
+ [2,3,4,5].forEach(n=>document.getElementById("level"+n).classList.add("locked"));
+ document.getElementById("completion").style.display="none";
+ ["feedback1","feedback2","feedback3","feedback4","feedback5"].forEach(id=>{const f=document.getElementById(id);f.textContent="";f.className="feedback"});
+ renderRows();
+ renderChoice("collabCases",collabData,2);
+ renderChoice("associationCases",associationData,3);
+ renderSort();
+ [1,2,3,4,5,6].forEach(n=>document.getElementById("b"+n).value="");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+renderRows();
+renderChoice("collabCases",collabData,2);
+renderChoice("associationCases",associationData,3);
+renderSort();
+
+document.getElementById("check1").addEventListener("click",checkRows);
+document.getElementById("reset1").addEventListener("click",()=>{renderRows();document.getElementById("feedback1").textContent=""});
+document.getElementById("check4").addEventListener("click",checkSort);
+document.getElementById("reset4").addEventListener("click",()=>{renderSort();document.getElementById("feedback4").textContent=""});
+document.getElementById("check5").addEventListener("click",checkBuilder);
+document.getElementById("reset5").addEventListener("click",()=>{[1,2,3,4,5,6].forEach(n=>document.getElementById("b"+n).value="");document.getElementById("feedback5").textContent=""});
+document.getElementById("restart").addEventListener("click",restart);
+</script>
+</body>
+</html>
