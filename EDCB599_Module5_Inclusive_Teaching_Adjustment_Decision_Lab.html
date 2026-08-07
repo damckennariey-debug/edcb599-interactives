@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDCB599 Module 5 — Inclusive Teaching & Adjustment Decision Lab</title>
+<style>
+:root{
+  --ink:#24152f; --purple:#4b155f; --purple2:#6d2a83; --cream:#fbf8f3; --card:#fff;
+  --line:#e5dce7; --green:#176b4a; --red:#9b2c2c; --amber:#8b5a00; --muted:#6a6170;
+  --shadow:0 8px 28px rgba(42,22,50,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream);line-height:1.45}
+header{background:linear-gradient(135deg,#351047,#5a1a70);color:#fff;padding:28px 18px}
+.header-inner{max-width:1180px;margin:auto}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:700}
+h1{font-size:clamp(1.7rem,4vw,2.8rem);margin:.25rem 0 .5rem;line-height:1.08}
+header p{max-width:930px;margin:0;opacity:.92}
+main{max-width:1180px;margin:auto;padding:18px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:8px 0 18px}
+.progress-wrap{background:#eadfed;height:12px;border-radius:999px;overflow:hidden;border:1px solid #d9c9dd}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#5a1a70,#9a58ac);transition:width .35s}
+.score{font-weight:750;white-space:nowrap}
+.intro,.level,.completion{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.level.locked{opacity:.5;filter:grayscale(.35);pointer-events:none}
+.level-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.level h2{margin:0;font-size:1.35rem}
+.badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#f1e7f4;color:var(--purple);font-size:.78rem;font-weight:800}
+.instructions{color:var(--muted);margin:.35rem 0 1rem}
+.note{background:#f7f0fa;border-left:4px solid var(--purple2);padding:10px 12px;border-radius:8px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.case,.row{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.case h3,.row h3{margin:.1rem 0 .5rem;font-size:1rem;color:var(--purple)}
+.options{display:grid;gap:8px;margin-top:10px}
+.option{width:100%;text-align:left;background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+.option.correct{background:#eff9f3;border-color:#79b798;color:#15593f}
+.option.wrong{background:#fff3f3;border-color:#d49797;color:#7f2222}
+.option:disabled{cursor:default;opacity:1}
+.explain{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#faf7fb;border-left:3px solid #9a72a6;font-size:.9rem}
+.bank{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;padding:14px;border:1px dashed #baa8c0;border-radius:14px;background:#fcf9fd;min-height:100px}
+.drag-card{background:#fff;border:1px solid #d9ccdd;border-radius:13px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:grab;user-select:none}
+.drag-card.selected{outline:3px solid #a87cba;background:#faf5fc}
+.drag-card.correct{border-color:#6fb595;background:#f1fbf6}
+.dropgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+.dropzone{min-height:185px;border:2px dashed #c7b5cc;border-radius:14px;padding:10px;background:#fff}
+.dropzone h3{margin:0 0 5px;color:var(--purple);font-size:1rem}
+.dropzone p{font-size:.84rem;color:var(--muted);margin:.2rem 0 .5rem}
+.dropzone.dragover{background:#f5eafa;border-color:#6f3d7f}
+.dropzone .drag-card{margin-top:8px;cursor:pointer}
+.row-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.row-buttons button{background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1}
+.row-buttons button.selected{outline:3px solid #a87cba}
+.row-buttons button.good{background:#eff9f3;border-color:#79b798}
+.row-buttons button.bad{background:#fff3f3;border-color:#d49797}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:.93rem;cursor:pointer}
+.primary{background:var(--purple);color:white}
+.secondary{background:#eee5f1;color:var(--purple)}
+.feedback{min-height:28px;margin-top:10px;font-weight:700}
+.feedback.ok{color:var(--green)}
+.feedback.bad{color:var(--red)}
+.feedback.hint{color:var(--amber)}
+.scenario{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.student{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.student h3{margin:.1rem 0 .6rem}
+.response-options{display:grid;gap:8px}
+.response-options button{text-align:left;background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1}
+.response-options button.correct{background:#eff9f3;border-color:#79b798}
+.response-options button.wrong{background:#fff3f3;border-color:#d49797}
+.small{font-size:.84rem;color:var(--muted)}
+.completion{text-align:center;display:none}
+.trophy{font-size:3rem}
+.footer{font-size:.78rem;color:var(--muted);padding:8px 2px 28px}
+@media(max-width:820px){
+ .topbar,.scenario{grid-template-columns:1fr}
+ .dropgrid{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+ main{padding:10px}
+ header{padding:22px 14px}
+ .level,.intro{padding:15px}
+}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+   <div class="eyebrow">EDCB599 • Module 5 formative activity</div>
+   <h1>Inclusive Teaching & Adjustment Decision Lab</h1>
+   <p>Practise identifying barriers, selecting reasonable and defensible supports, preserving the intended learning, consulting appropriately and responding to student diversity without lowering expectations.</p>
+ </div>
+</header>
+
+<main>
+ <div class="topbar">
+   <div>
+     <div class="small">Overall mastery</div>
+     <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+   </div>
+   <div class="score" id="score">0 / 5 challenges complete</div>
+ </div>
+
+ <section class="intro">
+   <h2>How to use the lab</h2>
+   <p>Complete each challenge after working through the module content on differentiation, reasonable adjustments, consultation, cultural responsiveness and EAL/D support. Focus on the intended learning first, then the barrier, consultation, support and review.</p>
+   <div class="note"><strong>Core principle:</strong> inclusion does not mean lowering expectations. Maintain the learning, remove unnecessary barriers, consult appropriately, provide targeted support and review whether the response is effective.</div>
+ </section>
+
+ <section class="level" id="level1">
+   <div class="level-head"><div><span class="badge">Challenge 1</span><h2>Identify the barrier</h2></div><span>🔎</span></div>
+   <p class="instructions">Choose the barrier that is most clearly supported by the available evidence. Avoid making assumptions from labels, diagnoses or backgrounds alone.</p>
+   <div class="grid" id="barrierCases"></div>
+   <div class="feedback" id="feedback1" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level2">
+   <div class="level-head"><div><span class="badge">Challenge 2</span><h2>Adjustment, support or modification?</h2></div><span>🧩</span></div>
+   <p class="instructions">Sort each example according to what the teacher is changing. Drag cards, or tap a card and then tap a destination.</p>
+   <div class="bank" id="bank2"></div>
+   <div class="dropgrid">
+     <div class="dropzone" data-zone="adjustment"><h3>Reasonable adjustment</h3><p>Changes access or participation while preserving the intended learning.</p></div>
+     <div class="dropzone" data-zone="support"><h3>Additional teaching / scaffolding</h3><p>Provides instruction or support so the student can access the same learning.</p></div>
+     <div class="dropzone" data-zone="conditions"><h3>Change to conditions</h3><p>Changes timing, setting or mode without necessarily changing the construct.</p></div>
+     <div class="dropzone" data-zone="construct"><h3>Changes the assessed learning</h3><p>Alters or removes the knowledge or skill being assessed.</p></div>
+   </div>
+   <div class="actions"><button class="primary" id="check2">Check sorting</button><button class="secondary" id="reset2">Reset</button></div>
+   <div class="feedback" id="feedback2" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level3">
+   <div class="level-head"><div><span class="badge">Challenge 3</span><h2>What would you do?</h2></div><span>🧭</span></div>
+   <p class="instructions">Choose the strongest professional response for each student scenario.</p>
+   <div class="grid" id="scenarioCases"></div>
+   <div class="feedback" id="feedback3" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level4">
+   <div class="level-head"><div><span class="badge">Challenge 4</span><h2>Cultural responsiveness check</h2></div><span>🌿</span></div>
+   <p class="instructions">Classify each statement as <strong>sound</strong>, <strong>needs more thought</strong>, or <strong>problematic</strong>.</p>
+   <div id="cultureRows" class="grid"></div>
+   <div class="actions"><button class="primary" id="check4">Check judgements</button><button class="secondary" id="reset4">Reset</button></div>
+   <div class="feedback" id="feedback4" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level5">
+   <div class="level-head"><div><span class="badge">Challenge 5</span><h2>Keep the challenge, remove the barrier</h2></div><span>🛠️</span></div>
+   <p class="instructions">Select the response that best preserves the intellectual demand of the Business task while making the learning accessible.</p>
+   <div class="scenario">
+     <div class="student">
+       <h3>Business task</h3>
+       <p>Students must analyse a short business case and write an evidence-based recommendation.</p>
+       <h3>Student evidence</h3>
+       <p>An EAL/D student demonstrates strong conceptual understanding in discussion but is still developing the academic English needed to organise an extended written response.</p>
+       <p class="small">The intended learning is Business reasoning and communication, not simply producing a fixed number of words without support.</p>
+     </div>
+     <div class="response-options" id="finalResponses"></div>
+   </div>
+   <div class="feedback" id="feedback5" aria-live="polite"></div>
+ </section>
+
+ <section class="completion" id="completion">
+   <div class="trophy">🏆</div>
+   <h2>Inclusive Teaching Decision Lab complete</h2>
+   <p>You have practised identifying barriers, distinguishing types of support, making defensible adjustments, considering cultural responsiveness and preserving curriculum challenge. Return to the module activities and use the same reasoning when adapting your own Business lesson or assessment.</p>
+   <button class="secondary" id="restart">Start again</button>
+ </section>
+
+ <div class="footer">Formative learning resource for EDCB599 Module 5. Designed to support the module’s focus on responsive teaching, reasonable adjustments, cultural responsiveness, EAL/D support, consultation and maintaining curriculum integrity.</div>
+</main>
+
+<script>
+const completed=new Set();
+let selectedCard=null;
+
+const barrierData=[
+ {title:"Scenario A — Presentation anxiety",text:"A Year 10 student demonstrates strong economic understanding but experiences significant anxiety when presenting live to the whole class.",answer:"Participation/access barrier",options:["Conceptual learning barrier","Language barrier","Participation/access barrier","No evidence of a barrier"],why:"The available evidence points to difficulty accessing the live presentation condition, not a lack of economic knowledge."},
+ {title:"Scenario B — EAL/D writing",text:"A Year 8 student can explain the concepts orally but struggles to interpret task language and organise a 400-word response.",answer:"Language barrier",options:["Conceptual learning barrier","Language barrier","Participation/access barrier","No evidence of a barrier"],why:"The evidence indicates that language demands are limiting the student’s capacity to demonstrate conceptual understanding."},
+ {title:"Scenario C — Diagnosis only",text:"A student has a documented disability, but you have not yet gathered evidence about how it affects access to this particular Business task.",answer:"No evidence of a barrier",options:["Conceptual learning barrier","Language barrier","Participation/access barrier","No evidence of a barrier"],why:"A diagnosis alone does not tell the teacher what barrier exists in this specific learning context."},
+ {title:"Scenario D — Missing prerequisite knowledge",text:"A student cannot compare loan options because they do not yet understand the difference between monthly repayment and total repayment.",answer:"Conceptual learning barrier",options:["Conceptual learning barrier","Language barrier","Participation/access barrier","No evidence of a barrier"],why:"The immediate issue is missing Business/financial knowledge that requires further teaching."}
+];
+
+const sortData=[
+ {id:"a1",text:"Allow a student to submit a recorded presentation when live whole-class presentation is not essential to the intended learning.",answer:"adjustment"},
+ {id:"a2",text:"Explicitly teach key Business vocabulary and provide a model response before students write.",answer:"support"},
+ {id:"a3",text:"Negotiate an extension because a student is absent for sorry business.",answer:"conditions"},
+ {id:"a4",text:"Remove the requirement to analyse economic relationships and assess only whether the student can list definitions.",answer:"construct"},
+ {id:"a5",text:"Provide captions and a transcript for a video used in a Business lesson.",answer:"adjustment"},
+ {id:"a6",text:"Provide sentence starters, oral rehearsal and a graphic organiser for an extended response.",answer:"support"},
+ {id:"a7",text:"Allow additional processing time where this is an agreed and reasonable response to the student’s needs.",answer:"conditions"},
+ {id:"a8",text:"Replace the class Business task with an unrelated colouring worksheet.",answer:"construct"}
+];
+
+const scenarioData=[
+ {title:"Annie",text:"The task is a five-minute response examining relationships between economic performance and living standards. Annie experiences significant anxiety when presenting to the whole class.",answer:"Consult with Annie and relevant people, determine whether live whole-class presentation is essential, and consider an alternative mode such as a smaller audience or recorded presentation that preserves the economic analysis and communication.",options:[
+   "Excuse Annie from the task entirely.",
+   "Require the same live presentation because fairness means identical conditions.",
+   "Consult with Annie and relevant people, determine whether live whole-class presentation is essential, and consider an alternative mode such as a smaller audience or recorded presentation that preserves the economic analysis and communication."
+ ],why:"The response begins with the intended learning and consultation, then considers an adjustment that preserves the construct."},
+ {title:"Adnan",text:"Adnan understands the economic concepts but needs support with task language and structuring an extended written response.",answer:"Explicitly teach vocabulary and task language, model the response, provide structured scaffolds and oral rehearsal, then reduce support as proficiency develops.",options:[
+   "Give Adnan an easier unrelated task.",
+   "Explicitly teach vocabulary and task language, model the response, provide structured scaffolds and oral rehearsal, then reduce support as proficiency develops.",
+   "Lower the expected Business reasoning because English is an additional language."
+ ],why:"The response supports language development while maintaining access to appropriately challenging Business learning."},
+ {title:"Amaranga",text:"Amaranga will be absent to attend sorry business and the assignment is due during the absence.",answer:"Respond privately and respectfully, consult appropriately, negotiate a suitable revised timeline and provide access to missed learning without demanding unnecessary personal explanation.",options:[
+   "Ask Amaranga to explain the family circumstances to the class before granting an extension.",
+   "Apply an automatic penalty because the assessment date is the same for everyone.",
+   "Respond privately and respectfully, consult appropriately, negotiate a suitable revised timeline and provide access to missed learning without demanding unnecessary personal explanation."
+ ],why:"This is culturally responsive, protects privacy and maintains appropriate assessment expectations while adjusting the surrounding conditions."}
+];
+
+const cultureData=[
+ {text:"Use the 8 Ways framework automatically whenever an Aboriginal or Torres Strait Islander student is in the class.",answer:"problematic",why:"The framework should not be treated as a universal learning-style prescription or assumed to suit every student or local context."},
+ {text:"Check the authority, provenance and local relevance of Aboriginal and Torres Strait Islander resources before using them.",answer:"sound",why:"Cultural safety and authenticity depend on using accurate, authorised and contextually appropriate resources."},
+ {text:"NAIDOC Week can be used as a Business context if the curriculum connection is authentic, locally appropriate and not tokenistic.",answer:"needs",why:"A community event is not automatically an appropriate curriculum context; the quality of the connection, local relevance and consultation matter."},
+ {text:"Seek guidance from relevant Aboriginal and Torres Strait Islander staff, families, educators or community members where appropriate.",answer:"sound",why:"Culturally responsive practice values local context, relationships and appropriate expertise."},
+ {text:"All Aboriginal and Torres Strait Islander students learn best through the same set of strategies.",answer:"problematic",why:"There is significant diversity within and across Aboriginal and Torres Strait Islander peoples, cultures, languages and experiences."},
+ {text:"A teacher can use the 8 Ways framework as a prompt for reflection, provided decisions are informed by curriculum purpose, student need, cultural safety and local knowledge.",answer:"sound",why:"This reflects the careful, contextualised use described in the module."}
+];
+
+const finalData=[
+ {text:"Replace the task with a much easier worksheet containing only definitions.",ok:false,why:"This changes the intended learning rather than making the original task accessible."},
+ {text:"Reduce the response to one unsupported sentence so the student can finish quickly.",ok:false,why:"This lowers the intellectual and communication demand rather than supporting access."},
+ {text:"Explicitly teach key vocabulary and response structure, provide a model and graphic organiser, allow oral rehearsal and sentence stems, then gradually reduce scaffolds while maintaining the requirement to analyse and justify with evidence.",ok:true,why:"This supports the language demands while preserving the Business reasoning and intended challenge."},
+ {text:"Allow the student to skip the task because English is an additional language.",ok:false,why:"EAL/D status should not be treated as evidence that the student cannot engage with challenging curriculum learning."}
+];
+
+function updateProgress(){
+ document.getElementById("progress").style.width=(completed.size/5*100)+"%";
+ document.getElementById("score").textContent=`${completed.size} / 5 challenges complete`;
+ if(completed.size===5)document.getElementById("completion").style.display="block";
+}
+function complete(n){
+ if(completed.has(n))return;
+ completed.add(n);
+ const next=document.getElementById("level"+(n+1));
+ if(next)next.classList.remove("locked");
+ updateProgress();
+}
+function renderChoiceCases(containerId,data,level){
+ const box=document.getElementById(containerId);box.innerHTML="";
+ data.forEach(c=>{
+   const d=document.createElement("div");d.className="case";d.innerHTML=`<h3>${c.title}</h3><p>${c.text}</p>`;
+   const opts=document.createElement("div");opts.className="options";
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=c.why;
+   c.options.forEach(o=>{
+     const b=document.createElement("button");b.className="option";b.textContent=o;
+     b.addEventListener("click",()=>{
+       [...opts.children].forEach(x=>{x.disabled=true;if(x.textContent===c.answer)x.classList.add("correct")});
+       if(o!==c.answer)b.classList.add("wrong");
+       exp.style.display="block";checkChoiceComplete(containerId,level);
+     });
+     opts.appendChild(b);
+   });
+   d.append(opts,exp);box.appendChild(d);
+ });
+}
+function checkChoiceComplete(containerId,level){
+ const groups=[...document.querySelectorAll(`#${containerId} .options`)];
+ if(!groups.every(g=>[...g.children].some(b=>b.disabled)))return;
+ const f=document.getElementById("feedback"+level);
+ f.className="feedback ok";
+ f.textContent=level===1?"Challenge complete. Start with evidence about the barrier, not assumptions about the student.":"Challenge complete. Strong responses preserve the intended learning, consult appropriately and respond to the specific barrier.";
+ complete(level);
+}
+function makeCard(i){
+ const d=document.createElement("div");d.className="drag-card";d.draggable=true;d.dataset.id=i.id;d.dataset.answer=i.answer;d.textContent=i.text;
+ d.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",i.id);selectedCard=d});
+ d.addEventListener("click",()=>{document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=d;d.classList.add("selected")});
+ return d;
+}
+function renderSort(){
+ const bank=document.getElementById("bank2");bank.innerHTML="";
+ [...sortData].sort(()=>Math.random()-.5).forEach(i=>bank.appendChild(makeCard(i)));
+ document.querySelectorAll("#level2 .dropzone").forEach(z=>[...z.querySelectorAll(".drag-card")].forEach(c=>c.remove()));
+ installDrops();
+}
+function installDrops(){
+ document.querySelectorAll("#level2 .dropzone").forEach(z=>{
+   z.ondragover=e=>{e.preventDefault();z.classList.add("dragover")};z.ondragleave=()=>z.classList.remove("dragover");
+   z.ondrop=e=>{e.preventDefault();z.classList.remove("dragover");const id=e.dataTransfer.getData("text/plain");const c=document.querySelector(`.drag-card[data-id="${id}"]`);if(c)z.appendChild(c);clearSel()};
+   z.onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){z.appendChild(selectedCard);clearSel()}};
+ });
+ document.getElementById("bank2").onclick=e=>{if(e.target.closest(".drag-card"))return;if(selectedCard){e.currentTarget.appendChild(selectedCard);clearSel()}};
+}
+function clearSel(){document.querySelectorAll(".drag-card.selected").forEach(c=>c.classList.remove("selected"));selectedCard=null}
+function checkSort(){
+ const cards=[...document.querySelectorAll("#level2 .drag-card")],f=document.getElementById("feedback2");let placed=0,correct=0;
+ cards.forEach(c=>{c.classList.remove("correct");const z=c.parentElement.closest(".dropzone");if(z){placed++;if(z.dataset.zone===c.dataset.answer){correct++;c.classList.add("correct")}}});
+ if(placed<cards.length){f.className="feedback hint";f.textContent=`Sort all ${cards.length} cards first. ${cards.length-placed} remain.`;return}
+ if(correct===cards.length){f.className="feedback ok";f.textContent="Excellent. You have distinguished between changing access, providing additional teaching, changing conditions and changing the assessed learning itself.";complete(2)}
+ else{f.className="feedback bad";f.textContent=`${correct}/${cards.length} are correctly placed. Green cards are correct. Reconsider the others.`}
+}
+function renderCulture(){
+ const box=document.getElementById("cultureRows");box.innerHTML="";
+ cultureData.forEach((r,i)=>{
+   const d=document.createElement("div");d.className="row";d.dataset.answer=r.answer;d.innerHTML=`<h3>Statement ${i+1}</h3><div>${r.text}</div>`;
+   const btns=document.createElement("div");btns.className="row-buttons";
+   [["sound","Sound"],["needs","Needs more thought"],["problematic","Problematic"]].forEach(([v,label])=>{
+      const b=document.createElement("button");b.textContent=label;b.dataset.value=v;b.addEventListener("click",()=>{[...btns.children].forEach(x=>x.classList.remove("selected"));b.classList.add("selected")});btns.appendChild(b);
+   });
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=r.why;d.append(btns,exp);box.appendChild(d);
+ });
+}
+function checkCulture(){
+ const items=[...document.querySelectorAll("#cultureRows .row")],f=document.getElementById("feedback4");
+ if(items.some(i=>!i.querySelector("button.selected"))){f.className="feedback hint";f.textContent="Make a judgement for every statement before checking.";return}
+ let correct=0;
+ items.forEach(i=>{const a=i.dataset.answer,s=i.querySelector("button.selected");[...i.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.dataset.value===a)b.classList.add("good")});if(s.dataset.value===a)correct++;else s.classList.add("bad");i.querySelector(".explain").style.display="block"});
+ f.className=correct===items.length?"feedback ok":"feedback bad";f.textContent=`${correct}/${items.length} matched the intended reasoning. Review the explanations and consider local context, cultural safety and appropriate consultation.`;complete(4);
+}
+function renderFinal(){
+ const box=document.getElementById("finalResponses");box.innerHTML="";
+ finalData.forEach(r=>{
+   const b=document.createElement("button");b.textContent=r.text;
+   b.addEventListener("click",()=>{[...box.children].forEach(x=>x.disabled=true);[...box.children].forEach((x,i)=>{if(finalData[i].ok)x.classList.add("correct")});if(!r.ok)b.classList.add("wrong");
+   const f=document.getElementById("feedback5");f.className=r.ok?"feedback ok":"feedback bad";f.textContent=r.why;if(r.ok)complete(5)});
+   box.appendChild(b);
+ });
+}
+function restart(){
+ completed.clear();updateProgress();[2,3,4,5].forEach(n=>document.getElementById("level"+n).classList.add("locked"));document.getElementById("completion").style.display="none";
+ ["feedback1","feedback2","feedback3","feedback4","feedback5"].forEach(id=>{const f=document.getElementById(id);f.textContent="";f.className="feedback"});
+ renderChoiceCases("barrierCases",barrierData,1);renderSort();renderChoiceCases("scenarioCases",scenarioData,3);renderCulture();renderFinal();window.scrollTo({top:0,behavior:"smooth"});
+}
+renderChoiceCases("barrierCases",barrierData,1);
+renderSort();
+renderChoiceCases("scenarioCases",scenarioData,3);
+renderCulture();
+renderFinal();
+
+document.getElementById("check2").addEventListener("click",checkSort);
+document.getElementById("reset2").addEventListener("click",()=>{renderSort();document.getElementById("feedback2").textContent=""});
+document.getElementById("check4").addEventListener("click",checkCulture);
+document.getElementById("reset4").addEventListener("click",()=>{renderCulture();document.getElementById("feedback4").textContent=""});
+document.getElementById("restart").addEventListener("click",restart);
+</script>
+</body>
+</html>
