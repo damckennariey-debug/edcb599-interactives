@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EDCB599 Module 6 — Assessment & Evidence Decision Lab</title>
+<style>
+:root{
+  --ink:#24152f; --purple:#4b155f; --purple2:#6d2a83; --cream:#fbf8f3; --card:#fff;
+  --line:#e5dce7; --green:#176b4a; --red:#9b2c2c; --amber:#8b5a00; --muted:#6a6170;
+  --shadow:0 8px 28px rgba(42,22,50,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream);line-height:1.45}
+header{background:linear-gradient(135deg,#351047,#5a1a70);color:#fff;padding:28px 18px}
+.header-inner{max-width:1180px;margin:auto}
+.eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:700}
+h1{font-size:clamp(1.7rem,4vw,2.8rem);margin:.25rem 0 .5rem;line-height:1.08}
+header p{max-width:930px;margin:0;opacity:.92}
+main{max-width:1180px;margin:auto;padding:18px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:8px 0 18px}
+.progress-wrap{background:#eadfed;height:12px;border-radius:999px;overflow:hidden;border:1px solid #d9c9dd}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#5a1a70,#9a58ac);transition:width .35s}
+.score{font-weight:750;white-space:nowrap}
+.intro,.level,.completion{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+.level.locked{opacity:.5;filter:grayscale(.35);pointer-events:none}
+.level-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:12px}
+.level h2{margin:0;font-size:1.35rem}
+.badge{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:#f1e7f4;color:var(--purple);font-size:.78rem;font-weight:800}
+.instructions{color:var(--muted);margin:.35rem 0 1rem}
+.note{background:#f7f0fa;border-left:4px solid var(--purple2);padding:10px 12px;border-radius:8px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.case,.row{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.case h3,.row h3{margin:.1rem 0 .5rem;font-size:1rem;color:var(--purple)}
+.options{display:grid;gap:8px;margin-top:10px}
+.option{width:100%;text-align:left;background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+.option.correct{background:#eff9f3;border-color:#79b798;color:#15593f}
+.option.wrong{background:#fff3f3;border-color:#d49797;color:#7f2222}
+.option:disabled{cursor:default;opacity:1}
+.explain{display:none;margin-top:10px;padding:10px;border-radius:10px;background:#faf7fb;border-left:3px solid #9a72a6;font-size:.9rem}
+.row-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.row-buttons button{background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1}
+.row-buttons button.selected{outline:3px solid #a87cba}
+.row-buttons button.good{background:#eff9f3;border-color:#79b798}
+.row-buttons button.bad{background:#fff3f3;border-color:#d49797}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:.93rem;cursor:pointer}
+.primary{background:var(--purple);color:white}
+.secondary{background:#eee5f1;color:var(--purple)}
+.feedback{min-height:28px;margin-top:10px;font-weight:700}
+.feedback.ok{color:var(--green)}
+.feedback.bad{color:var(--red)}
+.feedback.hint{color:var(--amber)}
+.data-box{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.data-box h3{margin:.1rem 0 .5rem;color:var(--purple)}
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.metric{border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center;background:#faf7fb}
+.metric strong{display:block;font-size:1.35rem;color:var(--purple)}
+.moderation{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.teacher{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff}
+.teacher h3{margin:.1rem 0 .5rem}
+.response-options{display:grid;gap:8px}
+.response-options button{text-align:left;background:#f6f2f7;color:var(--ink);border:1px solid #ded3e1}
+.response-options button.correct{background:#eff9f3;border-color:#79b798}
+.response-options button.wrong{background:#fff3f3;border-color:#d49797}
+.small{font-size:.84rem;color:var(--muted)}
+.completion{text-align:center;display:none}
+.trophy{font-size:3rem}
+.footer{font-size:.78rem;color:var(--muted);padding:8px 2px 28px}
+@media(max-width:820px){
+ .topbar,.moderation,.metric-grid{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+ main{padding:10px}
+ header{padding:22px 14px}
+ .level,.intro{padding:15px}
+}
+</style>
+</head>
+<body>
+<header>
+ <div class="header-inner">
+   <div class="eyebrow">EDCB599 • Module 6 formative activity</div>
+   <h1>Assessment & Evidence Decision Lab</h1>
+   <p>Practise deciding why assessment is being used, what the evidence can actually support, how to design valid assessment, how moderation should work and what makes feedback actionable.</p>
+ </div>
+</header>
+
+<main>
+ <div class="topbar">
+   <div>
+     <div class="small">Overall mastery</div>
+     <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+   </div>
+   <div class="score" id="score">0 / 5 challenges complete</div>
+ </div>
+
+ <section class="intro">
+   <h2>How to use the lab</h2>
+   <p>Complete each challenge after working through the module content. Focus on the relationship between intended learning, evidence and instructional response.</p>
+   <div class="note"><strong>Core principle:</strong> assessment improves learning only when the evidence gathered is sufficiently valid, interpreted carefully and used to inform an appropriate response.</div>
+ </section>
+
+ <section class="level" id="level1">
+   <div class="level-head"><div><span class="badge">Challenge 1</span><h2>What is the assessment purpose?</h2></div><span>🎯</span></div>
+   <p class="instructions">Judge the purpose from <strong>how the evidence will be used</strong>, not from the format of the activity.</p>
+   <div class="grid" id="purposeCases"></div>
+   <div class="feedback" id="feedback1" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level2">
+   <div class="level-head"><div><span class="badge">Challenge 2</span><h2>What does the evidence actually tell you?</h2></div><span>📊</span></div>
+   <p class="instructions">Choose the most defensible interpretation. Avoid claims that exceed the quality of the evidence.</p>
+   <div class="grid" id="evidenceCases"></div>
+   <div class="feedback" id="feedback2" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level3">
+   <div class="level-head"><div><span class="badge">Challenge 3</span><h2>Design a valid assessment</h2></div><span>🧪</span></div>
+   <p class="instructions">Select the item that best elicits the intended knowledge or skill.</p>
+   <div class="grid" id="validityCases"></div>
+   <div class="feedback" id="feedback3" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level4">
+   <div class="level-head"><div><span class="badge">Challenge 4</span><h2>Moderation room</h2></div><span>⚖️</span></div>
+   <p class="instructions">Two teachers have judged the same Business response differently. What should happen next?</p>
+   <div class="moderation">
+     <div class="teacher">
+       <h3>Teacher A</h3>
+       <p>Judges the response as <strong>B-standard</strong> because the student uses relevant evidence and explains the likely effect of the strategy on the target market.</p>
+     </div>
+     <div class="teacher">
+       <h3>Teacher B</h3>
+       <p>Judges the response as <strong>C-standard</strong> because the explanation is brief and one piece of evidence is only partially integrated.</p>
+     </div>
+   </div>
+   <div class="response-options" id="moderationOptions" style="margin-top:14px"></div>
+   <div class="feedback" id="feedback4" aria-live="polite"></div>
+ </section>
+
+ <section class="level locked" id="level5">
+   <div class="level-head"><div><span class="badge">Challenge 5</span><h2>Make the feedback actionable</h2></div><span>💬</span></div>
+   <p class="instructions">Choose the feedback most likely to help the student improve the intended Business reasoning.</p>
+   <div class="grid" id="feedbackCases"></div>
+   <div class="feedback" id="feedback5" aria-live="polite"></div>
+ </section>
+
+ <section class="completion" id="completion">
+   <div class="trophy">🏆</div>
+   <h2>Assessment & Evidence Decision Lab complete</h2>
+   <p>You have practised distinguishing assessment purposes, interpreting evidence cautiously, designing valid assessment, moderating judgements and providing actionable feedback. Return to the module activities and apply the same reasoning to your own assessment design and feedback planning.</p>
+   <button class="secondary" id="restart">Start again</button>
+ </section>
+
+ <div class="footer">Formative learning resource for EDCB599 Module 6. Designed to support the module’s focus on assessment purpose, evidence, validity, standards-based judgement, moderation and feedback.</div>
+</main>
+
+<script>
+const completed=new Set();
+
+const purposeData=[
+ {title:"Scenario A",text:"Before beginning a unit on business performance, students explain the difference between revenue and profit. The teacher uses the responses to decide whether prerequisite content needs revision.",answer:"Diagnostic",options:["Diagnostic","Formative","Summative"],why:"The evidence is being used to identify prior knowledge and misconceptions before or early in instruction."},
+ {title:"Scenario B",text:"Midway through a lesson, every student interprets a simple market graph. The teacher notices a common error and provides another worked example before students continue.",answer:"Formative",options:["Diagnostic","Formative","Summative"],why:"The defining feature is that evidence gathered during learning changes what happens next."},
+ {title:"Scenario C",text:"At the end of a unit, students complete a business investigation that is judged against selected aspects of the achievement standard and recorded as a result.",answer:"Summative",options:["Diagnostic","Formative","Summative"],why:"The primary purpose is to evaluate and record achievement after a period of learning."},
+ {title:"Scenario D",text:"Students complete an ungraded digital quiz. The teacher records the score but makes no change to teaching, feedback or student learning.",answer:"Neither automatically",options:["Formative because it is ungraded","Summative because it has a score","Neither automatically"],why:"Format and grading do not determine purpose. Without a clear use of the evidence, the quiz is not automatically formative or summative."}
+];
+
+const evidenceData=[
+ {title:"Class misconception",text:"12 of 30 students identify $5,000 as revenue when a business has $20,000 sales and $15,000 expenses.",answer:"There is evidence that a substantial group may be confusing revenue and profit; further teaching and another check are warranted.",options:[
+   "The whole class has failed to learn profitability.",
+   "There is evidence that a substantial group may be confusing revenue and profit; further teaching and another check are warranted.",
+   "The teacher's explanation was definitely ineffective."
+ ],why:"The responses support a claim about a likely misconception, but not a sweeping conclusion about the whole class or the sole cause."},
+ {title:"Different cohorts",text:"This year's Year 9 cohort averages 72% on a similar assessment; last year's cohort averaged 78%.",answer:"This suggests a cohort difference, but does not by itself measure individual student progress or teacher impact.",options:[
+   "Students have gone backwards by 6%.",
+   "The current teacher is less effective.",
+   "This suggests a cohort difference, but does not by itself measure individual student progress or teacher impact."
+ ],why:"Different cohorts are different students. Comparability and context matter."},
+ {title:"Matched students",text:"The same students complete two comparable data-interpretation tasks eight weeks apart and most show stronger performance on the later task.",answer:"This provides some evidence of progress, subject to the comparability of the tasks and relevant contextual factors.",options:[
+   "This provides some evidence of progress, subject to the comparability of the tasks and relevant contextual factors.",
+   "This proves the teaching strategy caused the improvement.",
+   "Only the final score matters because achievement is more valid than progress."
+ ],why:"Matched evidence across comparable points may support a progress claim, but causal claims require greater caution."},
+ {title:"One low-scoring item",text:"A multiple-choice item has a very low success rate, but the wording is ambiguous and two distractors are arguably defensible.",answer:"The item may not provide trustworthy evidence of the intended learning and should be reviewed before drawing strong conclusions.",options:[
+   "Students definitely lack the concept.",
+   "The item may not provide trustworthy evidence of the intended learning and should be reviewed before drawing strong conclusions.",
+   "The lowest-scoring item is automatically the most important teaching priority."
+ ],why:"Interpretation depends on item quality and validity, not just the percentage correct."}
+];
+
+const validityData=[
+ {title:"Assessing consumer decision-making",text:"Intended learning: compare two financial options and justify a consumer decision using relevant evidence.",answer:"Students compare two loan options and write a recommendation using repayment data, consumer considerations and a justification.",options:[
+   "Students design a colourful poster advertising their favourite car.",
+   "Students compare two loan options and write a recommendation using repayment data, consumer considerations and a justification.",
+   "Students memorise ten definitions about finance."
+ ],why:"The task directly elicits comparison, evidence use and justification."},
+ {title:"Assessing graph interpretation",text:"Intended learning: interpret a simple economic graph and explain the relationship shown.",answer:"Students identify the trend shown and explain the relationship in one or two sentences using the graph as evidence.",options:[
+   "Students identify the trend shown and explain the relationship in one or two sentences using the graph as evidence.",
+   "Students write a 1000-word essay about the economy.",
+   "Students colour-code the graph without explaining it."
+ ],why:"The response format is proportionate and directly targets interpretation and explanation."},
+ {title:"Multiple-choice design",text:"Intended learning: identify the difference between revenue and profit.",answer:"Use a clear stem and plausible distractors that reflect likely misconceptions about sales, expenses and profit.",options:[
+   "Use a trick question with two nearly identical correct answers.",
+   "Use a clear stem and plausible distractors that reflect likely misconceptions about sales, expenses and profit.",
+   "Use an obscure vocabulary term unrelated to the learning."
+ ],why:"Good distractors can reveal misconceptions rather than simply reward guessing or reading tricks."},
+ {title:"Accessibility",text:"Intended learning: analyse a business case, not decode unnecessarily complex prose.",answer:"Use clear task language and accessible formatting while retaining the Business reasoning and evidence requirements.",options:[
+   "Add dense, complex wording so the task appears rigorous.",
+   "Use clear task language and accessible formatting while retaining the Business reasoning and evidence requirements.",
+   "Remove the requirement to analyse."
+ ],why:"Fair and accessible assessment removes irrelevant barriers without changing the intended construct."}
+];
+
+const moderationData=[
+ {text:"Average the two grades and award the midpoint.",ok:false,why:"Moderation is not grade averaging; the teachers need to examine the standard and evidence."},
+ {text:"Let the more experienced teacher decide because expertise should override discussion.",ok:false,why:"Expertise can inform dialogue, but moderation should not be reduced to one person's authority."},
+ {text:"Return to the relevant standard or task-specific descriptors, compare the evidence in the response, explain each judgement and work towards a shared interpretation.",ok:true,why:"This centres moderation on standards, evidence, professional dialogue and consistency."},
+ {text:"Keep both grades because professional judgement is entirely subjective.",ok:false,why:"Professional judgement is not mechanical, but consistency and comparability still matter."}
+];
+
+const feedbackData=[
+ {title:"Business analysis",text:"A student identifies social media advertising as a strategy but does not explain how it could influence the target market.",answer:"You have identified a relevant strategy. To strengthen the analysis, explain how social media advertising could influence the identified target market and use one piece of evidence from the case study. Revise the final two sentences.",options:[
+   "Great work!",
+   "Add more detail.",
+   "You have identified a relevant strategy. To strengthen the analysis, explain how social media advertising could influence the identified target market and use one piece of evidence from the case study. Revise the final two sentences."
+ ],why:"The feedback identifies demonstrated learning, one priority improvement and a specific next action."},
+ {title:"Overloaded feedback",text:"A student's recommendation is generally sound but weakly supported by evidence.",answer:"Prioritise one or two changes the student can act on now, linked directly to the criteria and intended reasoning.",options:[
+   "Write a page of comments covering every minor issue in spelling, punctuation, layout, vocabulary, evidence, structure and presentation.",
+   "Prioritise one or two changes the student can act on now, linked directly to the criteria and intended reasoning.",
+   "Write 'B-' and nothing else."
+ ],why:"Effective feedback should be manageable and focused enough for the student to use."},
+ {title:"Timing",text:"A student receives useful feedback after the unit has completely ended and never sees a similar task again.",answer:"The feedback may have limited impact unless the student has an opportunity to revise, practise or apply it in a related future task.",options:[
+   "The feedback is automatically effective because it is detailed.",
+   "The feedback may have limited impact unless the student has an opportunity to revise, practise or apply it in a related future task.",
+   "Timing does not matter if the teacher comments quickly."
+ ],why:"Feedback is most useful when students have a meaningful opportunity to act on it."},
+ {title:"Teacher learning",text:"Many students make the same error in an assessment response.",answer:"Use the pattern as evidence to consider whether further explanation, modelling or practice is required, while also checking that the task validly elicited the intended learning.",options:[
+   "Assume the students did not study.",
+   "Use the pattern as evidence to consider whether further explanation, modelling or practice is required, while also checking that the task validly elicited the intended learning.",
+   "Ignore the pattern because feedback is only for students."
+ ],why:"Feedback and assessment evidence should inform the teacher as well as the student."}
+];
+
+function updateProgress(){
+ document.getElementById("progress").style.width=(completed.size/5*100)+"%";
+ document.getElementById("score").textContent=`${completed.size} / 5 challenges complete`;
+ if(completed.size===5)document.getElementById("completion").style.display="block";
+}
+function complete(n){
+ if(completed.has(n))return;
+ completed.add(n);
+ const next=document.getElementById("level"+(n+1));
+ if(next)next.classList.remove("locked");
+ updateProgress();
+}
+function renderChoice(containerId,data,level){
+ const box=document.getElementById(containerId);box.innerHTML="";
+ data.forEach(c=>{
+   const d=document.createElement("div");d.className="case";d.innerHTML=`<h3>${c.title}</h3><p>${c.text}</p>`;
+   const opts=document.createElement("div");opts.className="options";
+   const exp=document.createElement("div");exp.className="explain";exp.textContent=c.why;
+   c.options.forEach(o=>{
+     const b=document.createElement("button");b.className="option";b.textContent=o;
+     b.addEventListener("click",()=>{
+       [...opts.children].forEach(x=>{x.disabled=true;if(x.textContent===c.answer)x.classList.add("correct")});
+       if(o!==c.answer)b.classList.add("wrong");
+       exp.style.display="block";
+       checkChoice(containerId,level);
+     });
+     opts.appendChild(b);
+   });
+   d.append(opts,exp);box.appendChild(d);
+ });
+}
+function checkChoice(containerId,level){
+ const groups=[...document.querySelectorAll(`#${containerId} .options`)];
+ if(!groups.every(g=>[...g.children].some(b=>b.disabled)))return;
+ const f=document.getElementById("feedback"+level);
+ f.className="feedback ok";
+ if(level===1) f.textContent="Challenge complete. The purpose of assessment depends on how the evidence is used.";
+ if(level===2) f.textContent="Challenge complete. Strong interpretation stays within what the evidence can reasonably support.";
+ if(level===3) f.textContent="Challenge complete. Valid assessment starts with the intended curriculum evidence, not the activity format.";
+ if(level===5) f.textContent="Challenge complete. Effective feedback is specific, manageable, connected to the learning and usable by the student.";
+ complete(level);
+}
+function renderModeration(){
+ const box=document.getElementById("moderationOptions");box.innerHTML="";
+ moderationData.forEach(r=>{
+   const b=document.createElement("button");b.textContent=r.text;
+   b.addEventListener("click",()=>{
+     [...box.children].forEach(x=>x.disabled=true);
+     [...box.children].forEach((x,i)=>{if(moderationData[i].ok)x.classList.add("correct")});
+     if(!r.ok)b.classList.add("wrong");
+     const f=document.getElementById("feedback4");f.className=r.ok?"feedback ok":"feedback bad";f.textContent=r.why;
+     if(r.ok)complete(4);
+   });
+   box.appendChild(b);
+ });
+}
+function restart(){
+ completed.clear();updateProgress();
+ [2,3,4,5].forEach(n=>document.getElementById("level"+n).classList.add("locked"));
+ document.getElementById("completion").style.display="none";
+ ["feedback1","feedback2","feedback3","feedback4","feedback5"].forEach(id=>{const f=document.getElementById(id);f.textContent="";f.className="feedback"});
+ renderChoice("purposeCases",purposeData,1);
+ renderChoice("evidenceCases",evidenceData,2);
+ renderChoice("validityCases",validityData,3);
+ renderModeration();
+ renderChoice("feedbackCases",feedbackData,5);
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+renderChoice("purposeCases",purposeData,1);
+renderChoice("evidenceCases",evidenceData,2);
+renderChoice("validityCases",validityData,3);
+renderModeration();
+renderChoice("feedbackCases",feedbackData,5);
+document.getElementById("restart").addEventListener("click",restart);
+</script>
+</body>
+</html>
